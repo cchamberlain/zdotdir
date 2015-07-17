@@ -559,7 +559,7 @@ save-git() {
     return 1
   fi
   pushd "$repo_root"
-    git add -A 2>/dev/null && git commit -am "${2-"updating $(basename $1)"}" && git push
+    git add -A 2>/dev/null && git commit -am "${2-"updating $(basename $1)"}" 2>/dev/null && git push
   popd
 }
 
