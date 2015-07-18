@@ -1,34 +1,9 @@
-ZDOTDIR="${ZDOTDIR-$HOME}"
-ZPREZTO_ROOT="$ZDOTDIR/.zprezto"
-
-# Get Prezto
-if [[ ! -d "$ZPREZTO_ROOT" ]]; then
-  git clone --recursive https://github.com/sorin-ionescu/prezto "$ZPREZTO_ROOT"
-fi
-
 # Source Prezto.
 if [[ -s "$ZPREZTO_ROOT/init.zsh" ]]; then
   source "$ZPREZTO_ROOT/init.zsh"
 fi
 
 export GIT_USERNAME="cchamberlain"
-
-if [[ $(uname) = 'Linux' ]]; then
-  IS_LINUX=1
-elif [[ $(uname) = 'Darwin' ]]; then
-  IS_MAC=1
-else
-  IS_WIN=1
-fi
-if [[ -x `which brew` ]]; then
-  HAS_BREW=1
-fi
-if [[ -x `which apt-get` ]]; then
-  HAS_APT=1
-fi
-if [[ -x `which yum` ]]; then
-  HAS_YUM=1
-fi
 
 unsetopt autopushd
 setopt no_beep
@@ -59,7 +34,7 @@ export NPM_SRC_BASE="$USR_SRC_ROOT"
 export NPM_SRC_ROOT="$NPM_SRC_BASE/npm"
 
 export GIT_BASE_URL="https://$GIT_USERNAME@github.com"
-export GIT_USER_URL="$GIT_BASE_URL/$GIT_USERNAME"
+export GIT_USR_URL="$GIT_BASE_URL/$GIT_USERNAME"
 export GIST_BASE_URL="https://$GIT_USERNAME@gist.github.com"
 
 export NPM_GIT_SRC="$GIT_BASE_URL/cchamberlain/npm"
@@ -103,6 +78,12 @@ alias tree="ls -R | grep ":$" | sed -e 's/:$//' -e 's/[^-][^\/]*\//--/g' -e 's/^
 alias grep='grep --color'
 alias sgrep='grep -R -n -H -C 5 --exclude-dir={.git,.svn,CVS} '
 
+alias curlp='curl -sLN'
+
+curls() {
+  sanitize "$(curlp "$1")"
+}
+
 alias edit="$EDITOR"
 alias hack="$EDITOR_ATOM"
 alias webstorm="$EDITOR_WEBSTORM"
@@ -138,7 +119,7 @@ hackjs() {
 
 
 alias hackzsh="hack $DOT_ZSHRC_PATH"
-alias hackgist="hack $USER_SRC_GIST_ROOT"
+alias hackgist="hack $USR_SRC_GIST_ROOT"
 alias hacknpm="hackjs $NPM_SRC_ROOT"
 
 
@@ -252,7 +233,6 @@ path() {
 # -------------------------------------------------------------------
 nicemount() { (echo "DEVICE PATH TYPE FLAGS" && mount | awk '$2="";1') | column -t ; }
 
-
 # -------------------------------------------------------------------
 # sanitize html into human readable compact text
 # -------------------------------------------------------------------
@@ -291,7 +271,7 @@ findapp() {
 everything() {
 	mkdir -p "$NPM_CONFIG_PREFIX"
 	mkdir -p "$NPM_SRC_BASE"
-	hash node 2>/dev/null || { curl -L https://nodejs.org/dist/latest/x64/node.exe >"$NPM_CONFIG_PREFIX/node.exe"; }
+	hash node 2>/dev/null || { curl -sL https://nodejs.org/dist/latest/x64/node.exe >"$NPM_CONFIG_PREFIX/node.exe"; }
 	hash npm 2>/dev/null || {
 	  pushd "$NPM_SRC_BASE"
 	    printf -- "\nprefix=%s\nshell=bash\n" "$NPM_CONFIG_PREFIX" >"$HOME/.npmrc"
@@ -309,7 +289,7 @@ everything() {
 # profile startup time of app (defaults zsh)
 # -------------------------------------------------------------------
 startup() {
-    /usr/bin/time ${1-zsh} -i -c exit
+  /usr/bin/time ${1-zsh} -i -c exit
 }
 
 # -------------------------------------------------------------------
@@ -344,8 +324,10 @@ loglevel-reset() {
 # configure global git settings
 # -------------------------------------------------------------------
 setup-git() {
-  curl -L "http://download-codeplex.sec.s-msft.com/Download/Release?ProjectName=gitcredentialstore&DownloadId=834616&FileTime=130434786227870000&Build=21028" >"/usr/local/bin/git-credential-winstore.exe"
-  git-credential-winstore -s
+  if [[ $IS_WIN -eq 1 ]]; then
+    curl -sL "http://download-codeplex.sec.s-msft.com/Download/Release?ProjectName=gitcredentialstore&DownloadId=834616&FileTime=130434786227870000&Build=21028" >"/usr/local/bin/git-credential-winstore.exe"
+    git-credential-winstore -s
+  fi
 }
 
 # -------------------------------------------------------------------
@@ -361,11 +343,45 @@ npm-pub() {
   fi
 
   if [[ -d "$repo_root/.git" ]]; then
-    pushd "$repo_root"
-      git add -A 2>/dev/null && git commit -am ${2-"publishing $1"} 2>/dev/null && npm version patch && npm publish && git push --follow-tags
-    popd
+    pushd "$repo_root" 2>/dev/null
+      git add -A 2>/dev/null
+      git commit -am ${2-"publishing $1"} 2>/dev/null
+      npm version patch
+      npm publish
+      git push --follow-tags
+    popd 2>/dev/null
   else
     printf -- "%s is not a git repository...\n" "$repo_root"
+  fi
+}
+
+
+npm-url() {
+  printf -- "https://www.npmjs.com/package/%s" "$1"
+}
+
+npm-grep() {
+  url="$(npm-url "$1")"
+  [[ -n "$2" ]] && curls $url | grep "$2"
+  [[ -z "$2" ]] && curls $url
+}
+
+npm-exists() {
+  package="$1"
+  package_root="$USR_SRC_ROOT/$package"
+
+  if [[ -z "$(npm-grep "$1" "not found")" ]]; then
+    read -q "navigate?$package exists... open? (Yn):"
+    [[ $navigate = n ]] && return 0
+    chrome --new-window "$(npm-url "$package")"
+  else 
+    read -q "make_package?$package does not exist... claim? (Yn):"
+    [[ $make_package = n ]] && return 0
+    mkdir -p "package_root"
+    cd "$package_root"
+    git init
+    npm init
+    npm publish
   fi
 }
 
@@ -573,7 +589,7 @@ save-gist() {
   fi
   local gist_root="$USR_SRC_GIST_ROOT/$1"
   printf -- "saving gist...\n"
-  save-git $gist_root
+  save-git "$gist_root"
 }
 
 # -------------------------------------------------------------------
@@ -649,7 +665,17 @@ update-dotfiles() {
 # -------------------------------------------------------------------
 save-dotfiles() {
   save-zshenv
+  save-zshrc
   save-vimrc
   save-zdotdir
+}
+
+update-system() {
+  update-dotfiles
+  update-npm
+}
+
+save-system() {
+  save-dotfiles
 }
 
