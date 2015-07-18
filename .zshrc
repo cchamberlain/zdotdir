@@ -579,9 +579,9 @@ save-git() {
     printf -- "%s does not exist or is not a git repository...\n" "$repo_root"
     return 1
   fi
-  pushd "$repo_root"
+  pushd "$repo_root" 2>/dev/null
     git add -A 2>/dev/null && git commit -am "${2-"updating $(basename $1)"}" 2>/dev/null && git push
-  popd
+  popd 2>/dev/null
 }
 
 # -------------------------------------------------------------------
