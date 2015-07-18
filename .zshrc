@@ -30,7 +30,9 @@ export DOT_ZSHRC_PATH="$ZDOTDIR/.zshrc"
 export DOT_ZSHENV_PATH="$HOME/.zshenv"
 export DOT_VIMRC_PATH="$HOME/.vimrc"
 
-export NPM_CONFIG_PREFIX="$LOCAL_ROOT/npm"
+export USR_PREFIX="$LOCAL_ROOT"
+export USR_BIN_ROOT="$USR_PREFIX/bin"
+export NPM_CONFIG_PREFIX="$USR_PREFIX/npm"
 export NPM_SRC_BASE="$USR_SRC_ROOT"
 export NPM_SRC_ROOT="$NPM_SRC_BASE/npm"
 
@@ -59,6 +61,7 @@ if [[ $IS_WIN -eq 1 ]]; then
 fi
 
 if [[ $IS_MAC -eq 1 ]]; then
+  export PATH="$USR_BIN_ROOT:$NPM_CONFIG_PREFIX/bin:$PATH"
   unalias gls
   . /usr/local/Cellar/coreutils/8.24/bin
   alias ls='gls --color=auto'
@@ -94,6 +97,7 @@ alias rezsh=". $DOT_ZSHRC_PATH"
 alias zshrc="edit $DOT_ZSHRC_PATH"
 alias zshenv="edit $DOT_ZSHENV_PATH"
 alias npmrc="edit $DOT_NPMRC_PATH"
+alias vimrc="edit $DOT_VIMRC_PATH"
 
 if [[ $IS_WIN -eq 1 ]]; then
   alias visualstudio="$EDITOR_VS"
@@ -272,21 +276,25 @@ findapp() {
 # install everything
 # -------------------------------------------------------------------
 everything() {
-	mkdir -p "$NPM_CONFIG_PREFIX"
-	mkdir -p "$NPM_SRC_BASE"
-	hash node 2>/dev/null || { curl -sL https://nodejs.org/dist/latest/x64/node.exe >"$NPM_CONFIG_PREFIX/node.exe"; }
-	hash npm 2>/dev/null || {
-	  pushd "$NPM_SRC_BASE"
-	    printf -- "\nprefix=%s\nshell=bash\n" "$NPM_CONFIG_PREFIX" >"$HOME/.npmrc"
-	    git clone "$NPM_GIT_SRC"
-	    pushd npm
-	      ./configure
-	      make link
-	    popd
-	  popd
-	}
+  mkdir -p "$NPM_CONFIG_PREFIX"
+  mkdir -p "$NPM_SRC_BASE"
+  if [[ IS_WIN -eq 1 ]]; then
+    hash node 2>/dev/null || curl -sL https://nodejs.org/dist/latest/x64/node.exe >"$USR_BIN_ROOT/node.exe"
+  fi
+  if [[ IS_MAC -eq 1 ]]; then
+    hash node 2>/dev/null || brew install node
+  fi
+  hash npm 2>/dev/null || {
+    pushd "$NPM_SRC_BASE" 2>/dev/null
+      printf -- "\nprefix=%s\nshell=bash\n" "$NPM_CONFIG_PREFIX" >"$HOME/.npmrc"
+      git clone "$NPM_GIT_SRC"
+      pushd npm
+        ./configure
+        make link
+      popd
+    popd
+  }
 }
-
 
 # -------------------------------------------------------------------
 # profile startup time of app (defaults zsh)
@@ -393,6 +401,17 @@ npm-exists() {
 # -------------------------------------------------------------------
 update-fork() {
   [[ -d "${1-"$PWD"}/.git" ]] && git fetch upstream && git checkout master && git rebase upstream/master
+}
+
+update-npm() {
+  pushd "$NPM_SRC_ROOT" 2>/dev/null
+    git remote add upstream https://github.com/npm/npm
+    git fetch upstream
+    git checkout master
+    git reset upstream/master --hard
+    ./configure
+    make link
+  popd 2>/dev/null
 }
 
 update-zprezto() {
