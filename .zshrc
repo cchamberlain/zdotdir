@@ -1,4 +1,3 @@
-# Source Prezto.
 if [[ -s "$ZPREZTO_ROOT/init.zsh" ]]; then
   source "$ZPREZTO_ROOT/init.zsh"
 fi
@@ -645,6 +644,7 @@ save-zdotdir() {
   save-git "$ZDOTDIR"
 }
 
+
 # -------------------------------------------------------------------
 # update $ZDOTDIR/.zshrc from github
 # -------------------------------------------------------------------
@@ -671,6 +671,18 @@ update-vimrc() {
 # -------------------------------------------------------------------
 update-zdotdir() {
   update-git "$ZDOTDIR" "$GIT_URL_ZDOTDIR"
+}
+
+clone-tixinc() {
+  mkdir -p "$HOME/tixinc"
+  pushd "$HOME/tixinc" 2>/dev/null
+    git clone https://$GITHUB_USERNAME@github.com/tixinc/config
+    git clone https://$GITHUB_USERNAME@github.com/tixinc/ext
+    git clone https://$GITHUB_USERNAME@github.com/tixinc/automation
+    git clone https://$GITHUB_USERNAME@github.com/tixinc/tix-cli
+    git clone https://$GITHUB_USERNAME@github.com/tixinc/tixinc-js
+    git clone https://$GITHUB_USERNAME@github.com/tixinc/tixinc-net
+  popd 2>/dev/null
 }
 
 # -------------------------------------------------------------------
