@@ -27,7 +27,7 @@ export USR_BACKUP_ROOT="$HOME/.backup"
 
 export DOT_NPMRC_PATH="$HOME/.npmrc"
 export DOT_ZSHRC_PATH="$ZDOTDIR/.zshrc"
-export DOT_ZSHENV_PATH="$HOME/.zshrc"
+export DOT_ZSHENV_PATH="$HOME/.zshenv"
 export DOT_VIMRC_PATH="$HOME/.vimrc"
 
 export NPM_CONFIG_PREFIX="$LOCAL_ROOT/npm"
@@ -54,10 +54,8 @@ if [[ $IS_WIN -eq 1 ]]; then
   export PATH="/usr/local/bin:/usr/bin:/bin:/opt/bin:/mingw64/bin:$LOCAL_ROOT/bin:$LOCAL_ROOT/npm:$LOCAL_ROOT/iojs:$LOCAL_ROOT/tcc:/c/WINDOWS/system32:/c/WINDOWS:/c/WINDOWS/System32/WindowsPowerShell/v1.0:/c/Program Files (x86)/Heroku/bin:$LOCAL_ROOT/chocolatey/bin:$HOME/AppData/Local/atom/bin"
 
   export LS_IGNORE="-I 'NTUSER*' -I 'ntuser*'"
-
   alias ls="ls --color $LS_IGNORE"
   alias lsd="ls -pgo --group-directories-first $LS_IGNORE"
-
 fi
 
 if [[ $IS_MAC -eq 1 ]]; then
