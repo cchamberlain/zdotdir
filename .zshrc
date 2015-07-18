@@ -27,6 +27,7 @@ export USR_BACKUP_ROOT="$HOME/.backup"
 
 export DOT_NPMRC_PATH="$HOME/.npmrc"
 export DOT_ZSHRC_PATH="$ZDOTDIR/.zshrc"
+export DOT_ZSHENV_PATH="$HOME/.zshrc"
 export DOT_VIMRC_PATH="$HOME/.vimrc"
 
 export NPM_CONFIG_PREFIX="$LOCAL_ROOT/npm"
@@ -52,9 +53,11 @@ if [[ $IS_WIN -eq 1 ]]; then
   export EDITOR_WEBSTORM="/c/Program\ Files\ \(x86\)/JetBrains/WebStorm\ 10.0.4/bin/WebStorm.exe"
   export PATH="/usr/local/bin:/usr/bin:/bin:/opt/bin:/mingw64/bin:$LOCAL_ROOT/bin:$LOCAL_ROOT/npm:$LOCAL_ROOT/iojs:$LOCAL_ROOT/tcc:/c/WINDOWS/system32:/c/WINDOWS:/c/WINDOWS/System32/WindowsPowerShell/v1.0:/c/Program Files (x86)/Heroku/bin:$LOCAL_ROOT/chocolatey/bin:$HOME/AppData/Local/atom/bin"
 
-  LS_IGNORE="-I 'NTUSER*' -I 'ntuser*'"
+  export LS_IGNORE="-I 'NTUSER*' -I 'ntuser*'"
+
   alias ls="ls --color $LS_IGNORE"
   alias lsd="ls -pgo --group-directories-first $LS_IGNORE"
+
 fi
 
 if [[ $IS_MAC -eq 1 ]]; then
@@ -62,6 +65,7 @@ if [[ $IS_MAC -eq 1 ]]; then
   . /usr/local/Cellar/coreutils/8.24/bin
   alias ls='gls --color=auto'
   alias lsd="ls -pgo --group-directories-first"
+  alias sed="gsed"
 fi
 
 alias la='ls -lAFh'   #long list,show almost all,show type,human readable
@@ -90,6 +94,7 @@ alias webstorm="$EDITOR_WEBSTORM"
 
 alias rezsh=". $DOT_ZSHRC_PATH"
 alias zshrc="edit $DOT_ZSHRC_PATH"
+alias zshenv="edit $DOT_ZSHENV_PATH"
 alias npmrc="edit $DOT_NPMRC_PATH"
 
 if [[ $IS_WIN -eq 1 ]]; then
@@ -604,7 +609,7 @@ save-zshrc() {
 # save local ~/.zshenv to github
 # -------------------------------------------------------------------
 save-zshenv() {
-  cprf "$HOME/.zshenv" "$USR_SRC_GIST_ROOT/$GIST_ZSHENV_ID/.zshenv"
+  cprf "$DOT_ZSHENV_PATH" "$USR_SRC_GIST_ROOT/$GIST_ZSHENV_ID/.zshenv"
   save-gist "$GIST_ZSHENV_ID"
 }
 
@@ -634,7 +639,7 @@ update-zshrc() {
 # update ~/.zshenv from github
 # -------------------------------------------------------------------
 update-zshenv() {
-  update-gist "$GIST_ZSHENV_ID" "$HOME/.zshenv"
+  update-gist "$GIST_ZSHENV_ID" "$DOT_ZSHENV_PATH"
 }
 
 # -------------------------------------------------------------------
