@@ -676,12 +676,12 @@ update-zdotdir() {
 clone-tixinc() {
   mkdir -p "$HOME/tixinc"
   pushd "$HOME/tixinc" 2>/dev/null
-    git clone https://$GITHUB_USERNAME@github.com/tixinc/config
-    git clone https://$GITHUB_USERNAME@github.com/tixinc/ext
-    git clone https://$GITHUB_USERNAME@github.com/tixinc/automation
-    git clone https://$GITHUB_USERNAME@github.com/tixinc/tix-cli
-    git clone https://$GITHUB_USERNAME@github.com/tixinc/tixinc-js
-    git clone https://$GITHUB_USERNAME@github.com/tixinc/tixinc-net
+    git clone https://$GIT_USERNAME@github.com/tixinc/config
+    git clone https://$GIT_USERNAME@github.com/tixinc/ext
+    git clone https://$GIT_USERNAME@github.com/tixinc/automation
+    git clone https://$GIT_USERNAME@github.com/tixinc/tix-cli
+    git clone https://$GIT_USERNAME@github.com/tixinc/tixinc-js
+    git clone https://$GIT_USERNAME@github.com/tixinc/tixinc-net
   popd 2>/dev/null
 }
 
