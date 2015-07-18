@@ -387,7 +387,7 @@ npm-exists() {
   else 
     read -q "make_package?$package does not exist... claim? (Yn):"
     [[ $make_package = n ]] && return 0
-    mkdir -p "package_root"
+    mkdir -p "$package_root"
     cd "$package_root"
     git init
     npm init
