@@ -1,3 +1,5 @@
+#!/usr/bin/env zsh
+
 if [[ -s "$ZPREZTO_ROOT/init.zsh" ]]; then
   . "$ZPREZTO_ROOT/init.zsh"
 fi

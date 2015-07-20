@@ -1,0 +1,25 @@
+{
+  "name": "nodescript",
+  "version": "0.1.0",
+  "description": "\"node scripts for zos\"",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "node",
+    "script",
+    "zos"
+  ],
+  "author": "Cole Chamberlain",
+  "license": "MIT",
+  "dependencies": {
+    "bunyan": "^1.4.0",
+    "mkdirp": "^0.5.1",
+    "q": "^1.4.1",
+    "request": "^2.58.0",
+    "rimraf": "^2.4.1",
+    "vasync": "^1.6.3",
+    "yargs": "^3.15.0"
+  }
+}

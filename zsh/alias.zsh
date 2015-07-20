@@ -28,6 +28,21 @@ elif [[ $IS_WIN -eq 1 ]]; then
   export LS_IGNORE="-I 'NTUSER*' -I 'ntuser*'"
   alias ls="ls --color $LS_IGNORE"
   alias lsd="ls -pgo --group-directories-first $LS_IGNORE"
+
+  export VLC="$PF/VideoLAN/VLC/vlc.exe"
+  alias vlc="$VLC"
+  alias vlchelp='cat "$PF/VideoLAN/VLC/vlc-help.txt"'
+
+  vlcp() {
+    if [[ -n "$1" ]]; then
+      #local win_path="$(cygpath -w "$PWD/$1")"
+      local win_path="$(printf -- '%s' "$1" | sed 's/\\//g')"
+      printf -- "playing %s..." "$win_path"
+      vlc "$win_path"
+    else
+      cygpath -w "$PWD/*" | xargs -p0  vlc
+    fi
+  }
 else
   alias ls="ls --color"
   alias lsd="ls -pgo --group-directories-first"
@@ -92,10 +107,13 @@ alias hack="$EDITOR_ATOM"
 alias webstorm="$EDITOR_WEBSTORM"
 
 alias rezsh=". $DOT_ZSHRC_PATH"
-alias zshrc="edit $DOT_ZSHRC_PATH"
-alias zshenv="edit $DOT_ZSHENV_PATH"
-alias npmrc="edit $DOT_NPMRC_PATH"
-alias vimrc="edit $DOT_VIMRC_PATH"
+alias zshrc="vim $DOT_ZSHRC_PATH"
+alias zshenv="vim $DOT_ZSHENV_PATH"
+alias npmrc="vim $DOT_NPMRC_PATH"
+alias vimrc="vim $DOT_VIMRC_PATH"
+alias exports="vim $USR_ZSHSCRIPT_ROOT/exports.zsh"
+alias aliases="vim $USR_ZSHSCRIPT_ROOT/alias.zsh"
+alias functions="vim $USR_ZSHSCRIPT_ROOT/functions.zsh"
 
 alias hackzsh="hack $DOT_ZSHRC_PATH"
 alias hackgist="hack $USR_SRC_GIST_ROOT"

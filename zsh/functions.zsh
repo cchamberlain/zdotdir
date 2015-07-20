@@ -1,5 +1,23 @@
 #!/usr/bin/env zsh
 
+# -------------------------------------------------------------------
+# executes a nodescript
+# -------------------------------------------------------------------
+ns() {
+  if [[ -z "$1" ]]; then
+    printf -- "usage ns <nodescript> [args]\n"
+    return 1
+  fi
+  hash bunyan 2>/dev/null || npm install -g bunyan
+  nodescript_path="$USR_NODESCRIPT_ROOT/$1"
+  shift
+  node "$nodescript_path" "$@" | bunyan
+}
+
+alias clone="ns clone"
+alias s3="ns s3"
+alias note="ns note"
+
 # ------------------------------------------------------------------
 # prints out the environment variables related to current system
 # ------------------------------------------------------------------
@@ -323,20 +341,7 @@ backup() {
   fi
 }
 
-# -------------------------------------------------------------------
-# executes a nodescript
-# -------------------------------------------------------------------
-ns() {
-  if [[ -z "$1" ]]; then
-    printf -- "Must pass script name...\n"
-    return 1
-  fi
-  nodescript_path="$USR_NODESCRIPT_ROOT/$1"
-  shift
-  node "$nodescript_path" "$@"
-}
 
-alias note="ns note"
 
 # -------------------------------------------------------------------
 # force copy a directory or path and backup dest if it exists
