@@ -1,10 +1,16 @@
 #!/usr/bin/env zsh
 
 export LANG=en_US.UTF-8
+export SHELL="/bin/zsh"
 
 export EDITOR='vim'
 export EDITOR_ATOM='atom'
 export EDITOR_SUBLIME='subl'
+
+export GIT_BASE_URL="https://$GIT_USERNAME@github.com"
+export GIST_BASE_URL="https://$GIT_USERNAME@gist.github.com"
+export NPM_GIT_SRC="$GIT_BASE_URL/$GIT_NPM_ID"
+export GIT_USR_URL="$GIT_BASE_URL/$GIT_USERNAME"
 
 export LOCAL_ROOT="$HOME/local"
 export LOCAL_SRC_ROOT="$LOCAL_ROOT/src"
@@ -18,8 +24,6 @@ export NPM_CONFIG_PREFIX="$USR_PREFIX/npm"
 export NPM_SRC_BASE="$USR_SRC_ROOT"
 export NPM_SRC_ROOT="$NPM_SRC_BASE/npm"
 
-export GIT_USR_URL="$GIT_BASE_URL/$GIT_USERNAME"
-export GIST_BASE_URL="https://$GIT_USERNAME@gist.github.com"
 
 if [[ $IS_WIN -eq 1 ]]; then
   export CC=gcc
@@ -39,11 +43,11 @@ elif [[ $IS_MAC -eq 1 ]]; then
 fi
 
 # Setup terminal, and turn on colors
-export CLICOLOR=1
-export LSCOLORS=Gxfxcxdxbxegedabagacad
+#export CLICOLOR=1
+#export LSCOLORS=Gxfxcxdxbxegedabagacad
 
 # Enable color in grep
-export GREP_COLOR='3;33'
+#export GREP_COLOR='3;33'
 
 # This resolves issues install the mysql, postgres, and other gems with native non universal binary extensions
 export ARCHFLAGS='-arch x86_64'

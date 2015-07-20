@@ -20,5 +20,12 @@ unset LSCOLORS
 # Main change, you can see directories on a dark background
 #export LSCOLORS=gxfxcxdxbxegedabagacad
 
+#export CLICOLOR=1
+#export LS_COLORS=exfxcxdxbxegedabagacad
+
+# Setup terminal, and turn on colors
 export CLICOLOR=1
-export LS_COLORS=exfxcxdxbxegedabagacad
+export LSCOLORS=Gxfxcxdxbxegedabagacad
+
+# Enable color in grep
+export GREP_COLOR='3;33'

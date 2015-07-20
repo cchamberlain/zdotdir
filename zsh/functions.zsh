@@ -337,7 +337,6 @@ backup() {
     printf -- "backing up %s to %s...\n" "$1" "$backup_path"
     mkdir -p "$USR_BACKUP_ROOT"
     cp -rf "$1" "$backup_path"
-    rm -rf "$1"
   fi
 }
 
@@ -354,6 +353,7 @@ cprf() {
   if [[ -e "$2" ]]; then
     printf -- "Backing up %s..." "$2"
     backup "$2"
+    rm -rf "$2"
   fi
   cp -rf "$1" "$2"
 }
@@ -510,8 +510,16 @@ save-zshrc() {
 # -------------------------------------------------------------------
 # save local ~/.zshenv to github
 # -------------------------------------------------------------------
+save-uzshenv() {
+  cprf "$USR_ZSHENV_PATH" "$USR_SRC_GIST_ROOT/$GIST_USR_ZSHENV_ID/.zshenv"
+  save-gist "$GIST_USR_ZSHENV_ID"
+}
+
+# -------------------------------------------------------------------
+# save local $ZDOTDIR/.zshenv to github
+# -------------------------------------------------------------------
 save-zshenv() {
-  cprf "$USR_ZSHENV_PATH" "$USR_SRC_GIST_ROOT/$GIST_ZSHENV_ID/.zshenv"
+  cprf "$ZSHENV_PATH" "$USR_SRC_GIST_ROOT/$GIST_ZSHENV_ID/.zshenv"
   save-gist "$GIST_ZSHENV_ID"
 }
 
@@ -541,8 +549,15 @@ update-zshrc() {
 # -------------------------------------------------------------------
 # update ~/.zshenv from github
 # -------------------------------------------------------------------
+update-uzshenv() {
+  update-gist "$GIST_USR_ZSHENV_ID" "$USR_ZSHENV_PATH"
+}
+
+# -------------------------------------------------------------------
+# update $ZDOTDIR/.zshenv from github
+# -------------------------------------------------------------------
 update-zshenv() {
-  update-gist "$GIST_ZSHENV_ID" "$USR_ZSHENV_PATH"
+  update-gist "$GIST_ZSHENV_ID" "$ZSHENV_PATH"
 }
 
 # -------------------------------------------------------------------
@@ -557,6 +572,14 @@ update-vimrc() {
 # -------------------------------------------------------------------
 update-zdotdir() {
   update-git "$ZDOTDIR" "$GIT_URL_ZDOTDIR"
+}
+
+update-conemu() {
+  cprf "$ZETCDIR/ConEmu.xml" "$HOME/local/conemu/ConEmu.xml"
+}
+
+save-conemu() {
+  cprf "$HOME/local/conemu/ConEmu.xml" "$ZETCDIR/ConEmu.xml"
 }
 
 clone-tixinc() {
@@ -575,6 +598,8 @@ clone-tixinc() {
 # update all dotfiles to latest version from github
 # -------------------------------------------------------------------
 update-dotfiles() {
+  update-uzshenv
+  rezsh
   update-zshenv
   update-vimrc
   update-zdotdir
@@ -584,17 +609,26 @@ update-dotfiles() {
 # save local dotfiles to github
 # -------------------------------------------------------------------
 save-dotfiles() {
+  save-uzshenv
   save-zshenv
   save-zshrc
   save-vimrc
   save-zdotdir
 }
 
+# -------------------------------------------------------------------
+# update everything
+# -------------------------------------------------------------------
 update-system() {
   update-dotfiles
+  update-conemu
   update-npm
 }
 
+# -------------------------------------------------------------------
+# save everything
+# -------------------------------------------------------------------
 save-system() {
+  save-conemu
   save-dotfiles
 }

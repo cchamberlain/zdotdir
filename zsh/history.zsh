@@ -1,0 +1,5 @@
+#!/usr/bin/env zsh
+
+# HISTORY
+HISTSIZE=5000
+SAVEHIST=5000

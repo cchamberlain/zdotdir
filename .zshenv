@@ -10,6 +10,8 @@
 export ZDOTDIR="${ZDOTDIR:-"$HOME/.zsh"}"
 export ZNODEDIR="$ZDOTDIR/node"
 export ZSCRIPTDIR="$ZDOTDIR/zsh"
+export ZETCDIR="$ZDOTDIR/etc"
+export ZASSETSDIR="$ZDOTDIR/assets"
 export ZPREZTO_ROOT="$ZDOTDIR/.zprezto"
 
 # DOTFILES
@@ -35,7 +37,7 @@ if [[ "$SHLVL" -eq 1 && ! -o LOGIN && -s "$ZPROFILE_PATH" ]]; then
 fi
 
 # Get Dot Files
-if [[ ! -f "$ZSHENV_PATH" ]]; then
+if [[ ! -f "$ZSHRC_PATH" ]]; then
   if [[ -d "$ZDOTDIR" ]]; then
     printf -- "ZDOTDIR is corrupt.  Backup and delete %s and reload..." "$ZDOTDIR"
   fi

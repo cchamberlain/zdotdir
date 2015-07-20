@@ -4,27 +4,29 @@
 # Mac only
 # -------------------------------------------------------------------
 if [[ $IS_MAC -eq 1 ]]; then
- unalias gls
- . /usr/local/Cellar/coreutils/8.24/bin
- alias ls='gls --color=auto'
- alias lsd="ls -pgo --group-directories-first"
- alias sed="gsed"
- alias ql='qlmanage -p 2>/dev/null' # OS X Quick Look
- alias oo='open .' # open current directory in OS X Finder
- alias 'today=calendar -A 0 -f /usr/share/calendar/calendar.mark | sort'
- alias 'mailsize=du -hs ~/Library/mail'
- alias 'smart=diskutil info disk0 | grep SMART' # display SMART status of hard drive
- # Hall of the Mountain King
- alias cello='say -v cellos "di di di di di di di di di di di di di di di di di di di di di di di di di di"'
- # alias to show all Mac App store apps
- alias apps='mdfind "kMDItemAppStoreHasReceipt=1"'
- # reset Address Book permissions in Mountain Lion (and later presumably)
- alias resetaddressbook='tccutil reset AddressBook'
- # refresh brew by upgrading all outdated casks
- alias refreshbrew='brew outdated | while read cask; do brew upgrade $cask; done'
- # rebuild Launch Services to remove duplicate entries on Open With menu
- alias rebuildopenwith='/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.fram ework/Support/lsregister -kill -r -domain local -domain system -domain user'
-elif [[ $IS_WIN -eq 1 ]]; then
+  unalias gls
+  . /usr/local/Cellar/coreutils/8.24/bin
+  alias ls='gls --color=auto'
+  alias lsd="ls -pgo --group-directories-first"
+  alias sed="gsed"
+  alias ql='qlmanage -p 2>/dev/null' # OS X Quick Look
+  alias oo='open .' # open current directory in OS X Finder
+  alias 'today=calendar -A 0 -f /usr/share/calendar/calendar.mark | sort'
+  alias 'mailsize=du -hs ~/Library/mail'
+  alias 'smart=diskutil info disk0 | grep SMART' # display SMART status of hard drive
+  # Hall of the Mountain King
+  alias cello='say -v cellos "di di di di di di di di di di di di di di di di di di di di di di di di di di"'
+  # alias to show all Mac App store apps
+  alias apps='mdfind "kMDItemAppStoreHasReceipt=1"'
+  # reset Address Book permissions in Mountain Lion (and later presumably)
+  alias resetaddressbook='tccutil reset AddressBook'
+  # refresh brew by upgrading all outdated casks
+  alias refreshbrew='brew outdated | while read cask; do brew upgrade $cask; done'
+  # rebuild Launch Services to remove duplicate entries on Open With menu
+  alias rebuildopenwith='/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.fram ework/Support/lsregister -kill -r -domain local -domain system -domain user'
+fi
+if [[ $IS_WIN -eq 1 ]]; then
+  unalias ls
   export LS_IGNORE="-I 'NTUSER*' -I 'ntuser*'"
   alias ls="ls --color $LS_IGNORE"
   alias lsd="ls -pgo --group-directories-first $LS_IGNORE"
@@ -43,9 +45,6 @@ elif [[ $IS_WIN -eq 1 ]]; then
       cygpath -w "$PWD/*" | xargs -p0  vlc
     fi
   }
-else
-  alias ls="ls --color"
-  alias lsd="ls -pgo --group-directories-first"
 fi
 
 # -------------------------------------------------------------------
@@ -65,7 +64,6 @@ alias 'bk=cd $OLDPWD'
 # -------------------------------------------------------------------
 # directory information
 # -------------------------------------------------------------------
-alias ls='ls -GFh' # Colorize output, add file type indicator, and put sizes in human readable format
 alias ll='ls -GFhl' # Same as above, but in long listing format
 alias l='ls -al'
 #alias l='ls -lFh'     #size,show type,human readable
@@ -106,14 +104,15 @@ alias edit="$EDITOR"
 alias hack="$EDITOR_ATOM"
 alias webstorm="$EDITOR_WEBSTORM"
 
-alias rezsh=". $ZSHRC_PATH"
+alias rezsh=". $USR_ZSHENV_PATH"
 alias zshrc="vim $ZSHRC_PATH"
 alias zshenv="vim $ZSHENV_PATH"
 alias npmrc="vim $NPMRC_PATH"
 alias vimrc="vim $VIMRC_PATH"
 alias exports="vim $ZSCRIPTDIR/exports.zsh"
-alias aliases="vim $ZSCRIPTDIR/alias.zsh"
+alias aliases="vim $ZSCRIPTDIR/aliases.zsh"
 alias functions="vim $ZSCRIPTDIR/functions.zsh"
+alias colors="vim $ZSCRIPTDIR/colors.zsh"
 
 alias hackzsh="hack $ZSHRC_PATH"
 alias hackgist="hack $USR_SRC_GIST_ROOT"
