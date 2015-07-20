@@ -8,8 +8,11 @@ var format = require('util')
   , SSH_ROOT = join(HOME, '.ssh')
   , NPMRC_PATH = join(HOME, '.npmrc')
 
-  // ZDOTDIR: ROOT LOCAITON OF ZOS CONFIGURATION
+  // ZDOTDIR: ROOT LOCATION OF ZOS CONFIGURATION
   , ZDOTDIR = process.env.ZDOTDIR || join(HOME, '.zsh')
+
+  // ZNODEDIR: ROOT LOCATION OF ZOS NODE SCRIPTS
+  , ZNODEDIR = join(ZDOTDIR, 'node')
 
   // ZOS_ROOT: ROOT LOCATION OF ZOS OPERATING SYSTEM
   , ZOS_ROOT = process.env.ZOS_ROOT || join(HOME, 'zos')

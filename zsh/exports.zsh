@@ -9,14 +9,8 @@ export EDITOR_SUBLIME='subl'
 export LOCAL_ROOT="$HOME/local"
 export LOCAL_SRC_ROOT="$LOCAL_ROOT/src"
 export USR_SRC_GIST_ROOT="$USR_SRC_ROOT/gist"
-export USR_NODESCRIPT_ROOT="$ZDOTDIR/node"
 export USR_BACKUP_ROOT="$HOME/.backup"
 export USR_NOTES_ROOT="$HOME/.notes"
-
-export DOT_NPMRC_PATH="$HOME/.npmrc"
-export DOT_ZSHRC_PATH="$ZDOTDIR/.zshrc"
-export DOT_ZSHENV_PATH="$HOME/.zshenv"
-export DOT_VIMRC_PATH="$HOME/.vimrc"
 
 export USR_PREFIX="$LOCAL_ROOT"
 export USR_BIN_ROOT="$USR_PREFIX/bin"

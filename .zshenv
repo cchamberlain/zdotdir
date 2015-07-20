@@ -6,10 +6,20 @@
 #   Cole Chamberlain <cole.chamberlain@gmail.com
 #
 
+# DIRECTORIES
 export ZDOTDIR="${ZDOTDIR:-"$HOME/.zsh"}"
+export ZNODEDIR="$ZDOTDIR/node"
 export ZPREZTO_ROOT="$ZDOTDIR/.zprezto"
+
+# DOTFILES
 export ZSHENV_PATH="$ZDOTDIR/.zshenv"
+export ZSHRC_PATH="$ZDOTDIR/.zshrc"
+export ZPREZTORC_PATH="$ZDOTDIR/.zpreztorc"
 export ZPROFILE_PATH="$ZDOTDIR/.zprofile"
+export ZLOGIN_PATH="$ZDOTDIR/.zlogin"
+export ZLOGOUT_PATH="$ZDOTDIR/.zlogout"
+export NPMRC_PATH="$HOME/.npmrc"
+export VIMRC_PATH="$HOME/.vimrc"
 
 # Mac OS X uses path_helper and /etc/paths.d to preload PATH, clear it out first
 if [ -x /usr/libexec/path_helper ]; then

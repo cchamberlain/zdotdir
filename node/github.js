@@ -1,153 +1,190 @@
 #!/usr/bin/env node
 
 /**
- * Gets a GitHub token for a user
- * @module token
+ * Clones a GitHub repo or all of a users GitHub repos
+ * @module clone
  */
 
-module.exports = github
-github.Q = githubQ
-github.sync = githubSync
+module.exports = clone
+clone.Q = cloneQ
+clone.sync = cloneSync
 
-if (!module.parent) github.sync(process.argv)
-
-var env = require('./env')
-  , logger = require('./tools/log')
+var path = require('path')
+  , join = path.join
+  , resolve = path.resolve
+  , env = require('./env')
+  , logger = require('./tools/logger')
   , bash = require('./tools/bash')
-  , github = require('./github')
-  , join = require('path').join
-  , async = require('async')
+  , vasync = require('vasync')
+  , vforeach = vasync.forEachParallel
+  , vwaterfall  = vasync.waterfall
   , format = require('util').format
+  , request = require('request')
   , mkdirp = require('mkdirp')
   , yargs = require('yargs')
-    .usage('usage: $0 [-u/--username] [-o/--organization]')
-    .option('u'
-    , { alias: 'username'
+    .usage('usage: node clone [-s/--sync] [-p/--path] [-b/--branch] [-v/--version] [-o/--organization] username|organization[/repo]')
+    .demand(1)
+    .option('s'
+    , { alias: 'sync'
       , demand: true
       , default: false
-      , describe: 'pull repo information for a user'
+      , describe: 'clone to sync root'
+      , type: 'boolean'
+    })
+    .option('p'
+    , { alias: 'path'
+      , demand: true
+      , default: env.SRC_ROOT
+      , describe: 'path to clone into'
+      , type: 'string'
+    })
+    .option('b'
+    , { alias: 'branch'
+      , demand: true
+      , default: 'master'
+      , describe: 'the branch to checkout'
+      , type: 'string'
+    })
+    .option('v'
+    , { alias: 'version'
+      , demand: false
+      , describe: 'the annotated version to checkout'
       , type: 'string'
     })
     .option('o'
     , { alias: 'organization'
-      , demand: true
+      , demand: false
       , default: false
-      , describe: 'pull repo information for an organization'
-      , type: 'string'
+      , describe: 'specifies to use organizations instead of usernames'
     })
-    .demand(1)
   , commands =
-    { clone: function (url) { return format('git clone %s', url) }
+  { clone: function (url) { return format('git clone %s', url) }
     , fetch: function () { return 'git fetch --all' }
     , checkout: function (argv) {
-        return argv.version ?
-          format('git checkout -f %s', argv.version) :
-          format('git checkout %s', argv.branch)
-      }
+    return argv.version ?
+      format('git checkout -f %s', argv.version) :
+      format('git checkout %s', argv.branch)
+  }
   }
   , messages =
-    { cloneFinished: 'clone step finished'
+  { cloneFinished: 'clone step finished'
     , fetchFinished: 'fetch step finished'
     , checkoutFinished: 'checkout step finished'
     , errorOccurred: 'an error occurred during clone.js execution'
-    }
+  }
 
-function clone (args, cb) {
+
+function clone (args, log, cb) {
   var ctx = buildContext(args)
-  logger('clone', function (err) {
-    if (err) onError(err)
-    else {
-      mkdirp(rootDirectory, function (err) {
-        if (err) onError(err)
-        else _clone(ctx, cb)
-      })
-    }
-  })
-}
 
-function _clone (ctx, cb) {
-  if(ctx.strategy === 'U') {
-
-
-    //if()
-    //bash.Q(commands.clone)
-
-
-  }
-  else if(ctx.strategy === 'P') {
-    bash.Q(commands.clone(ctx.url), ctx.rootDirectory)
-      .then(onClone).then(onError)
+  if(typeof log === 'function') {
+    cb = log
+    log = null
+    logger.Q('clone').then(setupClone).then(onError)
+  } else {
+    setupClone(log)
   }
 
-  function onClone (stdout) {
-    log.info(stdout, messages.cloneFinished)
-    bash.Q(commands.fetch(), ctx.projectDirectory)
-      .then(onFetch).then(onError)
-  }
-
-  function onFetch (stdout) {
-    log.info(stdout, messages.fetchFinished)
-    bash.Q(commands.checkout(ctx.argv), ctx.projectDirectory)
-      .then(onCheckout).then(onError)
-  }
-
-  function onCheckout (stdout) {
-    log.info(stdout, messages.checkoutFinished)
-    cb()
+  function setupClone(_log) {
+    log = _log
+    mkdirp(ctx.rootDirectory, function (err) {
+      if (err) onError(err)
+      else _clone(ctx, log, cb)
+    })
   }
 
   function onError (err) {
-    log.error(err, messages.errorOccurred)
+    ;(log && log.error(err, messages.errorOccurred))
     cb(err)
   }
 }
 
-function cloneQ (args) {
+function _clone (ctx, log, cb) {
+  var basename = ctx.strategy.basename
+  if(ctx.strategy.type === 'F') {
+    var githubArgs = ctx.argv.organization ? ['-o', basename] : ['-u', basename]
+    github.Q(githubArgs)
+      .then(function(urls) {
+        log.debug(cloneAll(urls, cb))
+      })
+      .then(onError)
+  }
+  else if(ctx.strategy.type === 'S') {
+    var url = getUrl(basename, ctx.strategy.repo)
+    log.debug(cloneSingle(url, cb))
+  }
+
+  function cloneAll(urls, _cb) {
+    var vArgs = { 'func': cloneSingle
+      , 'inputs': urls }
+    log.debug(vforeach(vArgs, _cb))
+  }
+
+  function cloneSingle(url, _cb) {
+    var repo = path.basename(url, '.git')
+      , repoPath = join(ctx.rootDirectory, repo)
+      , flow = getFlow(url, repoPath)
+    vwaterfall(flow, function(err) {
+      _cb(err, repo)
+    })
+  }
+
+  function getFlow(url, repoPath) {
+    return  [ function gitClone(_cb) { bash(commands.clone(url), ctx.rootDirectory, _cb) }
+      , function gitFetch(_cb) { bash(commands.fetch(), repoPath, _cb) }
+      , function gitCheckout(_cb) { bash(commands.checkout(ctx.argv), repoPath, _cb) }
+    ]
+  }
+}
+
+function cloneQ (args, log) {
   return Q.nfbind(clone)(args)
 }
 
-function cloneSync (args) {
+function cloneSync (args, log) {
   var ctx = buildContext(args)
-    , stdout = ''
-    , log = logger.sync('clone')
+  if(!log) log = logger.sync('clone')
+  log.trace(env, 'env')
+  log.trace(ctx, 'cloneSync context')
 
   try {
-    mkdirp.sync(ctx.rootDirectory)
-    stdout = bash.sync(commands.clone(ctx.url), ctx.rootDirectory)
-    log.info(stdout, messages.cloneFinished)
-    stdout = bash.sync(commands.fetch(), ctx.projectDirectory)
-    log.info(stdout, messages.fetchFinished)
-    stdout = bash.sync(commands.checkout(ctx.argv), ctx.projectDirectory)
-    log.info(stdout, messages.checkoutFinished)
+    if(ctx.strategy.type === 'F') {
+
+    } else if(ctx.strategy.type === 'S') {
+      cloneSingle(getUrl(ctx.strategy.basename, ctx.strategy.repo))
+    }
   } catch (err) {
     log.error(err, messages.errorOccurred)
-    throw err
+  }
+
+  function cloneSingle(url) {
+    var repo = path.basename(url, '.git')
+      , repoPath = join(ctx.rootDirectory, repo)
+    mkdirp.sync(ctx.rootDirectory)
+    log.debug(bash.sync(commands.clone(url), ctx.rootDirectory), messages.cloneFinished)
+    log.debug(bash.sync(commands.fetch(), repoPath), messages.fetchFinished)
+    log.debug(bash.sync(commands.checkout(ctx.argv), repoPath), messages.checkoutFinished)
   }
 }
 
 function buildContext (args) {
   var argv = yargs.parse(args)
-    , strategy = getStrategy(argv._[0])
-    , rootDirectory = getRootDirectory()
-
+    , strategy = getStrategy(argv)
   return  { argv: argv
-          , strategy: strategy
-          , rootDirectory: rootDirectory
-          }
+    , strategy: strategy
+    , rootDirectory: getRootDirectory()
+  }
 
-  /** returns object with strategy 'U' [full user clone] or 'P' [project clone] */
-  function getStrategy(arg) {
-    var splitIndex = arg.indexOf('/')
-    if(splitIndex === -1) {
-      return  { strategy: 'U'
-              , username: arg
-              }
-    } else {
-      var argSplit = arg.split(splitIndex)
-      return  { strategy: 'P'
-              , username: argSplit[0]
-              , project: argSplit[1]
-              }
+  /** returns object with strategy type 'F' [full clone] or 'S' [single clone] */
+  function getStrategy(argv) {
+    var arg = argv._[0]
+      , splitIndex = arg.indexOf('/')
+
+    return splitIndex === -1 ?
+    { type: 'F', basename: arg } :
+    { type: 'S'
+      , basename: arg.slice(0, splitIndex)
+      , repo: arg.slice(splitIndex + 1)
     }
   }
 
@@ -158,11 +195,13 @@ function buildContext (args) {
   function getRootDirectory () {
     if (argv.sync) return env.SYNC_ROOT
     if (argv.path) return argv.path
-    return join(env.SRC_ROOT, strategy.username)
+    return join(env.SRC_ROOT, strategy.basename)
   }
 }
 
-function getUrl(username, project, token) {
+function getUrl(basename, repo, token) {
   token = token ? format('%s@', token) : ''
-  return format('https://%sgithub.com/%s/%s', token, username, project)
+  return format('https://%sgithub.com/%s/%s', token, basename, repo)
 }
+
+if (!module.parent) clone.sync(process.argv.slice(2))

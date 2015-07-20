@@ -4,14 +4,14 @@
 # executes a nodescript
 # -------------------------------------------------------------------
 ns() {
-  if [[ -z "$1" ]]; then
-    printf -- "usage ns <nodescript> [args]\n"
-    return 1
-  fi
+  hash nodescript 2>/dev/null || {
+    pushd "$ZNODEDIR" 2>/dev/null
+      printf -- "linking nodescript..."
+      npm link
+    popd 2>/dev/null
+  }
   hash bunyan 2>/dev/null || npm install -g bunyan
-  nodescript_path="$USR_NODESCRIPT_ROOT/$1"
-  shift
-  node "$nodescript_path" "$@" | bunyan
+  nodescript "$@" | bunyan
 }
 
 alias clone="ns clone"

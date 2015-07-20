@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "description": "\"node scripts for zos\"",
   "main": "index.js",
+  "bin": {
+    "nodescript": "./bin/nodescript.js"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

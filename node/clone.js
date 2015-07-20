@@ -138,7 +138,7 @@ function _clone (ctx, log, cb) {
 }
 
 function cloneQ (args, log) {
-  return Q.nfbind(clone)(args)
+  return Q.nfbind(clone)(args, log)
 }
 
 function cloneSync (args, log) {
@@ -160,7 +160,7 @@ function cloneSync (args, log) {
   function cloneSingle(url) {
     var repo = path.basename(url, '.git')
       , repoPath = join(ctx.rootDirectory, repo)
-    mkdirp.sync(ctx.rootDirectory)
+    log.debug(mkdirp.sync(ctx.rootDirectory), 'mkdirp %s', ctx.rootDirectory)
     log.debug(bash.sync(commands.clone(url), ctx.rootDirectory), messages.cloneFinished)
     log.debug(bash.sync(commands.fetch(), repoPath), messages.fetchFinished)
     log.debug(bash.sync(commands.checkout(ctx.argv), repoPath), messages.checkoutFinished)

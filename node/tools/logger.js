@@ -8,8 +8,7 @@ var bunyan = require('bunyan')
   , Q = require('q')
 
 function logger(name, cb) {
-    if(err) cb(err)
-    else cb(null, createLogger(name, logDirectory))
+    cb(null, createLogger(name))
 }
 
 function loggerQ(name) {

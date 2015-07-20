@@ -4,7 +4,6 @@ module.exports = bash
 bash.Q = bashQ
 bash.sync = bashSync
 
-if(!module.parent) bash.sync(process.argv)
 
 var Q = require('q')
   , logger = require('./logger').sync
@@ -64,3 +63,5 @@ function resolveLogger(log) {
 function wrapCommand(command) {
   return format('bash -c "%s"', command)
 }
+
+if(!module.parent) bash.sync(process.argv)
