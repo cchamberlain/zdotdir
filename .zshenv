@@ -9,9 +9,11 @@
 # DIRECTORIES
 export ZDOTDIR="${ZDOTDIR:-"$HOME/.zsh"}"
 export ZNODEDIR="$ZDOTDIR/node"
+export ZSCRIPTDIR="$ZDOTDIR/zsh"
 export ZPREZTO_ROOT="$ZDOTDIR/.zprezto"
 
 # DOTFILES
+export USR_ZSHENV_PATH="$HOME/.zshenv"
 export ZSHENV_PATH="$ZDOTDIR/.zshenv"
 export ZSHRC_PATH="$ZDOTDIR/.zshrc"
 export ZPREZTORC_PATH="$ZDOTDIR/.zpreztorc"

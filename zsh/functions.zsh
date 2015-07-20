@@ -352,6 +352,7 @@ cprf() {
     return 1
   fi
   if [[ -e "$2" ]]; then
+    printf -- "Backing up %s..." "$2"
     backup "$2"
   fi
   cp -rf "$1" "$2"
@@ -502,7 +503,7 @@ save-gist() {
 # save local $ZDOTDIR/.zshrc to github
 # -------------------------------------------------------------------
 save-zshrc() {
-  cprf "$DOT_ZSHRC_PATH" "$USR_SRC_GIST_ROOT/$GIST_ZSHRC_ID/.zshrc"
+  cprf "$ZSHRC_PATH" "$USR_SRC_GIST_ROOT/$GIST_ZSHRC_ID/.zshrc"
   save-gist "$GIST_ZSHRC_ID"
 }
 
@@ -510,7 +511,7 @@ save-zshrc() {
 # save local ~/.zshenv to github
 # -------------------------------------------------------------------
 save-zshenv() {
-  cprf "$DOT_ZSHENV_PATH" "$USR_SRC_GIST_ROOT/$GIST_ZSHENV_ID/.zshenv"
+  cprf "$USR_ZSHENV_PATH" "$USR_SRC_GIST_ROOT/$GIST_ZSHENV_ID/.zshenv"
   save-gist "$GIST_ZSHENV_ID"
 }
 
@@ -518,7 +519,7 @@ save-zshenv() {
 # save local ~/.vimrc to github
 # -------------------------------------------------------------------
 save-vimrc() {
-  cprf "$DOT_VIMRC_PATH" "$USR_SRC_GIST_ROOT/$GIST_VIMRC_ID/.vimrc"
+  cprf "$VIMRC_PATH" "$USR_SRC_GIST_ROOT/$GIST_VIMRC_ID/.vimrc"
   save-gist "$GIST_VIMRC_ID"
 }
 
@@ -534,21 +535,21 @@ save-zdotdir() {
 # update $ZDOTDIR/.zshrc from github
 # -------------------------------------------------------------------
 update-zshrc() {
-  update-gist "$GIST_ZSHRC_ID" "$DOT_ZSHRC_PATH"
+  update-gist "$GIST_ZSHRC_ID" "$ZSHRC_PATH"
 }
 
 # -------------------------------------------------------------------
 # update ~/.zshenv from github
 # -------------------------------------------------------------------
 update-zshenv() {
-  update-gist "$GIST_ZSHENV_ID" "$DOT_ZSHENV_PATH"
+  update-gist "$GIST_ZSHENV_ID" "$USR_ZSHENV_PATH"
 }
 
 # -------------------------------------------------------------------
 # update ~/.vimrc from github
 # -------------------------------------------------------------------
 update-vimrc() {
-  update-gist "$GIST_VIMRC_ID" "$DOT_VIMRC_PATH"
+  update-gist "$GIST_VIMRC_ID" "$VIMRC_PATH"
 }
 
 # -------------------------------------------------------------------
