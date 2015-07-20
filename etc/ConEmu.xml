@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <key name="Software">
 	<key name="ConEmu">
-		<key name=".Vanilla" modified="2015-07-19 13:34:54" build="150716">
+		<key name=".Vanilla" modified="2015-07-20 14:37:18" build="150716">
 			<value name="ColorTable00" type="dword" data="00362b00"/>
 			<value name="ColorTable01" type="dword" data="0000bfa8"/>
 			<value name="ColorTable02" type="dword" data="00009985"/>
@@ -134,13 +134,13 @@
 			<value name="ColorKeyValue" type="dword" data="00010101"/>
 			<value name="UseCurrentSizePos" type="hex" data="01"/>
 			<value name="WindowMode" type="dword" data="0000051f"/>
-			<value name="ConWnd Width" type="dword" data="00000082"/>
+			<value name="ConWnd Width" type="dword" data="00000065"/>
 			<value name="ConWnd Height" type="dword" data="00000049"/>
 			<value name="Cascaded" type="hex" data="00"/>
 			<value name="ConWnd X" type="dword" data="0000003e"/>
 			<value name="ConWnd Y" type="dword" data="fffffffd"/>
 			<value name="16bit Height" type="dword" data="00000000"/>
-			<value name="AutoSaveSizePos" type="hex" data="00"/>
+			<value name="AutoSaveSizePos" type="hex" data="01"/>
 			<value name="IntegralSize" type="hex" data="00"/>
 			<value name="QuakeStyle" type="hex" data="01"/>
 			<value name="QuakeAnimation" type="dword" data="00000078"/>
@@ -521,18 +521,18 @@
 			<value name="DndLKey" type="hex" data="00"/>
 			<value name="DndRKey" type="hex" data="a2"/>
 			<value name="WndDragKey" type="dword" data="00121101"/>
-			<key name="Tasks" modified="2015-07-19 13:34:54" build="150716">
+			<key name="Tasks" modified="2015-07-20 14:14:32" build="150716">
 				<value name="Count" type="dword" data="0000000a"/>
-				<key name="Task1" modified="2015-07-19 13:34:54" build="150716">
+				<key name="Task1" modified="2015-07-20 14:14:32" build="150716">
 					<value name="Name" type="string" data="{zsh}"/>
 					<value name="Hotkey" type="dword" data="00000000"/>
 					<value name="GuiArgs" type="string" data=""/>
 					<value name="Cmd1" type="string" data="zsh -li -new_console:t:&quot;zsh&quot; -new_console:C:&quot;%USERPROFILE%\local\assets\ico\zsh-icon-48.ico&quot;"/>
 					<value name="Active" type="dword" data="00000000"/>
 					<value name="Count" type="dword" data="00000001"/>
-					<value name="Flags" type="dword" data="00000000"/>
+					<value name="Flags" type="dword" data="00000002"/>
 				</key>
-				<key name="Task2" modified="2015-07-19 13:34:54" build="150716">
+				<key name="Task2" modified="2015-07-20 14:14:32" build="150716">
 					<value name="Name" type="string" data="{bash}"/>
 					<value name="Hotkey" type="dword" data="00000000"/>
 					<value name="GuiArgs" type="string" data=""/>
@@ -541,7 +541,7 @@
 					<value name="Count" type="dword" data="00000001"/>
 					<value name="Flags" type="dword" data="00000000"/>
 				</key>
-				<key name="Task3" modified="2015-07-19 13:34:54" build="150716">
+				<key name="Task3" modified="2015-07-20 14:14:32" build="150716">
 					<value name="Name" type="string" data="{msysgit}"/>
 					<value name="Hotkey" type="dword" data="00000000"/>
 					<value name="GuiArgs" type="string" data="/dir &quot;%USERPROFILE%&quot;"/>
@@ -550,7 +550,7 @@
 					<value name="Count" type="dword" data="00000001"/>
 					<value name="Flags" type="dword" data="00000000"/>
 				</key>
-				<key name="Task4" modified="2015-07-19 13:34:54" build="150716">
+				<key name="Task4" modified="2015-07-20 14:14:32" build="150716">
 					<value name="Name" type="string" data="{cmd}"/>
 					<value name="Hotkey" type="dword" data="00000000"/>
 					<value name="GuiArgs" type="string" data="/dir &quot;%USERPROFILE%&quot;"/>
@@ -559,7 +559,7 @@
 					<value name="Count" type="dword" data="00000001"/>
 					<value name="Flags" type="dword" data="00000000"/>
 				</key>
-				<key name="Task5" modified="2015-07-19 13:34:54" build="150716">
+				<key name="Task5" modified="2015-07-20 14:14:32" build="150716">
 					<value name="Name" type="string" data="{cmd (Admin)}"/>
 					<value name="Hotkey" type="dword" data="00000000"/>
 					<value name="GuiArgs" type="string" data="/dir &quot;%USERPROFILE%&quot;"/>
@@ -568,7 +568,7 @@
 					<value name="Count" type="dword" data="00000001"/>
 					<value name="Flags" type="dword" data="00000000"/>
 				</key>
-				<key name="Task6" modified="2015-07-19 13:34:54" build="150716">
+				<key name="Task6" modified="2015-07-20 14:14:32" build="150716">
 					<value name="Name" type="string" data="{PowerShell}"/>
 					<value name="Hotkey" type="dword" data="00000000"/>
 					<value name="GuiArgs" type="string" data="/dir &quot;%USERPROFILE%&quot;"/>
@@ -577,7 +577,7 @@
 					<value name="Count" type="dword" data="00000001"/>
 					<value name="Flags" type="dword" data="00000000"/>
 				</key>
-				<key name="Task7" modified="2015-07-19 13:34:54" build="150716">
+				<key name="Task7" modified="2015-07-20 14:14:32" build="150716">
 					<value name="Name" type="string" data="{PowerShell (Admin)}"/>
 					<value name="Hotkey" type="dword" data="00000000"/>
 					<value name="GuiArgs" type="string" data="/dir &quot;%USERPROFILE%&quot;"/>
@@ -586,7 +586,7 @@
 					<value name="Count" type="dword" data="00000001"/>
 					<value name="Flags" type="dword" data="00000000"/>
 				</key>
-				<key name="Task8" modified="2015-07-19 13:34:54" build="150716">
+				<key name="Task8" modified="2015-07-20 14:14:32" build="150716">
 					<value name="Name" type="string" data="{Show ANSI colors}"/>
 					<value name="Flags" type="dword" data="00000000"/>
 					<value name="Hotkey" type="dword" data="00000000"/>
@@ -597,7 +597,7 @@
 					<value name="Active" type="dword" data="00000000"/>
 					<value name="Count" type="dword" data="00000001"/>
 				</key>
-				<key name="Task9" modified="2015-07-19 13:34:54" build="150716">
+				<key name="Task9" modified="2015-07-20 14:14:32" build="150716">
 					<value name="Name" type="string" data="{Chocolatey (Admin)}"/>
 					<value name="Flags" type="dword" data="00000000"/>
 					<value name="Hotkey" type="dword" data="00000000"/>
@@ -608,7 +608,7 @@
 					<value name="Cmd2" type="string" data="tcc.exe -new_console:t:&quot;cmd&quot; -new_console:C:&quot;%USERPROFILE%\local\assets\ico\flat-terminal.ico&quot;"/>
 					<value name="Cmd3" type="string" data="powershell.exe -new_console:t:&quot;powershell&quot; -new_console:C:&quot;%USERPROFILE%\local\assets\ico\powershell.ico&quot;"/>
 				</key>
-				<key name="Task10" modified="2015-07-19 13:34:54" build="150716">
+				<key name="Task10" modified="2015-07-20 14:14:32" build="150716">
 					<value name="Name" type="string" data="{startup}"/>
 					<value name="Flags" type="dword" data="00000000"/>
 					<value name="Hotkey" type="dword" data="00000000"/>
@@ -629,8 +629,8 @@
 					<value name="Count" type="dword" data="00000001"/>
 				</key>
 			</key>
-			<key name="Colors" modified="2015-07-19 13:34:54" build="150716">
-				<key name="Palette1" modified="2015-07-19 13:34:54" build="150716">
+			<key name="Colors" modified="2015-07-20 14:14:32" build="150716">
+				<key name="Palette1" modified="2015-07-20 14:14:32" build="150716">
 					<value name="Name" type="string" data="Monokai"/>
 					<value name="ExtendColors" type="hex" data="00"/>
 					<value name="ExtendColorIdx" type="hex" data="0e"/>
@@ -696,7 +696,7 @@
 			<value name="StatusBar.Hide.Dpi" type="hex" data="01"/>
 			<value name="TabFlashChanged" type="dword" data="00000008"/>
 			<value name="TabModifiedSuffix" type="string" data="[*]"/>
-			<key name="HotKeys" modified="2015-07-19 13:34:54" build="150716">
+			<key name="HotKeys" modified="2015-07-20 14:14:32" build="150716">
 				<value name="KeyMacroVersion" type="hex" data="02"/>
 				<value name="Multi.Modifier" type="dword" data="00000011"/>
 				<value name="Multi.ArrowsModifier" type="dword" data="0000005b"/>
@@ -879,9 +879,9 @@
 			<value name="ConsoleFontWidth" type="dword" data="00000003"/>
 			<value name="ConsoleFontHeight" type="dword" data="00000005"/>
 			<value name="MonitorConsoleLang" type="hex" data="03"/>
-			<key name="Apps" modified="2015-07-19 13:34:54" build="150716">
+			<key name="Apps" modified="2015-07-20 14:14:32" build="150716">
 				<value name="Count" type="dword" data="00000002"/>
-				<key name="App1" modified="2015-07-19 13:34:54" build="150716">
+				<key name="App1" modified="2015-07-20 14:14:32" build="150716">
 					<value name="AppNames" type="string" data="powershell.exe"/>
 					<value name="Elevated" type="hex" data="00"/>
 					<value name="OverridePalette" type="hex" data="01"/>
@@ -905,7 +905,7 @@
 					<value name="ClipboardClickPromptPosition" type="hex" data="00"/>
 					<value name="ClipboardDeleteLeftWord" type="hex" data="00"/>
 				</key>
-				<key name="App2" modified="2015-07-19 13:34:54" build="150716">
+				<key name="App2" modified="2015-07-20 14:14:32" build="150716">
 					<value name="AppNames" type="string" data="tcc.exe|cmd.exe"/>
 					<value name="Elevated" type="hex" data="00"/>
 					<value name="OverridePalette" type="hex" data="01"/>
