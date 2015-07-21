@@ -31,7 +31,7 @@ function nsSync(args) {
     , nodescript = requireNS(argv._[0])
     , nodescriptSync = nodescript.sync
 
-  if(nodescriptSync) nodescriptSync(argv.slice(1))
+  if(nodescriptSync) nodescriptSync(argv._.slice(1))
   else process.exit(1)
 }
 
