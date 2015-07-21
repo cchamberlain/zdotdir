@@ -599,10 +599,9 @@ clone-tixinc() {
 # -------------------------------------------------------------------
 update-dotfiles() {
   update-uzshenv
-  rezsh
-  update-zshenv
-  update-vimrc
   update-zdotdir
+  update-vimrc
+  rezsh
 }
 
 # -------------------------------------------------------------------
