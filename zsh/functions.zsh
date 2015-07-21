@@ -363,7 +363,7 @@ cprf() {
     return 1
   fi
   if [[ -e "$2" ]]; then
-    printf -- "Backing up %s..." "$2"
+    printf -- "Backing up %s...\n" "$2"
     backup "$2"
     rm -rf "$2"
   fi
