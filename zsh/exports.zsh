@@ -24,6 +24,7 @@ export NPM_CONFIG_PREFIX="$USR_PREFIX/npm"
 export NPM_SRC_BASE="$USR_SRC_ROOT"
 export NPM_SRC_ROOT="$NPM_SRC_BASE/npm"
 
+export MSYS2_PACKAGES_ROOT="$USR_SRC_ROOT/msys2-packages"
 
 if [[ $IS_WIN -eq 1 ]]; then
   export CC=gcc
@@ -42,12 +43,6 @@ elif [[ $IS_MAC -eq 1 ]]; then
   export PATH="$USR_BIN_ROOT:$NPM_CONFIG_PREFIX/bin:$PATH:~/bin:/usr/local/bin:/usr/local/sbin:~/bin"
 fi
 
-# Setup terminal, and turn on colors
-#export CLICOLOR=1
-#export LSCOLORS=Gxfxcxdxbxegedabagacad
-
-# Enable color in grep
-#export GREP_COLOR='3;33'
 
 # This resolves issues install the mysql, postgres, and other gems with native non universal binary extensions
 export ARCHFLAGS='-arch x86_64'

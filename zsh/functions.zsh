@@ -285,6 +285,18 @@ update-fork() {
   [[ -d "${1-"$PWD"}/.git" ]] && git fetch upstream && git checkout master && git rebase upstream/master
 }
 
+update-msys2-packages() {
+  if [[ ! -d "$MSYS2_PACKAGES_ROOT" ]]; then
+    clone "$GIT_MSYS2_PACKAGES_ID"
+  fi
+  pushd "$MSYS2_PACKAGES_ROOT" 2>/dev/null
+    git remote add upstream "https://github.com/Alexpux/MSYS2-packages" &>/dev/null
+    git fetch --all
+    git reset --hard upstream/master
+  popd 2>/dev/null
+}
+
+
 update-npm() {
   pushd "$NPM_SRC_ROOT" 2>/dev/null
     git remote add upstream https://github.com/npm/npm
