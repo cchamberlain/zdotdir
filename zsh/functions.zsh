@@ -14,9 +14,9 @@ ns() {
   nodescript "$@" | bunyan
 }
 
-alias clone="ns clone"
-alias s3="ns s3"
-alias note="ns note"
+alias -g clone=ns clone
+alias -g s3=ns s3
+alias -g note=ns note
 
 # ------------------------------------------------------------------
 # prints out the environment variables related to current system
