@@ -248,17 +248,25 @@ npm-pub() {
   fi
 }
 
-
+# -------------------------------------------------------------------
+# get url for an npm package
+# -------------------------------------------------------------------
 npm-url() {
   printf -- "https://www.npmjs.com/package/%s" "$1"
 }
 
+# -------------------------------------------------------------------
+# grep an npm package page
+# -------------------------------------------------------------------
 npm-grep() {
   url="$(npm-url "$1")"
   [[ -n "$2" ]] && curls $url | grep "$2"
   [[ -z "$2" ]] && curls $url
 }
 
+# -------------------------------------------------------------------
+# check if npm package exists, and optionally reserve if it doesn't
+# -------------------------------------------------------------------
 npm-exists() {
   package="$1"
   package_root="$USR_SRC_ROOT/$package"
@@ -414,6 +422,7 @@ update-git() {
 
   local repo_path="$1"
   local root_path="${1%/*}"
+  local basename="$(basename root_path)"
   local repo_name="${1##*/}"
   local git_url="${2-"$GIT_USER_URL/$repo_name"}"
 
@@ -594,6 +603,7 @@ save-conemu() {
   cprf "$HOME/local/conemu/ConEmu.xml" "$ZETCDIR/ConEmu.xml"
 }
 
+
 clone-tixinc() {
   mkdir -p "$HOME/tixinc"
   pushd "$HOME/tixinc" 2>/dev/null
@@ -625,6 +635,14 @@ save-dotfiles() {
   save-zshrc
   save-vimrc
   save-zdotdir
+}
+
+# -------------------------------------------------------------------
+# downloads the latest packages and upgrades
+# -------------------------------------------------------------------
+update-pacman() {
+  pacman -Sy
+  pacman -Su
 }
 
 # -------------------------------------------------------------------

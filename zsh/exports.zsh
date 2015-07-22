@@ -43,6 +43,8 @@ elif [[ $IS_MAC -eq 1 ]]; then
   export PATH="$USR_BIN_ROOT:$NPM_CONFIG_PREFIX/bin:$PATH:~/bin:/usr/local/bin:/usr/local/sbin:~/bin"
 fi
 
+# vi mode lag fix
+#export KEYTIMEOUT=1
 
 # This resolves issues install the mysql, postgres, and other gems with native non universal binary extensions
 export ARCHFLAGS='-arch x86_64'

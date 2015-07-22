@@ -21,6 +21,7 @@ var path = require('path')
   , format = require('util').format
   , request = require('request')
   , mkdirp = require('mkdirp')
+  , chalk = require('chalk')
   , yargs = require('yargs')
     .usage('usage: node clone [-s/--sync] [-p/--path] [-b/--branch] [-v/--version] [-o/--organization] username|organization[/repo]')
     .demand(1)

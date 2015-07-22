@@ -31,9 +31,9 @@ if [[ $IS_WIN -eq 1 ]]; then
   alias ls="ls --color $LS_IGNORE"
   alias lsd="ls -pgo --group-directories-first $LS_IGNORE"
 
-  export VLC="$PF/VideoLAN/VLC/vlc.exe"
-  alias vlc="$VLC"
-  alias vlchelp='cat "$PF/VideoLAN/VLC/vlc-help.txt"'
+#  export VLC="$PF/VideoLAN/VLC/vlc.exe"
+#  alias vlc="$VLC"
+#alias vlchelp='cat "$PF/VideoLAN/VLC/vlc-help.txt"'
 
   vlcp() {
     if [[ -n "$1" ]]; then

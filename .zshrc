@@ -9,6 +9,7 @@ fi
 . "$ZSCRIPTDIR/colors.zsh"
 . "$ZSCRIPTDIR/setopt.zsh"
 . "$ZSCRIPTDIR/exports.zsh"
+. "$ZSCRIPTDIR/bindkeys.zsh"
 . "$ZSCRIPTDIR/prompt.zsh"
 . "$ZSCRIPTDIR/completion.zsh"
 . "$ZSCRIPTDIR/hashes.zsh"
