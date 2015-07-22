@@ -26,14 +26,10 @@ if [[ $IS_MAC -eq 1 ]]; then
   alias rebuildopenwith='/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.fram ework/Support/lsregister -kill -r -domain local -domain system -domain user'
 fi
 if [[ $IS_WIN -eq 1 ]]; then
-  unalias ls
+  #unalias ls
   export LS_IGNORE="-I 'NTUSER*' -I 'ntuser*'"
   alias ls="ls --color $LS_IGNORE"
   alias lsd="ls -pgo --group-directories-first $LS_IGNORE"
-
-#  export VLC="$PF/VideoLAN/VLC/vlc.exe"
-#  alias vlc="$VLC"
-#alias vlchelp='cat "$PF/VideoLAN/VLC/vlc-help.txt"'
 
   vlcp() {
     if [[ -n "$1" ]]; then
@@ -111,9 +107,9 @@ alias npmrc="vim $NPMRC_PATH"
 alias vimrc="vim $VIMRC_PATH"
 alias exports="vim $ZSCRIPTDIR/exports.zsh"
 alias aliases="vim $ZSCRIPTDIR/aliases.zsh"
-alias functions="vim $ZSCRIPTDIR/functions.zsh"
+alias fns="vim $ZSCRIPTDIR/functions.zsh"
 alias colors="vim $ZSCRIPTDIR/colors.zsh"
-alias paradox="vim $ZPREZTODIR/modules/prompt/functions/prompt_paradox_setup
+alias paradox="vim $ZPREZTODIR/modules/prompt/functions/prompt_paradox_setup"
 
 alias hackzsh="hack $ZSHRC_PATH"
 alias hackgist="hack $USR_SRC_GIST_ROOT"

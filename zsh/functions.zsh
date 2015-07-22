@@ -317,7 +317,7 @@ update-npm() {
 }
 
 update-zprezto() {
-  pushd "$ZPREZTO_ROOT" 2>/dev/null
+  pushd "$ZPREZTODIR" 2>/dev/null
     git pull && git submodule update --init --recursive
   popd 2>/dev/null
 }

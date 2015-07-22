@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 
-if [[ -s "$ZPREZTO_ROOT/init.zsh" ]]; then
-  . "$ZPREZTO_ROOT/init.zsh"
+if [[ -s "$ZPREZTODIR/init.zsh" ]]; then
+  . "$ZPREZTODIR/init.zsh"
 fi
 
 
