@@ -137,19 +137,19 @@ zstyle ':prezto:module:syntax-highlighting' styles \
 #
 
 # To indicate when the editor is in the primary keymap (VI)
-# zstyle ':prezto:module:editor:info:keymap:primary' format '>>>'
+zstyle ':prezto:module:editor:info:keymap:primary' format '>>>'
 
 # Indicate when editor is in vi insert mode
-# zstyle ':prezto:module:editor:info:keymap:primary:insert' format 'I'
+zstyle ':prezto:module:editor:info:keymap:primary:insert' format 'I'
 
 # Indicate when editor is in overwrite mode
-# zstyle ':prezto:module:editor:info:keymap:primary:overwrite' format 'O'
+zstyle ':prezto:module:editor:info:keymap:primary:overwrite' format 'O'
 
 # Indicate alternate keymap (vicmd) mode
-# zstyle ':prezto:module:editor:info:keymap:alternate' format '<<<'
+zstyle ':prezto:module:editor:info:keymap:alternate' format '<<<'
 
 # Indicate command is completing (add $editor_info[keymap], $editor_info[insert], $editor_info[overwrite]
-# zstyle ':prezto:module:editor:info:completing' format '...'
+zstyle ':prezto:module:editor:info:completing' format '...'
 
 
 # Auto set the tab and window titles.
