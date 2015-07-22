@@ -78,7 +78,7 @@ zstyle ':prezto:module:history-substring-search:color' not-found ''
 #
 
 # Set the Pacman frontend.
-zstyle ':prezto:module:pacman' frontend 'yaourt'
+# zstyle ':prezto:module:pacman' frontend 'yaourt'
 
 #
 # Prompt
@@ -111,7 +111,7 @@ zstyle ':prezto:module:prompt' theme 'paradox'
 #
 
 # Set the SSH identities to load into the agent.
-zstyle ':prezto:module:ssh:load' identities 'id_rsa' 'id_rsa2' 'id_github'
+# zstyle ':prezto:module:ssh:load' identities 'id_rsa' 'id_rsa2' 'id_github'
 
 #
 # Syntax Highlighting

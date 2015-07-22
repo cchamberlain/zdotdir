@@ -31,9 +31,35 @@ checks() {
 # ------------------------------------------------------------------
 namedir () { $1=$PWD ;  : ~$1 }
 
-# --------------------------------------------
+alias printout='printf --'
+alias printerr='>&2 printf --'
+alias printsym='cat "$ZASSETSDIR/symbols/cool_symbols"'
+
+printuse() {
+  local usage=$1
+  local min_args=$2
+  local arg_count=$3
+  if [[ $# -lt 3 ]]; then
+    printerr "%busage: %bprintuse \"<usage>\" <min_args> <arg_count> %b|| return 1%b\n\tminimum args: 3\n\tprovided: %b%s%b\n" "$fg[blue]" "$fg[green]" "$reset_color" "$fg[magenta]" "$fg[red]" "$#" "$reset_color"
+    return 2
+  elif [[ $arg_count -lt $min_args ]]; then
+    printerr "%busage: %b%s%b\n\tminimum args: %s\n\tprovided: %b%s%b\n" "$fg[blue]" "$fg[green]" "$usage" "$fg[magenta]" "$min_args" "$fg[red]" "$arg_count" "$reset_color"
+    return 1
+  else
+    return 0
+  fi
+}
+
+add-alias() {
+  printuse "add-alias <name> <alias>" 2 $# || return 1
+  local alias_command="alias $1='$2'"
+  printout "\n%s\n" $alias_command >>"$ZSCRIPTDIR/aliases.zsh"
+  printout "alias -> %s <- added\n" "$alias_command"
+}
+
+# ------------------------------------------------------------------
 # If ~/_netrc and ! ~/.netrc, symlink ~/.netrc
-# --------------------------------------------
+# ------------------------------------------------------------------
 [[ -f "$HOME/_netrc" ]] && [[ ! -f "$HOME/.netrc" ]] && ln -s "$HOME/_netrc" "$HOME/.netrc"
 
 chrome() {
@@ -44,9 +70,9 @@ chrome() {
   fi
   "$CHROME_PATH" $chrome_args
 }
+
 # -------------------------------------------------------------------
 # compressed file expander
-# (from https://github.com/myfreeweb/zshuery/blob/master/zshuery.sh)
 # -------------------------------------------------------------------
 ex() {
     if [[ -f $1 ]]; then
@@ -290,9 +316,16 @@ npm-exists() {
 # pull latest upstream code for a git fork and rebase on top
 # -------------------------------------------------------------------
 update-fork() {
-  [[ -d "${1-"$PWD"}/.git" ]] && git fetch upstream && git checkout master && git rebase upstream/master
+  [[ -d "${1-"$PWD"}/.git" ]] && {
+    git fetch upstream
+    git checkout master
+    git rebase upstream/master
+  }
 }
 
+# -------------------------------------------------------------------
+# pull latest upstream msys2 packages and reset
+# -------------------------------------------------------------------
 update-msys2-packages() {
   if [[ ! -d "$MSYS2_PACKAGES_ROOT" ]]; then
     clone "$GIT_MSYS2_PACKAGES_ID"
@@ -305,6 +338,9 @@ update-msys2-packages() {
 }
 
 
+# -------------------------------------------------------------------
+# pull latest npm and reset
+# -------------------------------------------------------------------
 update-npm() {
   pushd "$NPM_SRC_ROOT" 2>/dev/null
     git remote add upstream https://github.com/npm/npm
@@ -316,10 +352,21 @@ update-npm() {
   popd 2>/dev/null
 }
 
+# -------------------------------------------------------------------
+# pull latest zprezto and rebase
+# -------------------------------------------------------------------
 update-zprezto() {
   pushd "$ZPREZTODIR" 2>/dev/null
     git pull && git submodule update --init --recursive
+    update-fork
   popd 2>/dev/null
+}
+
+# -------------------------------------------------------------------
+# describe a function
+# -------------------------------------------------------------------
+descfn() {
+  cat "$ZSCRIPTDIR/functions.zsh" | grep -B 3 -C 0 $1
 }
 
 # -------------------------------------------------------------------
