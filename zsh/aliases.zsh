@@ -113,6 +113,7 @@ alias exports="vim $ZSCRIPTDIR/exports.zsh"
 alias aliases="vim $ZSCRIPTDIR/aliases.zsh"
 alias functions="vim $ZSCRIPTDIR/functions.zsh"
 alias colors="vim $ZSCRIPTDIR/colors.zsh"
+alias paradox="vim $ZPREZTODIR/modules/prompt/functions/prompt_paradox_setup
 
 alias hackzsh="hack $ZSHRC_PATH"
 alias hackgist="hack $USR_SRC_GIST_ROOT"

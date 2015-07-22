@@ -27,7 +27,7 @@ export ZNODEDIR="$ZDOTDIR/node"
 export ZSCRIPTDIR="$ZDOTDIR/zsh"
 export ZETCDIR="$ZDOTDIR/etc"
 export ZASSETSDIR="$ZDOTDIR/assets"
-export ZPREZTO_ROOT="$ZDOTDIR/.zprezto"
+export ZPREZTODIR="$ZDOTDIR/.zprezto"
 
 # DOTFILES
 export ZSHENV_PATH="$ZDOTDIR/.zshenv"
@@ -47,8 +47,8 @@ if [ -x /usr/libexec/path_helper ]; then
 fi
 
 # Get Prezto
-if [[ ! -d "$ZPREZTO_ROOT" ]]; then
-  git clone --recursive https://github.com/$GIT_ZPREZTO_ID "$ZPREZTO_ROOT"
+if [[ ! -d "$ZPREZTODIR" ]]; then
+  git clone --recursive https://github.com/$GIT_ZPREZTO_ID "$ZPREZTODIR"
 fi
 
 # Ensure that a non-login, non-interactive shell has a defined environment.
