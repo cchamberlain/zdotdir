@@ -30,17 +30,6 @@ if [[ $IS_WIN -eq 1 ]]; then
   export LS_IGNORE="-I 'NTUSER*' -I 'ntuser*'"
   alias ls="ls --color $LS_IGNORE"
   alias lsd="ls -pgo --group-directories-first $LS_IGNORE"
-
-  vlcp() {
-    if [[ -n "$1" ]]; then
-      #local win_path="$(cygpath -w "$PWD/$1")"
-      local win_path="$(printf -- '%s' "$1" | sed 's/\\//g')"
-      printf -- "playing %s..." "$win_path"
-      vlc "$win_path"
-    else
-      cygpath -w "$PWD/*" | xargs -p0  vlc
-    fi
-  }
 fi
 
 # -------------------------------------------------------------------

@@ -26,10 +26,7 @@ checks() {
   env | grep HAS_
 }
 
-# ------------------------------------------------------------------
-# namedir my_path -> names the current working directory as ~my_path
-# ------------------------------------------------------------------
-namedir () { $1=$PWD ;  : ~$1 }
+
 
 alias printout='printf --'
 alias printerr='>&2 printf --'
@@ -50,6 +47,22 @@ printuse() {
   fi
 }
 
+# ------------------------------------------------------------------
+# namedir my_path -> names the current working directory as ~my_path
+# ------------------------------------------------------------------
+namedir () { $1=$PWD ;  : ~$1 }
+
+mergedir() { 
+  printuse "mergedir <dir_one> <dir_two> <dir_dest>" 3 $# || return 1
+  local dir_one="$1"
+  local dir_two="$2"
+  local dir_dest="$3"
+  mkdirp "$dir_dest"
+  mv $dir_one/* "$dir_dest" && [ "$dir_one" -ef "$dir_dest" ] || rmdir "$dir_one"
+  mv $dir_two/* "$dir_dest" && [ "$dir_two" -ef "$dir_dest" ] || rmdir "$dir_two"
+  printout "%bfinished merging dirs to %s!%b" "$fg[green]" "$dir_dest" "$reset_color"
+}
+
 add-alias() {
   printuse "add-alias <name> <alias>" 2 $# || return 1
   local alias_command="alias $1='$2'"
@@ -57,10 +70,23 @@ add-alias() {
   printout "alias -> %s <- added\n" "$alias_command"
 }
 
+help-expansion() {
+  local expansion_help="$ZDOTDIR/help/expansion"
+  mkdirp "$expansion_help"
+  [[ ! -f "$expansion_help" ]] && curl -L http://webcache.googleusercontent.com/search?q=cache:4ChUelyDvkoJ:zsh.sourceforge.net/Doc/Release/Expansion.html | sanitize >"$expansion_help"
+  vim "$expansion_help"
+}
+
 # ------------------------------------------------------------------
 # If ~/_netrc and ! ~/.netrc, symlink ~/.netrc
 # ------------------------------------------------------------------
 [[ -f "$HOME/_netrc" ]] && [[ ! -f "$HOME/.netrc" ]] && ln -s "$HOME/_netrc" "$HOME/.netrc"
+
+vlcp() {
+  local vlc_path="${1-:./}"
+  vlc "$vlc_path" & disown
+  printout "playing %s..." "$vlc_path"
+}
 
 chrome() {
   if [[ $IS_WIN -eq 1 ]]; then
