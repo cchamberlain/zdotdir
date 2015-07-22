@@ -44,7 +44,7 @@ elif [[ $IS_MAC -eq 1 ]]; then
 fi
 
 # vi mode lag fix
-#export KEYTIMEOUT=1
+export KEYTIMEOUT=1
 
 # This resolves issues install the mysql, postgres, and other gems with native non universal binary extensions
 export ARCHFLAGS='-arch x86_64'
