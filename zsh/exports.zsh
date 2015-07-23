@@ -61,6 +61,8 @@ export LESS='--ignore-case --raw-control-chars'
 export PAGER='less'
 export EDITOR='subl -w'
 
+export PKG_CONFIG_PATH="/usr/lib/pkgconfig"
+
 export NODE_PATH="$USR_NODESCRIPT_ROOT:$NODE_PATH"
 #export PYTHONPATH=/usr/local/lib/python2.6/site-packages
 # CTAGS Sorting in VIM/Emacs is better behaved with this in place

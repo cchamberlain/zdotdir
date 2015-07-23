@@ -12,6 +12,7 @@ alias printsym='cat "$ZASSETSDIR/symbols/cool_symbols"'
 alias nclone='ns clone'
 alias ns3='ns s3'
 alias note='ns note'
+alias aga='ag -i'
 
 # -------------------------------------------------------------------
 # executes a nodescript
@@ -25,6 +26,11 @@ ns() {
   }
   hash bunyan 2>/dev/null || npm install -g bunyan
   nodescript "$@" | bunyan
+}
+
+function agz {
+  printuse "agz <options>" 1 $# || return 1
+  aga "$@" "$ZDOTDIR"
 }
 
 # ------------------------------------------------------------------
@@ -306,6 +312,24 @@ npm-pub() {
   else
     printf -- "%s is not a git repository...\n" "$repo_root"
   fi
+}
+
+get-image-urls() {
+  printuse "get-image-urls <url>" 1 $# || return 1
+  curl -sL "$1" |& perl -e '{use HTML::TokeParser; 
+    $parser = HTML::TokeParser->new(\*STDIN); 
+    $img = $parser->get_tag('img') ; 
+    print "$img->[1]->{src}\n"; 
+  }'
+}
+
+get-images() {
+  printuse "get-images <url>" 1 $# || return 1
+  local image_root="$ZDOWNLOADDIR/image"
+  mkdirp "$image_root"
+  pushd "$image_root"
+    get-image-urls "$1" | xargs I{} curl -sL {} >"$ZDOWNLOADDIR"
+  popd
 }
 
 # -------------------------------------------------------------------

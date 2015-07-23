@@ -51,7 +51,6 @@ alias 'bk=cd $OLDPWD'
 # -------------------------------------------------------------------
 alias ll='ls -GFhl' # Same as above, but in long listing format
 alias l='ls -al'
-#alias l='ls -lFh'     #size,show type,human readable
 alias la='ls -lAFh'   #long list,show almost all,show type,human readable
 alias lr='ls -tRFh'   #sorted by date,recursive,show type,human readable
 alias lS='ls -1FSsh'
