@@ -29,7 +29,7 @@ ns() {
 }
 
 function agz {
-  printuse "agz <options>" 1 $# || return 1
+  printuse "agz <options>" 1 $# $1 || return 1
   aga "$@" "$ZDOTDIR"
 }
 
@@ -49,10 +49,11 @@ printuse() {
   local usage=$1
   local min_args=$2
   local arg_count=$3
+  local first_arg=$4
   if [[ $# -lt 3 ]]; then
     printerr "%busage: %bprintuse \"<usage>\" <min_args> <arg_count> %b|| return 1%b\n\tminimum args: 3\n\tprovided: %b%s%b\n" "$fg[blue]" "$fg[green]" "$reset_color" "$fg[magenta]" "$fg[red]" "$#" "$reset_color"
     return 2
-  elif [[ $arg_count -lt $min_args ]]; then
+  elif [[ $arg_count -lt $min_args ]] || [[ "$first_arg" == "-h" ]] || [[ "$first_arg" == "--help" ]] || [[ "$first_arg" == "?" ]]; then
     printerr "%busage: %b%s%b\n\tminimum args: %s\n\tprovided: %b%s%b\n" "$fg[blue]" "$fg[green]" "$usage" "$fg[magenta]" "$min_args" "$fg[red]" "$arg_count" "$reset_color"
     return 1
   else
@@ -66,7 +67,7 @@ printuse() {
 namedir () { $1=$PWD ;  : ~$1 }
 
 mergedir() { 
-  printuse "mergedir <dir_one> [<dir_two>] <dir_dest>" 2 $# || return 1
+  printuse "mergedir <dir_one> [<dir_two>] <dir_dest>" 2 $# $1 || return 1
   local dir_one="$1"
   local dir_two="$2"
   local dir_dest="${3-:}"
@@ -77,14 +78,14 @@ mergedir() {
 }
 
 add-alias() {
-  printuse "add-alias <name> <alias>" 2 $# || return 1
+  printuse "add-alias <name> <alias>" 2 $# $1 || return 1
   local alias_command="alias $1='$2'"
   printout "\n%s\n" $alias_command >>"$ZSCRIPTDIR/aliases.zsh"
   printout "alias -> %s <- added\n" "$alias_command"
 }
 
 help-expansion() {
-  printuse "help-expansion <alias>" 2 $# || return 1
+  printuse "help-expansion <alias>" 2 $# $1 || return 1
   local expansion_help="$ZHELPDIR/expansion"
   mkdirp "$$ZHELPDIR"
   [[ ! -f "$expansion_help" ]] && curl -L http://webcache.googleusercontent.com/search?q=cache:4ChUelyDvkoJ:zsh.sourceforge.net/Doc/Release/Expansion.html | sanitize >"$expansion_help"
@@ -315,7 +316,7 @@ npm-pub() {
 }
 
 get-image-urls() {
-  printuse "get-image-urls <url>" 1 $# || return 1
+  printuse "get-image-urls <url>" 1 $# $1 || return 1
   curl -sL "$1" |& perl -e '{use HTML::TokeParser; 
     $parser = HTML::TokeParser->new(\*STDIN); 
     $img = $parser->get_tag('img') ; 
@@ -324,7 +325,7 @@ get-image-urls() {
 }
 
 get-images() {
-  printuse "get-images <url>" 1 $# || return 1
+  printuse "get-images <url>" 1 $# $1 || return 1
   local image_root="$ZDOWNLOADDIR/image"
   mkdirp "$image_root"
   pushd "$image_root"
@@ -370,19 +371,38 @@ npm-exists() {
   fi
 }
 
+
+# -------------------------------------------------------------------
+# pull latest upstream code for a git fork
+# -------------------------------------------------------------------
+update-fork() {
+  printuse "update-fork [organization|username]" 0 $# $1 || return 1
+  [[ -d "$PWD/.git" ]] || printerr "directory is not a git repo..." && return 2
+  [[ -n "$1" ]] && git remote add upstream "https://github.com/$1/${PWD##*/}"
+  git fetch --all
+  git checkout master
+}
+
 # -------------------------------------------------------------------
 # pull latest upstream code for a git fork and rebase on top
 # -------------------------------------------------------------------
-update-fork() {
-  [[ -d "${1-"$PWD"}/.git" ]] && {
-    git fetch upstream
-    git checkout master
-    git rebase upstream/master
-  }
+update-fork-rebase() {
+  printuse "update-fork-rebase [organization|username]" 0 $# $1 || return 1
+  update-fork "$@"
+  git rebase upstream/master
+}
+
+# -------------------------------------------------------------------
+# pull latest upstream code for a git fork and overwrite
+# -------------------------------------------------------------------
+update-fork-reset() {
+  printuse "update-fork-reset [organization|username]" 0 $# $1 || return 1
+  update-fork "$@"
+  git reset --hard upstream/master
 }
 
 exec-ps() {
-  printuse "exec-ps <powershell_args>" 1 $# || return 1
+  printuse "exec-ps <powershell_args>" 1 $# $1 || return 1
   printout "executing [powershell %s]..." "$*"
   echo $* | PowerShell -NoLogo -ExecutionPolicy unrestricted -NoProfile -Command -
 }
@@ -395,7 +415,7 @@ winpath() {
 # run an iso from disk
 # -------------------------------------------------------------------
 exec-iso() {
-  printuse "runiso <iso_path>" 1 $# || return 1
+  printuse "runiso <iso_path>" 1 $# $1 || return 1
   local iso_path="$1"
   if [[ ! -f "$iso_path" ]]; then
     printerr "no iso located at $iso_path...\n"
