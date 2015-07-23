@@ -18,17 +18,25 @@ export USR_SRC_GIST_ROOT="$USR_SRC_ROOT/gist"
 export USR_BACKUP_ROOT="$HOME/.backup"
 export USR_NOTES_ROOT="$HOME/.notes"
 
+# USR APP DIRECTORIES
 export USR_PREFIX="$LOCAL_ROOT"
 export USR_BIN_ROOT="$USR_PREFIX/bin"
-export NPM_CONFIG_PREFIX="$USR_PREFIX/npm"
-export NPM_SRC_BASE="$USR_SRC_ROOT"
+
+# NPM DIRECTORIES
+export NPM_SRC_BASENAME="${GIT_NPM_ID%/*}"
+export NPM_SRC_BASE="$USR_SRC_ROOT/$NPM_SRC_BASENAME"
 export NPM_SRC_ROOT="$NPM_SRC_BASE/npm"
 
+# NPM SETTINGS
+export NPM_CONFIG_PREFIX="$USR_PREFIX/npm"
+export NPM_CONFIG_CACHE="$USR_PREFIX/npm-cache"
+
+# MSYS2 DIRECTORIES
 export MSYS2_PACKAGES_ROOT="$USR_SRC_ROOT/msys2-packages"
 
 if [[ $IS_WIN -eq 1 ]]; then
   export CC=gcc
-  export GYP_MSVS_VERSION=2013
+  export GYP_MSVS_VERSION=2015
   export PYTHON="/usr/bin/python"
   export JAVA_HOME=/c/WINDOWS/system32/java
   export PF86="/c/Program\ Files\ \(x86\)"

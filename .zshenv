@@ -27,6 +27,8 @@ export ZNODEDIR="$ZDOTDIR/node"
 export ZSCRIPTDIR="$ZDOTDIR/zsh"
 export ZETCDIR="$ZDOTDIR/etc"
 export ZASSETSDIR="$ZDOTDIR/assets"
+export ZDOWNLOADDIR="$ZDOTDIR/download"
+export ZHELPDIR="$ZDOTDIR/help"
 export ZPREZTODIR="$ZDOTDIR/.zprezto"
 
 # DOTFILES

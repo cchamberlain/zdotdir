@@ -1,4 +1,17 @@
 #!/usr/bin/env zsh
+#
+#
+#
+
+# -------------------------------------------------------------------
+# aliases that are tightly bound to stuff in here
+# -------------------------------------------------------------------
+alias printout='printf --'
+alias printerr='>&2 printf --'
+alias printsym='cat "$ZASSETSDIR/symbols/cool_symbols"'
+alias nclone='ns clone'
+alias ns3='ns s3'
+alias note='ns note'
 
 # -------------------------------------------------------------------
 # executes a nodescript
@@ -6,7 +19,7 @@
 ns() {
   hash nodescript 2>/dev/null || {
     pushd "$ZNODEDIR" 2>/dev/null
-      printf -- "linking nodescript..."
+      printf -- "linking nodescript...\n"
       npm link
     popd 2>/dev/null
   }
@@ -14,24 +27,18 @@ ns() {
   nodescript "$@" | bunyan
 }
 
-alias clone='ns clone'
-alias s3='ns s3'
-alias note='ns note'
-
 # ------------------------------------------------------------------
 # prints out the environment variables related to current system
 # ------------------------------------------------------------------
 checks() {
   env | grep IS_
   env | grep HAS_
+  env | grep '^Z'
 }
 
-
-
-alias printout='printf --'
-alias printerr='>&2 printf --'
-alias printsym='cat "$ZASSETSDIR/symbols/cool_symbols"'
-
+# ------------------------------------------------------------------
+# print usage with checking to see if min args were passed
+# ------------------------------------------------------------------
 printuse() {
   local usage=$1
   local min_args=$2
@@ -53,10 +60,10 @@ printuse() {
 namedir () { $1=$PWD ;  : ~$1 }
 
 mergedir() { 
-  printuse "mergedir <dir_one> <dir_two> <dir_dest>" 3 $# || return 1
+  printuse "mergedir <dir_one> [<dir_two>] <dir_dest>" 2 $# || return 1
   local dir_one="$1"
   local dir_two="$2"
-  local dir_dest="$3"
+  local dir_dest="${3-:}"
   mkdirp "$dir_dest"
   mv $dir_one/* "$dir_dest" && [ "$dir_one" -ef "$dir_dest" ] || rmdir "$dir_one"
   mv $dir_two/* "$dir_dest" && [ "$dir_two" -ef "$dir_dest" ] || rmdir "$dir_two"
@@ -71,8 +78,9 @@ add-alias() {
 }
 
 help-expansion() {
-  local expansion_help="$ZDOTDIR/help/expansion"
-  mkdirp "$expansion_help"
+  printuse "help-expansion <alias>" 2 $# || return 1
+  local expansion_help="$ZHELPDIR/expansion"
+  mkdirp "$$ZHELPDIR"
   [[ ! -f "$expansion_help" ]] && curl -L http://webcache.googleusercontent.com/search?q=cache:4ChUelyDvkoJ:zsh.sourceforge.net/Doc/Release/Expansion.html | sanitize >"$expansion_help"
   vim "$expansion_help"
 }
@@ -347,6 +355,59 @@ update-fork() {
     git checkout master
     git rebase upstream/master
   }
+}
+
+exec-ps() {
+  printuse "exec-ps <powershell_args>" 1 $# || return 1
+  printout "executing [powershell %s]..." "$*"
+  echo $* | PowerShell -NoLogo -ExecutionPolicy unrestricted -NoProfile -Command -
+}
+
+winpath() {
+  cygpath -w $1 | sed 's/\\/\\\\/g'
+}
+
+# -------------------------------------------------------------------
+# run an iso from disk
+# -------------------------------------------------------------------
+exec-iso() {
+  printuse "runiso <iso_path>" 1 $# || return 1
+  local iso_path="$1"
+  if [[ ! -f "$iso_path" ]]; then
+    printerr "no iso located at $iso_path...\n"
+    return 2
+  fi
+  local iso_win_path="$(winpath "$iso_path")"
+
+  exec-ps "Mount-DiskImage -ImagePath \"$iso_win_path\""
+  printout "The ISO has been mounted as a local drive. Install manually from here...\n"
+  #local drive_letter=$(exec-ps "(Get-DiskImage \"$iso_win_path\" | Get-Disk | Get-Partition | Get-Volume).DriveLetter")
+  #echo $drive_letter
+}
+
+# -------------------------------------------------------------------
+# download / install the latest visual studio and configure node msvs
+# -------------------------------------------------------------------
+update-vs() {
+  local network_iso_path="/s/microsoft/vs/vs2015.iso"
+  local local_iso_path="$ZDOWNLOADDIR/vs2015.iso"
+  local local_install_root="$PF86/vs/"
+  if [[ -d "$local_install_root" ]]; then
+    printout "VS2015 is already installed."
+    return 0
+  fi
+  mkdirp "$ZDOWNLOADDIR"
+  if [[ ! -f "$local_iso_path" ]]; then
+    if [[ -f "$network_iso_path" ]]; then
+      printout "copying VS2015 from %s for offline install...\n" "$network_iso_path"
+      cp "$network_iso_path" "$local_iso_path"
+    else
+      printout "downloading VS2015 from Microsoft for offline install...\n"
+      curl -L "http://download.microsoft.com/download/0/B/C/0BC321A4-013F-479C-84E6-4A2F90B11269/vs2015.com_enu.iso" -H "Accept-Encoding: gzip, deflate, sdch" -H "Accept-Language: en-US,en;q=0.8" --compressed >"$local_iso_path"
+    fi
+  fi
+  printout "running iso...\n"
+  exec-iso "$local_iso_path"
 }
 
 # -------------------------------------------------------------------
