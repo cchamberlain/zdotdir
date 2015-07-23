@@ -53,7 +53,7 @@ printuse() {
   if [[ $# -lt 3 ]]; then
     printerr "%busage: %bprintuse \"<usage>\" <min_args> <arg_count> %b|| return 1%b\n\tminimum args: 3\n\tprovided: %b%s%b\n" "$fg[blue]" "$fg[green]" "$reset_color" "$fg[magenta]" "$fg[red]" "$#" "$reset_color"
     return 2
-  elif [[ $arg_count -lt $min_args ]] || [[ "$first_arg" == "-h" ]] || [[ "$first_arg" == "--help" ]] || [[ "$first_arg" == "?" ]]; then
+  elif [[ $arg_count -lt $min_args ]] || [[ "$first_arg" == "-h" ]] || [[ "$first_arg" == "--help" ]]; then
     printerr "%busage: %b%s%b\n\tminimum args: %s\n\tprovided: %b%s%b\n" "$fg[blue]" "$fg[green]" "$usage" "$fg[magenta]" "$min_args" "$fg[red]" "$arg_count" "$reset_color"
     return 1
   else
