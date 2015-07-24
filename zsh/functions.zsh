@@ -293,28 +293,28 @@ setup-git() {
 # -------------------------------------------------------------------
 # git add, commit, and publish to npm
 # -------------------------------------------------------------------
-npm-pub() {
+publish-npm() {
+  printuse "publish-npm [package] [commit_message]" 0 $# $1 || return 1
   if [[ -n "$1" ]]; then
-    local repo_root="$USR_SRC_ROOT/$1"
-    local commit_msg="${2-"publishing $1"}"
+    local repo_root="$USR_SRC_ROOT/$GIT_USERNAME/$1"
   else
     local repo_root="$PWD"
-    local commit_msg="publishing $(basename $PWD)"
   fi
+  local commit_message="${2-:"publishing $(basename $repo_root)"}"
 
-  if [[ -d "$repo_root/.git" ]]; then
-    pushd "$repo_root" 2>/dev/null
-      git add -A 2>/dev/null
-      git commit -am ${2-"publishing $1"} 2>/dev/null
-      npm version patch
-      npm publish
-      git push --follow-tags
-    popd 2>/dev/null
-  else
-    printf -- "%s is not a git repository...\n" "$repo_root"
-  fi
+  [[ -d "$repo_root/.git" ]] || printerr "%s is not a git repository...\n" "$repo_root" && return 2
+  pushd "$repo_root" 2>/dev/null
+    git add -A 2>/dev/null
+    git commit -am "$commit_message" 2>/dev/null
+    npm version patch
+    npm publish
+    git push --follow-tags
+  popd 2>/dev/null
 }
 
+# -------------------------------------------------------------------
+# parse image urls from a page
+# -------------------------------------------------------------------
 get-image-urls() {
   printuse "get-image-urls <url>" 1 $# $1 || return 1
   curl -sL "$1" |& perl -e '{use HTML::TokeParser; 
@@ -324,6 +324,9 @@ get-image-urls() {
   }'
 }
 
+# -------------------------------------------------------------------
+# download images from a page to $ZDOWNLOADDIR/image
+# -------------------------------------------------------------------
 get-images() {
   printuse "get-images <url>" 1 $# $1 || return 1
   local image_root="$ZDOWNLOADDIR/image"
@@ -337,6 +340,7 @@ get-images() {
 # get url for an npm package
 # -------------------------------------------------------------------
 npm-url() {
+  print-use "npm-url <package>" 1 $# $1 || return 1
   printf -- "https://www.npmjs.com/package/%s" "$1"
 }
 
@@ -344,7 +348,8 @@ npm-url() {
 # grep an npm package page
 # -------------------------------------------------------------------
 npm-grep() {
-  url="$(npm-url "$1")"
+  printuse "npm-grep <filter>" 1 $# $1 || return 1
+  local url="$(npm-url "$1")"
   [[ -n "$2" ]] && curls $url | grep "$2"
   [[ -z "$2" ]] && curls $url
 }
@@ -353,8 +358,9 @@ npm-grep() {
 # check if npm package exists, and optionally reserve if it doesn't
 # -------------------------------------------------------------------
 npm-exists() {
-  package="$1"
-  package_root="$USR_SRC_ROOT/$package"
+  printuse "npm-exists <package>" 1 $# $1 || return 1
+  local package="$1"
+  local package_root="$USR_SRC_ROOT/$GIT_USERNAME/$package"
 
   if [[ -z "$(npm-grep "$1" "not found")" ]]; then
     read -q "navigate?$package exists... open? (Yn):"
@@ -363,7 +369,7 @@ npm-exists() {
   else
     read -q "make_package?$package does not exist... claim? (Yn):"
     [[ $make_package = n ]] && return 0
-    mkdir -p "$package_root"
+    mkdirp "$USR_SRC_ROOT/$package_root"
     cd "$package_root"
     git init
     npm init
