@@ -546,34 +546,28 @@ status-recursive() {
 # take a backup of path and delete it
 # -------------------------------------------------------------------
 backup() {
-  if [[ -z "$1" ]]; then
-    printf -- "Must pass something to backup...\n"
-  elif [[ ! -e "$1" ]]; then
-    printf -- "%s does not exist...\n" "$1"
-  else
-    local backup_path="$USR_BACKUP_ROOT/${1##*/}_$(date +%s)"
-    printf -- "backing up %s to %s...\n" "$1" "$backup_path"
-    mkdir -p "$USR_BACKUP_ROOT"
-    cp -rf "$1" "$backup_path"
-  fi
+  printuse "backup <path>" 1 $# $1 || return 1
+  local src_path="$1"
+  [[ ! -e "$1" ]] && printerr "%s does not exist...\n" "$src_path" && return 2
+  local backup_path="$USR_BACKUP_ROOT/${src_path##*/}_$(date +%s)"
+  printout "backing up %s to %s...\n" "$src_path" "$backup_path"
+  mkdirp "$USR_BACKUP_ROOT"
+  cp -rf "$src_path" "$backup_path"
 }
-
 
 
 # -------------------------------------------------------------------
 # force copy a directory or path and backup dest if it exists
 # -------------------------------------------------------------------
 cprf() {
-  if [[ $# -lt 2 ]]; then
-    printf -- "Must specify source and destination...\n"
-    return 1
+  printuse "cprt <src_path> <dest_path>" 2 $# $1 || return 1
+  local src_path="$1"
+  local dest_path="$2"
+  if [[ -e "$dest_path" ]]; then
+    backup "$dest_path"
+    rimraf "$dest_path"
   fi
-  if [[ -e "$2" ]]; then
-    printf -- "Backing up %s...\n" "$2"
-    backup "$2"
-    rm -rf "$2"
-  fi
-  cp -rf "$1" "$2"
+  cp -rf "$src_path" "$dest_path"
 }
 
 # -------------------------------------------------------------------
