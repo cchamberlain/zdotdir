@@ -354,7 +354,7 @@ get-images() {
 # get url for an npm package
 # -------------------------------------------------------------------
 npm-url() {
-  print-use "npm-url <package>" 1 $# $1 || return 1
+  printuse "npm-url <package>" 1 $# $1 || return 1
   printf -- "https://www.npmjs.com/package/%s" "$1"
 }
 
