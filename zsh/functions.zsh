@@ -1,4 +1,4 @@
-#!/usr/bin/env zsh
+#usr/bin/env zsh
 #
 #
 #
@@ -12,7 +12,7 @@ alias printsym='cat "$ZASSETSDIR/symbols/cool_symbols"'
 alias nclone='ns clone'
 alias ns3='ns s3'
 alias note='ns note'
-alias aga='ag -i'
+alias agi='ag -i'
 
 # -------------------------------------------------------------------
 # executes a nodescript
@@ -29,8 +29,14 @@ ns() {
 }
 
 function agz {
-  printuse "agz <options>" 1 $# $1 || return 1
-  aga "$@" "$ZDOTDIR"
+  printuse "agz <pattern>" 1 $# $1 || return 1
+  agi "$@" "$ZDOTDIR"
+}
+
+function agp {
+  printuse "agp <pattern>" 1 $# $1 || return 1
+  agi "$@" "$PF86"
+  agi "$@" "$PF"
 }
 
 # ------------------------------------------------------------------
