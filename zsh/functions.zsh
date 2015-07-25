@@ -522,6 +522,8 @@ update-npm() {
     ./configure
     make link
   popd 2>/dev/null
+  npm install -g rimraf
+  npm install -g mkdirp
 }
 
 # -------------------------------------------------------------------
