@@ -15,12 +15,18 @@ alias note='ns note'
 alias agi='ag -i'
 
 
+# -------------------------------------------------------------------
+# replace something recursively
+# -------------------------------------------------------------------
 replace-recursive() {
   printuse "replace-recursive <find_str> <replace_str>" 2 $# $1 || return 1
   hash gsed 2>/dev/null && local SED_CMD="gsed" || SED_CMD="sed"
   find . -type f -name "*.*" -not -path "*/.git/*" -print0 | xargs -0 $SED_CMD -i "s/$1/$2/g"
 }
 
+# -------------------------------------------------------------------
+# replace windows line endings recursively
+# -------------------------------------------------------------------
 fix-line-endings() {
   replace-recursive "\r" ""
 }
