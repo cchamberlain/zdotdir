@@ -36,7 +36,7 @@ if [[ $IS_MAC -eq 1 ]]; then
   alias rebuildopenwith='/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.fram ework/Support/lsregister -kill -r -domain local -domain system -domain user'
 fi
 if [[ $IS_WIN -eq 1 ]]; then
-  unalias-safe ls
+  # unalias-safe ls
   export LS_IGNORE="-I 'NTUSER*' -I 'ntuser*'"
   alias ls="ls --color $LS_IGNORE"
   alias lsd="ls -pgo --group-directories-first $LS_IGNORE"
