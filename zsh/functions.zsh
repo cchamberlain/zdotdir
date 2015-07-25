@@ -14,6 +14,17 @@ alias ns3='ns s3'
 alias note='ns note'
 alias agi='ag -i'
 
+
+replace-recursive() {
+  printuse "replace-recursive <find_str> <replace_str>" 2 $# $1 || return 1
+  hash gsed 2>/dev/null && local SED_CMD="gsed" || SED_CMD="sed"
+  find . -type f -name "*.*" -not -path "*/.git/*" -print0 | xargs -0 $SED_CMD -i "s/$1/$2/g"
+}
+
+fix-line-endings() {
+  replace-recursive "\r" ""
+}
+
 # -------------------------------------------------------------------
 # vi history fix
 # -------------------------------------------------------------------
@@ -21,6 +32,8 @@ vi-search-fix() {
   zle vi-cmd-mode
   zle .vi-history-search-backward
 }
+
+
 
 # -------------------------------------------------------------------
 # executes a nodescript
@@ -398,7 +411,7 @@ npm-exists() {
 update-fork() {
   printuse "update-fork [organization|username]" 0 $# $1 || return 1
   [[ -d "$PWD/.git" ]] || printerr "directory is not a git repo..." && return 2
-  [[ -n "$1" ]] && git remote add upstream "https://github.com/$1/${PWD##*/}"
+  [[ -n "$1" ]] && git remote add upstream "https://github.com/$1/${PWD##*/}" 2>/dev/null
   git fetch --all
   git checkout master
 }
@@ -488,28 +501,26 @@ update-msys2-packages() {
   popd 2>/dev/null
 }
 
-
 # -------------------------------------------------------------------
 # pull latest npm and reset
 # -------------------------------------------------------------------
 update-npm() {
+  printuse "update-npm" 0 $# $1 || return 1
   pushd "$NPM_SRC_ROOT" 2>/dev/null
-    git remote add upstream https://github.com/npm/npm
-    git fetch upstream
-    git checkout master
-    git reset upstream/master --hard
+    update-fork-reset npm
     ./configure
     make link
   popd 2>/dev/null
 }
 
 # -------------------------------------------------------------------
-# pull latest zprezto and rebase
+# pull latest prezto and rebase
 # -------------------------------------------------------------------
-update-zprezto() {
+update-prezto() {
+  printuse "update-prezto" 0 $# $1 || return 1
   pushd "$ZPREZTODIR" 2>/dev/null
-    git pull && git submodule update --init --recursive
-    update-fork
+    git pull && git submodule update --init --recursive 2>/dev/null
+    update-fork-rebase sorin-ionescu
   popd 2>/dev/null
 }
 
@@ -541,6 +552,11 @@ status-recursive() {
   ls-git-recursive | xargs -P10 -I{} git -C {} status
 }
 
+get-random() {
+  printuse "get-random <digits>" 1 $# $1 || return 1
+  local $digits=$1
+  ${(l:$digits::0:)${RANDOM}}
+}
 
 # -------------------------------------------------------------------
 # take a backup of path and delete it
@@ -549,7 +565,7 @@ backup() {
   printuse "backup <path>" 1 $# $1 || return 1
   local src_path="$1"
   [[ ! -e "$1" ]] && printerr "%s does not exist...\n" "$src_path" && return 2
-  local backup_path="$USR_BACKUP_ROOT/${src_path##*/}_$(date +%s)"
+  local backup_path="$USR_BACKUP_ROOT/${src_path##*/}_$(date +%s)_$(get-random 2)"
   printout "backing up %s to %s...\n" "$src_path" "$backup_path"
   mkdirp "$USR_BACKUP_ROOT"
   cp -rf "$src_path" "$backup_path"
@@ -574,10 +590,7 @@ cprf() {
 # update a gist in user gist directory and file system from github
 # -------------------------------------------------------------------
 update-gist() {
-  if [[ $# -lt 2 ]]; then
-    printf -- "usage: update-gist gist_id file_path\n"
-    return 1
-  fi
+  printuse "update-gist <gist_id> <file_path> [skip_sync]" 2 $# $1 || return 1
   local gist_id="$1"
   local file_path="$2"
   local file_name="${2##*/}"
@@ -588,29 +601,28 @@ update-gist() {
 
   if [[ -d "$gist_root" ]]; then
     pushd "$gist_root" 2>/dev/null
-      printf -- "updating %s source...\n" "$file_name"
+      printout "updating %s source...\n" "$file_name"
       git pull
     popd 2>/dev/null
   else
-    mkdir -p "$USR_SRC_GIST_ROOT"
+    mkdirp "$USR_SRC_GIST_ROOT"
     pushd "$USR_SRC_GIST_ROOT" 2>/dev/null
-      printf -- "cloning %s source...\n" "$file_name"
+      printout "cloning %s source...\n" "$file_name"
       git clone "$gist_url"
     popd 2>/dev/null
   fi
 
-  printf -- "force copying %s to %s...\n" "$gist_path" "$file_path"
-  cprf "$gist_path" "$file_path"
+  if [[ -z $skip_sync ]]; then
+    printout "force copying %s to %s...\n" "$gist_path" "$file_path"
+    cprf "$gist_path" "$file_path"
+  fi
 }
 
 # -------------------------------------------------------------------
 # clone or pull a git repo from github to your machine
 # -------------------------------------------------------------------
 update-git() {
-  if [[ $# -lt 1 ]]; then
-    printf -- "usage: update-git repo_path [repo_url]\n"
-    return 1
-  fi
+  printuse "update-git <repo_path> [repo_url]" 1 $# $1 || return 1
 
   local repo_path="$1"
   local root_path="${1%/*}"
@@ -620,13 +632,13 @@ update-git() {
 
   if [[ -d "$repo_path" ]]; then
     pushd "$repo_path" 2>/dev/null
-      printf -- "updating %s source...\n" "$repo_path"
+      printout "updating %s source...\n" "$repo_path"
       git pull
     popd 2>/dev/null
   else
-    mkdir -p "$root_path"
+    mkdirp "$root_path"
     pushd "$root_path" 2>/dev/null
-      printf -- "cloning %s to %s/%s...\n" "$git_url" "$root_path" "$repo_name"
+      printout "cloning %s to %s/%s...\n" "$git_url" "$root_path" "$repo_name"
       git clone "$git_url" "$repo_name"
     popd 2>/dev/null
   fi
@@ -685,14 +697,11 @@ backup-merge-use-our-files() {
 # git add, commit and push to github
 # -------------------------------------------------------------------
 save-git() {
-  if [[ $# -lt 1 ]]; then
-    printf -- "usage: save-git repo_root\n"
-    return 1
-  fi
+  printuse "save-git repo_root" 1 $# $1 || return 1
   local repo_root="$1"
   if [[ ! -d "$repo_root/.git" ]]; then
-    printf -- "%s does not exist or is not a git repository...\n" "$repo_root"
-    return 1
+    printerr "%s does not exist or is not a git repository...\n" "$repo_root"
+    return 2
   fi
   pushd "$repo_root" 2>/dev/null
     git add -A 2>/dev/null && git commit -am "${2-"updating $(basename $1)"}" 2>/dev/null && git push
@@ -703,45 +712,56 @@ save-git() {
 # save gist to github
 # -------------------------------------------------------------------
 save-gist() {
-  if [[ $# -lt 1 ]]; then
-    printf -- "usage: save-gist gist_id\n"
-    return 1
+  printuse "save-gist <gist_id> <file_path>" 2 $# $1 || return 1
+  local gist_id="$1"
+  local gist_root="$USR_SRC_GIST_ROOT/$gist_id"
+  local file_path="$2"
+  local file_name="${file_path##*/}"
+  local gist_path="$gist_root/${file_path##*/}"
+  if [[ ! -d "$gist_root" ]]; then
+    printout "updating gist first...\n"
+    update-gist "$gist_id" "$file_path" 1
   fi
-  local gist_root="$USR_SRC_GIST_ROOT/$1"
-  printf -- "saving gist...\n"
+  printout "copying gist...\n"
+  cprf "$file_path" "$gist_path"
+  printout "saving gist...\n"
   save-git "$gist_root"
 }
+
 
 # -------------------------------------------------------------------
 # save local $ZDOTDIR/.zshrc to github
 # -------------------------------------------------------------------
 save-zshrc() {
-  cprf "$ZSHRC_PATH" "$USR_SRC_GIST_ROOT/$GIST_ZSHRC_ID/.zshrc"
-  save-gist "$GIST_ZSHRC_ID"
+  save-gist "$GIST_ZSHRC_ID" "$ZSHRC_PATH"
 }
 
 # -------------------------------------------------------------------
 # save local ~/.zshenv to github
 # -------------------------------------------------------------------
 save-uzshenv() {
-  cprf "$USR_ZSHENV_PATH" "$USR_SRC_GIST_ROOT/$GIST_USR_ZSHENV_ID/.zshenv"
-  save-gist "$GIST_USR_ZSHENV_ID"
+  save-gist "$GIST_USR_ZSHENV_ID" "$USR_ZSHENV_PATH"
 }
 
 # -------------------------------------------------------------------
 # save local $ZDOTDIR/.zshenv to github
 # -------------------------------------------------------------------
 save-zshenv() {
-  cprf "$ZSHENV_PATH" "$USR_SRC_GIST_ROOT/$GIST_ZSHENV_ID/.zshenv"
-  save-gist "$GIST_ZSHENV_ID"
+  save-gist "$GIST_ZSHENV_ID" "$ZSHENV_PATH"
 }
 
 # -------------------------------------------------------------------
 # save local ~/.vimrc to github
 # -------------------------------------------------------------------
 save-vimrc() {
-  cprf "$VIMRC_PATH" "$USR_SRC_GIST_ROOT/$GIST_VIMRC_ID/.vimrc"
-  save-gist "$GIST_VIMRC_ID"
+  save-gist "$GIST_VIMRC_ID" "$VIMRC_PATH"
+}
+
+# -------------------------------------------------------------------
+# save $ZPREZTODIR to github
+# -------------------------------------------------------------------
+save-prezto() {
+  save-git "$ZPREZTODIR"
 }
 
 # -------------------------------------------------------------------
@@ -787,6 +807,7 @@ update-zdotdir() {
   update-git "$ZDOTDIR" "$GIT_URL_ZDOTDIR"
 }
 
+
 update-conemu() {
   cprf "$ZETCDIR/ConEmu.xml" "$HOME/local/conemu/ConEmu.xml"
 }
@@ -808,6 +829,7 @@ clone-tixinc() {
   popd 2>/dev/null
 }
 
+
 # -------------------------------------------------------------------
 # update all dotfiles to latest version from github
 # -------------------------------------------------------------------
@@ -816,7 +838,10 @@ update-dotfiles() {
   update-zdotdir
   update-vimrc
   rezsh
+  update-prezto
+  rezsh
 }
+
 
 # -------------------------------------------------------------------
 # save local dotfiles to github
@@ -827,6 +852,7 @@ save-dotfiles() {
   save-zshrc
   save-vimrc
   save-zdotdir
+  save-prezto 
 }
 
 # -------------------------------------------------------------------
