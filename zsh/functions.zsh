@@ -559,9 +559,9 @@ status-recursive() {
 }
 
 get-random() {
-  printuse "get-random <digits>" 1 $# $1 || return 1
-  local $digits=$1
-  ${(l:$digits::0:)${RANDOM}}
+  printuse "get-random" 0 $# $1 || return 1
+  local rand="${(l:3::0:)${RANDOM}}"
+  printout "%s" "$rand"
 }
 
 # -------------------------------------------------------------------
@@ -571,8 +571,7 @@ backup() {
   printuse "backup <path>" 1 $# $1 || return 1
   local src_path="$1"
   [[ ! -e "$1" ]] && printerr "%s does not exist...\n" "$src_path" && return 2
-  local rand_path=$(get-random 2)
-  local backup_path="$USR_BACKUP_ROOT/${src_path##*/}_$(date +%s)_$rand_path"
+  local backup_path="$USR_BACKUP_ROOT/${src_path##*/}_$(date +%s)_$(get-random)"
   printout "backing up %s to %s...\n" "$src_path" "$backup_path"
   mkdirp "$USR_BACKUP_ROOT"
   cp -rf "$src_path" "$backup_path"
