@@ -419,7 +419,7 @@ update-fork() {
     local basename="${1%/*}"
     local repo="${1#*/}"
     [[ -z "$repo" ]] && local repo="${PDW##*/}"
-    git remote add upstream "https://github.com/$basename/$repo" 2>/dev/null
+    git remote add upstream "https://github.com/$basename/$repo"
   fi
   git fetch --all
   git checkout master
