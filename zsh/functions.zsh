@@ -880,7 +880,7 @@ update-pacman() {
 # -------------------------------------------------------------------
 update-system() {
   update-dotfiles
-  update-conemu
+  [[ $IS_WIN -eq 1 ]] && update-conemu
   update-npm
 }
 
@@ -888,6 +888,6 @@ update-system() {
 # save everything
 # -------------------------------------------------------------------
 save-system() {
-  save-conemu
+  [[ $IS_WIN -eq 1 ]] && save-conemu
   save-dotfiles
 }
