@@ -5,6 +5,7 @@
 # apply changes
 # -------------------------------------------------------------------
 function rezsh {
+  env -i zsh
   . "$USR_ZSHENV_PATH"
   . "$ZSHENV_PATH"
   . "$ZSHRC_PATH"
