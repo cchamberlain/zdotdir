@@ -1,10 +1,19 @@
 #!/usr/bin/env zsh
+#
+
+alias-exists() {
+  type $1 | grep -q 'aliased'
+}
+
+function unalias-safe {
+  alias-exists $1 && unalias $1
+}
 
 # -------------------------------------------------------------------
 # Mac only
 # -------------------------------------------------------------------
 if [[ $IS_MAC -eq 1 ]]; then
-  unalias gls
+  unalias-safe gls
   . /usr/local/Cellar/coreutils/8.24/bin
   alias ls='gls --color=auto'
   alias lsd="ls -pgo --group-directories-first"
@@ -27,7 +36,7 @@ if [[ $IS_MAC -eq 1 ]]; then
   alias rebuildopenwith='/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.fram ework/Support/lsregister -kill -r -domain local -domain system -domain user'
 fi
 if [[ $IS_WIN -eq 1 ]]; then
-  #unalias ls
+  unalias-safe ls
   export LS_IGNORE="-I 'NTUSER*' -I 'ntuser*'"
   alias ls="ls --color $LS_IGNORE"
   alias lsd="ls -pgo --group-directories-first $LS_IGNORE"
@@ -89,24 +98,23 @@ alias edit="$EDITOR"
 alias hack="$EDITOR_ATOM"
 alias webstorm="$EDITOR_WEBSTORM"
 
-alias rezsh=". $USR_ZSHENV_PATH"
-alias zshrc="vim $ZSHRC_PATH"
-alias zshenv="vim $ZSHENV_PATH"
-alias npmrc="vim $NPMRC_PATH"
-alias vimrc="vim $VIMRC_PATH"
-alias exports="vim $ZSCRIPTDIR/exports.zsh"
-alias aliases="vim $ZSCRIPTDIR/aliases.zsh"
-alias fns="vim $ZSCRIPTDIR/functions.zsh"
-alias colors="vim $ZSCRIPTDIR/colors.zsh"
-alias paradox="vim $ZPREZTODIR/modules/prompt/functions/prompt_paradox_setup"
+alias zshrc='vim "$ZSHRC_PATH"'
+alias zshenv='vim "$ZSHENV_PATH"'
+alias npmrc='vim "$NPMRC_PATH"'
+alias vimrc='vim "$VIMRC_PATH"'
+alias exports='vim "$ZSCRIPTDIR/exports.zsh"'
+alias aliases='vim "$ZSCRIPTDIR/aliases.zsh"'
+alias fns='vim "$ZSCRIPTDIR/functions.zsh"'
+alias colors='vim "$ZSCRIPTDIR/colors.zsh"'
+alias paradox='vim "$ZPREZTODIR/modules/prompt/functions/prompt_paradox_setup"'
 
-alias hackzsh="hack $ZSHRC_PATH"
-alias hackgist="hack $USR_SRC_GIST_ROOT"
-alias hacknpm="hackjs $NPM_SRC_ROOT"
+alias hackzsh='hack "$ZSHRC_PATH"'
+alias hackgist='hack "$USR_SRC_GIST_ROOT"'
+alias hacknpm='hackjs "$NPM_SRC_ROOT"'
 
 if [[ $IS_WIN -eq 1 ]]; then
-  alias visualstudio="$EDITOR_VS"
-  alias hosts="edit /c/windows/system32/drivers/etc/hosts"
+  alias visualstudio='"$EDITOR_VS"'
+  alias hosts='edit "/c/windows/system32/drivers/etc/hosts"'
 
   win_resolve() {
     local file_path="$1"

@@ -1,7 +1,18 @@
 #usr/bin/env zsh
 #
-#
-#
+
+# -------------------------------------------------------------------
+# apply changes
+# -------------------------------------------------------------------
+function rezsh {
+  . "$USR_ZSHENV_PATH"
+  . "$ZSHENV_PATH"
+  . "$ZSHRC_PATH"
+}
+
+fn_exists() {
+  type $1 | grep -q 'shell function'
+}
 
 # -------------------------------------------------------------------
 # aliases that are tightly bound to stuff in here
