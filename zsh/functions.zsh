@@ -683,24 +683,25 @@ update-gist() {
 # clone or pull a git repo from github to your machine
 # -------------------------------------------------------------------
 update-git() {
-  printuse "update-git <repo_path> [repo_url]" 1 $# $1 || return 1
-
-  local repo_path="$1"
-  local root_path="${1%/*}"
+  printuse "update-git <repo_id> <repo_path>" 2 $# $1 || return 1
+  local repo_id="$1"
+  local repo_path="$2"
+  local root_path="${repo_path%/*}"
   local basename="$(basename root_path)"
-  local repo_name="${1##*/}"
-  local git_url="${2-"$GIT_USER_URL/$repo_name"}"
+  local repo_name="${repo_path##*/}"
+  local git_url="$GIT_USER_URL/$repo_id"
 
   if [[ -d "$repo_path" ]]; then
     pushd "$repo_path" 2>/dev/null
       printout "updating %s source...\n" "$repo_path"
-      git pull
+      git pull 2>/dev/null
+      git pull --tags 2>/dev/null
     popd 2>/dev/null
   else
     mkdirp "$root_path"
     pushd "$root_path" 2>/dev/null
       printout "cloning %s to %s/%s...\n" "$git_url" "$root_path" "$repo_name"
-      git clone "$git_url" "$repo_name"
+      git clone "$git_url" "$repo_name" 2>/dev/null
     popd 2>/dev/null
   fi
 }
@@ -865,7 +866,7 @@ update-vimrc() {
 # update $ZDOTDIR from github
 # -------------------------------------------------------------------
 update-zdotdir() {
-  update-git "$ZDOTDIR" "$GIT_URL_ZDOTDIR"
+  update-git "$GIT_ZDOTDIR_ID" "$ZDOTDIR"
 }
 
 
@@ -878,16 +879,31 @@ save-conemu() {
 }
 
 
-clone-tixinc() {
-  mkdir -p "$HOME/tixinc"
-  pushd "$HOME/tixinc" 2>/dev/null
-    git clone https://$GIT_USERNAME@github.com/tixinc/config
-    git clone https://$GIT_USERNAME@github.com/tixinc/ext
-    git clone https://$GIT_USERNAME@github.com/tixinc/automation
-    git clone https://$GIT_USERNAME@github.com/tixinc/tix-cli
-    git clone https://$GIT_USERNAME@github.com/tixinc/tixinc-js
-    git clone https://$GIT_USERNAME@github.com/tixinc/tixinc-net
+function update-tixinc {
+  local tixinc_root="$HOME/tixinc"
+  mkdirp "$tixinc_root"
+  update-git tixinc/config "$tixinc_root/config"
+  update-git tixinc/ext "$tixinc_root/ext"
+  update-git tixinc/automation "$tixinc_root/automation"
+  update-git tixinc/tix-cli "$tixinc_root/tix-cli"
+  update-git tixinc/tixinc-js "$tixinc_root/tixinc-js"
+  update-git tixinc/tixinc-net "$tixinc_root/tixinc-net"
+  printout "successfully updated all tixinc repos\n"
+}
+
+function link-tixinc {
+  local tixinc_root="$HOME/tixinc"
+  pushd "$tixinc_root/tix-cli" 2>/dev/null
+    npm link
   popd 2>/dev/null
+  pushd "$tixinc_root/ext" 2>/dev/null
+    npm link ../config
+  popd 2>/dev/null
+  pushd "$tixinc_root/tixinc-js" 2>/dev/null
+    npm link ../config
+    npm link ../ext
+  popd 2>/dev/null
+  
 }
 
 
