@@ -567,7 +567,7 @@ status-recursive() {
 
 get-random() {
   printuse "get-random count" 1 $# $1 || return 1
-  rand="$(head -c 500 /dev/urandom | tr -dc 'a-zA-Z0-9~!@#$%^&*_-' | fold -w $1 | head -n 1)"
+  rand="$(head -c 500 /dev/urandom | tr -dc 'a-zA-Z0-9~!@#$%^&*_-' | fold -w "$1" | head -n 1)"
   printout "%s" "$rand"
 }
 

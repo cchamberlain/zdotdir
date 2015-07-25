@@ -9,6 +9,7 @@ if [[ $IS_MAC -eq 1 ]]; then
   alias ls='gls --color=auto'
   alias lsd="ls -pgo --group-directories-first"
   alias sed="gsed"
+  alias tr="gtr"
   alias ql='qlmanage -p 2>/dev/null' # OS X Quick Look
   alias oo='open .' # open current directory in OS X Finder
   alias 'today=calendar -A 0 -f /usr/share/calendar/calendar.mark | sort'
