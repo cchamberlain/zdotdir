@@ -414,13 +414,13 @@ npm-exists() {
 # -------------------------------------------------------------------
 update-fork() {
   printuse "update-fork [organization|username[/repo]]" 0 $# $1 || return 1
-  [[ -d "$PWD/.git" ]] || printerr "directory is not a git repo..." && return 2
+  [[ -d "$PWD/.git" ]] || (printerr "directory is not a git repo...\n" && return 2)
   if [[ -n "$1" ]]; then
     local basename="${1%/*}"
     local repo="${1#*/}"
     [[ -z "$repo" ]] && local repo="${PDW##*/}"
     local remote_url="https://github.com/$basename/$repo"
-    printout "adding upstream remote:%s" "$remote_url"
+    printout "adding upstream remote:%s\n" "$remote_url"
     git remote add upstream "$remote_url"
   fi
   git fetch --all
@@ -447,7 +447,7 @@ update-fork-reset() {
 
 exec-ps() {
   printuse "exec-ps <powershell_args>" 1 $# $1 || return 1
-  printout "executing [powershell %s]..." "$*"
+  printout "executing [powershell %s]...\n" "$*"
   echo $* | PowerShell -NoLogo -ExecutionPolicy unrestricted -NoProfile -Command -
 }
 
@@ -481,7 +481,7 @@ update-vs() {
   local local_iso_path="$ZDOWNLOADDIR/vs2015.iso"
   local local_install_root="$PF86/vs/"
   if [[ -d "$local_install_root" ]]; then
-    printout "VS2015 is already installed."
+    printout "VS2015 is already installed.\n"
     return 0
   fi
   mkdirp "$ZDOWNLOADDIR"
@@ -531,7 +531,7 @@ update-prezto() {
   printuse "update-prezto" 0 $# $1 || return 1
   pushd "$ZPREZTODIR" 2>/dev/null
     git pull 2>/dev/null && git submodule update --init --recursive 2>/dev/null
-    update-fork-rebase sorin-ionescu/prezto
+    update-fork-rebase "sorin-ionescu/prezto"
   popd 2>/dev/null
 }
 
