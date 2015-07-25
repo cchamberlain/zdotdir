@@ -571,7 +571,8 @@ backup() {
   printuse "backup <path>" 1 $# $1 || return 1
   local src_path="$1"
   [[ ! -e "$1" ]] && printerr "%s does not exist...\n" "$src_path" && return 2
-  local backup_path="$USR_BACKUP_ROOT/${src_path##*/}_$(date +%s)_$(get-random 2)"
+  local rand_path=$(get-random 2)
+  local backup_path="$USR_BACKUP_ROOT/${src_path##*/}_$(date +%s)_$rand_path"
   printout "backing up %s to %s...\n" "$src_path" "$backup_path"
   mkdirp "$USR_BACKUP_ROOT"
   cp -rf "$src_path" "$backup_path"
