@@ -419,7 +419,9 @@ update-fork() {
     local basename="${1%/*}"
     local repo="${1#*/}"
     [[ -z "$repo" ]] && local repo="${PDW##*/}"
-    git remote add upstream "https://github.com/$basename/$repo"
+    local remote_url="https://github.com/$basename/$repo"
+    printout "adding upstream remote:%s" "$remote_url"
+    git remote add upstream "$remote_url"
   fi
   git fetch --all
   git checkout master
@@ -846,7 +848,6 @@ update-dotfiles() {
   update-uzshenv
   update-zdotdir
   update-vimrc
-  rezsh
   update-prezto
   rezsh
 }
