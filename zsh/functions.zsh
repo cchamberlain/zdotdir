@@ -566,8 +566,8 @@ status-recursive() {
 }
 
 get-random() {
-  printuse "get-random" 0 $# $1 || return 1
-  local rand="${(l:3::0:)${RANDOM}}"
+  printuse "get-random count" 1 $# $1 || return 1
+  rand="$(head -c 500 /dev/urandom | tr -dc 'a-zA-Z0-9~!@#$%^&*_-' | fold -w $1 | head -n 1)
   printout "%s" "$rand"
 }
 
@@ -578,7 +578,7 @@ backup() {
   printuse "backup <path>" 1 $# $1 || return 1
   local src_path="$1"
   [[ ! -e "$1" ]] && printerr "%s does not exist...\n" "$src_path" && return 2
-  local backup_path="$USR_BACKUP_ROOT/${src_path##*/}_$(date +%s)_$(get-random)"
+  local backup_path="$USR_BACKUP_ROOT/${src_path##*/}_$(date +%s)_$(get-random 3)"
   printout "backing up %s to %s...\n" "$src_path" "$backup_path"
   mkdirp "$USR_BACKUP_ROOT"
   cp -rf "$src_path" "$backup_path"
@@ -589,7 +589,7 @@ backup() {
 # force copy a directory or path and backup dest if it exists
 # -------------------------------------------------------------------
 cprf() {
-  printuse "cprt <src_path> <dest_path>" 2 $# $1 || return 1
+  printuse "cprf <src_path> <dest_path>" 2 $# $1 || return 1
   local src_path="$1"
   local dest_path="$2"
   if [[ -e "$dest_path" ]]; then
