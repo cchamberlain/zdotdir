@@ -87,13 +87,13 @@ checks() {
 # ------------------------------------------------------------------
 # print usage with checking to see if min args were passed
 # ------------------------------------------------------------------
-printuse() {
+function printuse {
   local usage=$1
   local min_args=$2
   local arg_count=$3
   local first_arg=$4
   if [[ $# -lt 3 ]]; then
-    printerr "%busage: %bprintuse \"<usage>\" <min_args> <arg_count> %b|| return 1%b\n\tminimum args: 3\n\tprovided: %b%s%b\n" "$fg[blue]" "$fg[green]" "$reset_color" "$fg[magenta]" "$fg[red]" "$#" "$reset_color"
+    printerr "%busage: %bprintuse \"<usage>\" <min_args> <arg_count> <first_arg> %b|| return 1%b\n\tminimum args: 3\n\tprovided: %b%s%b\n" "$fg[blue]" "$fg[green]" "$reset_color" "$fg[magenta]" "$fg[red]" "$#" "$reset_color"
     return 2
   elif [[ $arg_count -lt $min_args ]] || [[ "$first_arg" == "-h" ]] || [[ "$first_arg" == "--help" ]]; then
     printerr "%busage: %b%s%b\n\tminimum args: %s\n\tprovided: %b%s%b\n" "$fg[blue]" "$fg[green]" "$usage" "$fg[magenta]" "$min_args" "$fg[red]" "$arg_count" "$reset_color"
@@ -451,9 +451,10 @@ function git-remote-exists {
 # safe add remote to a git repo (repo optional if in repo)
 # -------------------------------------------------------------------
 function git-remote-add {
-  printuse "git-remote-add <remote> basename[/repo]"
-  local basename="${1%/*}"
-  local repo="${1#*/}"
+  printuse "git-remote-add <remote> basename[/repo]" 2 $# $1 || return 1
+  local remote="$1"
+  local basename="${2%/*}"
+  local repo="${2#*/}"
   [[ -z "$repo" ]] && local repo="${PWD##*/}"
   local remote_url="https://github.com/$basename/$repo"
   git-remote-exists upstream || git remote add upstream "$remote_url"
