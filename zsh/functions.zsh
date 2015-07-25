@@ -5,7 +5,6 @@
 # apply changes
 # -------------------------------------------------------------------
 function rezsh {
-  env -i zsh
   . "$USR_ZSHENV_PATH"
   . "$ZSHENV_PATH"
   . "$ZSHRC_PATH"
@@ -420,6 +419,45 @@ npm-exists() {
   fi
 }
 
+# -------------------------------------------------------------------
+# validate if a directory (or CWD) is a git repo
+# -------------------------------------------------------------------
+function is-git {
+  printuse "is-git [repo_path] || return 1" 0 $# $1 || return 1
+  local repo_path="${1-"$PWD"}"
+  local git_path="$repo_path/.git"
+  if [[ -d "$git_path" ]]; then
+    return 0
+  else
+    printerr "$repo_path is not a git path..."
+    return 1
+  fi
+}
+
+# -------------------------------------------------------------------
+# check if a git remote exists
+# -------------------------------------------------------------------
+function git-remote-exists {
+  printuse "git-remote-exists <remote> || git remote add..." 1 $# $1 || return 1
+  is-git || return 1
+  if git remote | grep $1 >/dev/null; then
+    return 0
+  else
+    return 1
+  fi
+}
+
+# -------------------------------------------------------------------
+# safe add remote to a git repo (repo optional if in repo)
+# -------------------------------------------------------------------
+function git-remote-add {
+  printuse "git-remote-add <remote> basename[/repo]"
+  local basename="${1%/*}"
+  local repo="${1#*/}"
+  [[ -z "$repo" ]] && local repo="${PWD##*/}"
+  local remote_url="https://github.com/$basename/$repo"
+  git-remote-exists upstream || git remote add upstream "$remote_url"
+}
 
 # -------------------------------------------------------------------
 # pull latest upstream code for a git fork
@@ -428,16 +466,12 @@ update-fork() {
   printuse "update-fork [organization|username[/repo]]" 0 $# $1 || return 1
   [[ -d "$PWD/.git" ]] || (printerr "directory is not a git repo...\n" && return 2)
   if [[ -n "$1" ]]; then
-    local basename="${1%/*}"
-    local repo="${1#*/}"
-    [[ -z "$repo" ]] && local repo="${PDW##*/}"
-    local remote_url="https://github.com/$basename/$repo"
-    printout "adding upstream remote:%s\n" "$remote_url"
-    git remote add upstream "$remote_url"
+    git-remote-add upstream "$1"
   fi
   git fetch --all
   git checkout master
 }
+
 
 # -------------------------------------------------------------------
 # pull latest upstream code for a git fork and rebase on top
@@ -530,10 +564,11 @@ update-msys2-packages() {
 update-npm() {
   printuse "update-npm" 0 $# $1 || return 1
   pushd "$NPM_SRC_ROOT" 2>/dev/null
-    update-fork-reset npm
+    update-fork-reset npm/npm
     ./configure
     make link
   popd 2>/dev/null
+  rezsh
   npm install -g rimraf
   npm install -g mkdirp
 }
@@ -544,8 +579,8 @@ update-npm() {
 update-prezto() {
   printuse "update-prezto" 0 $# $1 || return 1
   pushd "$ZPREZTODIR" 2>/dev/null
-    git pull 2>/dev/null && git submodule update --init --recursive 2>/dev/null
     update-fork-rebase "sorin-ionescu/prezto"
+    git pull 2>/dev/null && git submodule update --init --recursive 2>/dev/null
   popd 2>/dev/null
 }
 
