@@ -39,8 +39,6 @@ vi-search-fix() {
   zle .vi-history-search-backward
 }
 
-
-
 # -------------------------------------------------------------------
 # executes a nodescript
 # -------------------------------------------------------------------
@@ -415,9 +413,14 @@ npm-exists() {
 # pull latest upstream code for a git fork
 # -------------------------------------------------------------------
 update-fork() {
-  printuse "update-fork [organization|username]" 0 $# $1 || return 1
+  printuse "update-fork [organization|username[/repo]]" 0 $# $1 || return 1
   [[ -d "$PWD/.git" ]] || printerr "directory is not a git repo..." && return 2
-  [[ -n "$1" ]] && git remote add upstream "https://github.com/$1/${PWD##*/}" 2>/dev/null
+  if [[ -n "$1" ]]; then
+    local basename="${1%/*}"
+    local repo="${1#*/}"
+    [[ -z "$repo" ]] && local repo="${PDW##*/}"
+    git remote add upstream "https://github.com/$basename/$repo" 2>/dev/null
+  fi
   git fetch --all
   git checkout master
 }
@@ -426,7 +429,7 @@ update-fork() {
 # pull latest upstream code for a git fork and rebase on top
 # -------------------------------------------------------------------
 update-fork-rebase() {
-  printuse "update-fork-rebase [organization|username]" 0 $# $1 || return 1
+  printuse "update-fork-rebase [organization|username[/repo]]" 0 $# $1 || return 1
   update-fork "$@"
   git rebase upstream/master
 }
@@ -435,7 +438,7 @@ update-fork-rebase() {
 # pull latest upstream code for a git fork and overwrite
 # -------------------------------------------------------------------
 update-fork-reset() {
-  printuse "update-fork-reset [organization|username]" 0 $# $1 || return 1
+  printuse "update-fork-reset [organization|username[/repo]]" 0 $# $1 || return 1
   update-fork "$@"
   git reset --hard upstream/master
 }
@@ -525,8 +528,8 @@ update-npm() {
 update-prezto() {
   printuse "update-prezto" 0 $# $1 || return 1
   pushd "$ZPREZTODIR" 2>/dev/null
-    git pull && git submodule update --init --recursive 2>/dev/null
-    update-fork-rebase sorin-ionescu
+    git pull 2>/dev/null && git submodule update --init --recursive 2>/dev/null
+    update-fork-rebase sorin-ionescu/prezto
   popd 2>/dev/null
 }
 
