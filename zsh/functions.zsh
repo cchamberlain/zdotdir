@@ -39,7 +39,7 @@ alias agi='ag -i'
 # -------------------------------------------------------------------
 # replace something recursively
 # -------------------------------------------------------------------
-replace-recursive() {
+function replace-recursive {
   printuse "replace-recursive <find_str> <replace_str>" 2 $# $1 || return 1
   hash gsed 2>/dev/null && local SED_CMD="gsed" || SED_CMD="sed"
   find . -type f -name "*.*" -not -path "*/.git/*" -print0 | xargs -0 $SED_CMD -i "s/$1/$2/g"
@@ -48,14 +48,14 @@ replace-recursive() {
 # -------------------------------------------------------------------
 # replace windows line endings recursively
 # -------------------------------------------------------------------
-fix-line-endings() {
+function fix-line-endings {
   replace-recursive "\r" ""
 }
 
 # -------------------------------------------------------------------
 # vi history fix
 # -------------------------------------------------------------------
-vi-search-fix() {
+function vi-search-fix {
   zle vi-cmd-mode
   zle .vi-history-search-backward
 }
@@ -63,7 +63,7 @@ vi-search-fix() {
 # -------------------------------------------------------------------
 # executes a nodescript
 # -------------------------------------------------------------------
-ns() {
+function ns {
   hash nodescript 2>/dev/null || {
     pushd "$ZNODEDIR" 2>/dev/null
       printf -- "linking nodescript...\n"
@@ -95,7 +95,7 @@ function agp {
 # ------------------------------------------------------------------
 # prints out the environment variables related to current system
 # ------------------------------------------------------------------
-checks() {
+function checks {
   env | grep IS_
   env | grep HAS_
   env | grep '^Z'
@@ -123,9 +123,9 @@ function printuse {
 # ------------------------------------------------------------------
 # namedir my_path -> names the current working directory as ~my_path
 # ------------------------------------------------------------------
-namedir () { $1=$PWD ;  : ~$1 }
+function namedir { $1=$PWD ;  : ~$1 }
 
-mergedir() { 
+function mergedir { 
   printuse "mergedir <dir_one> [<dir_two>] <dir_dest>" 2 $# $1 || return 1
   local dir_one="$1"
   local dir_two="$2"
@@ -136,14 +136,14 @@ mergedir() {
   printout "%bfinished merging dirs to %s!%b" "$fg[green]" "$dir_dest" "$reset_color"
 }
 
-add-alias() {
+function add-alias {
   printuse "add-alias <name> <alias>" 2 $# $1 || return 1
   local alias_command="alias $1='$2'"
   printout "\n%s\n" $alias_command >>"$ZSCRIPTDIR/aliases.zsh"
   printout "alias -> %s <- added\n" "$alias_command"
 }
 
-help-expansion() {
+function help-expansion {
   printuse "help-expansion <alias>" 2 $# $1 || return 1
   local expansion_help="$ZHELPDIR/expansion"
   mkdirp "$$ZHELPDIR"
@@ -156,13 +156,13 @@ help-expansion() {
 # ------------------------------------------------------------------
 [[ -f "$HOME/_netrc" ]] && [[ ! -f "$HOME/.netrc" ]] && ln -s "$HOME/_netrc" "$HOME/.netrc"
 
-vlcp() {
+function vlcp {
   local vlc_path="${1-:./}"
   vlc "$vlc_path" & disown
   printout "playing %s..." "$vlc_path"
 }
 
-chrome() {
+function chrome {
   if [[ $IS_WIN -eq 1 ]]; then
     local chrome_args="//new-window $1"
   else
@@ -174,7 +174,7 @@ chrome() {
 # -------------------------------------------------------------------
 # compressed file expander
 # -------------------------------------------------------------------
-ex() {
+function ex {
     if [[ -f $1 ]]; then
         case $1 in
           *.tar.bz2) tar xvjf $1;;
@@ -200,7 +200,7 @@ ex() {
 # -------------------------------------------------------------------
 # extract a file that was downloaded to downloads folder
 # -------------------------------------------------------------------
-exdl() {
+function exdl {
   pushd "$DOWNLOAD_ROOT"
     if [[ -f "$1" ]]; then
       ex "$1"
@@ -216,7 +216,7 @@ exdl() {
 # any function from http://onethingwell.org/post/14669173541/any
 # search for running processes
 # -------------------------------------------------------------------
-any() {
+function any {
     emulate -L zsh
     unsetopt KSH_ARRAYS
     if [[ -z "$1" ]] ; then
@@ -230,7 +230,7 @@ any() {
 # -------------------------------------------------------------------
 # display a neatly formatted path
 # -------------------------------------------------------------------
-path() {
+function path {
   echo $PATH | tr ":" "\n" | \
     awk "{ sub(\"/usr\",   \"$fg_no_bold[green]/usr$reset_color\"); \
            sub(\"/bin\",   \"$fg_no_bold[blue]/bin$reset_color\"); \
@@ -246,24 +246,26 @@ path() {
 # nice mount (http://catonmat.net/blog/another-ten-one-liners-from-commandlingfu-explained)
 # displays mounted drive information in a nicely formatted manner
 # -------------------------------------------------------------------
-nicemount() { (echo "DEVICE PATH TYPE FLAGS" && mount | awk '$2="";1') | column -t ; }
+function nicemount { (echo "DEVICE PATH TYPE FLAGS" && mount | awk '$2="";1') | column -t ; }
 
 # -------------------------------------------------------------------
 # sanitize html into human readable compact text
 # -------------------------------------------------------------------
-sanitize() {
+function sanitize {
   printf -- "%s" "$1" | sed -e 's/<[^>]\+>/ /gi' -e 's/&[a-z]\+;/ /gi' -e 's/^ */\n/g' | tr -s '[:space:]' | tr \015 \012 | tr -s \012
 }
 
 # -------------------------------------------------------------------
 # define a word
 # -------------------------------------------------------------------
-defword() { curl -sL "dict://dict.org/d:$1"; }
+function defword {
+  curl -sL "dict://dict.org/d:$1"
+}
 
 # -------------------------------------------------------------------
 # define zsh test conditionals
 # -------------------------------------------------------------------
-deftest() {
+function deftest {
   raw_conditions="$(curl -sL "http://zsh.sourceforge.net/Doc/Release/Conditional-Expressions.html")"
   if [[ -n "$1" ]]; then
     sanitize "$raw_conditions" | grep -B 2 -A 8 -e"$1"
@@ -275,7 +277,7 @@ deftest() {
 # -------------------------------------------------------------------
 # search apps in usual places
 # -------------------------------------------------------------------
-findapp() {
+function findapp {
   ag -lg "$1" /c/Program\ Files
   ag -lg "$1" /c/Program\ Files\(x86\)
 }
@@ -283,7 +285,7 @@ findapp() {
 # -------------------------------------------------------------------
 # install everything
 # -------------------------------------------------------------------
-everything() {
+function everything {
   mkdir -p "$NPM_CONFIG_PREFIX"
   mkdir -p "$NPM_SRC_BASE"
   if [[ IS_WIN -eq 1 ]]; then
@@ -307,21 +309,21 @@ everything() {
 # -------------------------------------------------------------------
 # profile startup time of app (defaults zsh)
 # -------------------------------------------------------------------
-startup() {
+function startup {
   /usr/bin/time ${1-zsh} -i -c exit
 }
 
 # -------------------------------------------------------------------
 # modify npm log level
 # -------------------------------------------------------------------
-loglevel() {
+function loglevel {
   npm config -g set loglevel $1
 }
 
 # -------------------------------------------------------------------
 # set logging to extremely verbose
 # -------------------------------------------------------------------
-loglevel-silly() {
+function loglevel-silly {
   loglevel silly
   export GIT_TRACE=1
   export GIT_CURL_VERBOSE=1
@@ -331,7 +333,7 @@ loglevel-silly() {
 # -------------------------------------------------------------------
 # reset logging to defaults
 # -------------------------------------------------------------------
-loglevel-reset() {
+function loglevel-reset {
   loglevel warn
   unset GIT_TRACE
   unset GIT_CURL_VERBOSE
@@ -342,7 +344,7 @@ loglevel-reset() {
 # -------------------------------------------------------------------
 # configure global git settings
 # -------------------------------------------------------------------
-setup-git() {
+function setup-git {
   if [[ $IS_WIN -eq 1 ]]; then
     curl -sL "http://download-codeplex.sec.s-msft.com/Download/Release?ProjectName=gitcredentialstore&DownloadId=834616&FileTime=130434786227870000&Build=21028" >"/usr/local/bin/git-credential-winstore.exe"
     git-credential-winstore -s
@@ -352,7 +354,7 @@ setup-git() {
 # -------------------------------------------------------------------
 # git add, commit, and publish to npm
 # -------------------------------------------------------------------
-publish-npm() {
+function publish-npm {
   printuse "publish-npm [package] [commit_message]" 0 $# $1 || return 1
   if [[ -n "$1" ]]; then
     local repo_root="$USR_SRC_ROOT/$GIT_USERNAME/$1"
@@ -375,7 +377,7 @@ publish-npm() {
 # -------------------------------------------------------------------
 # parse image urls from a page
 # -------------------------------------------------------------------
-get-image-urls() {
+function get-image-urls {
   printuse "get-image-urls <url>" 1 $# $1 || return 1
   curl -sL "$1" |& perl -e '{use HTML::TokeParser; 
     $parser = HTML::TokeParser->new(\*STDIN); 
@@ -387,7 +389,7 @@ get-image-urls() {
 # -------------------------------------------------------------------
 # download images from a page to $ZDOWNLOADDIR/image
 # -------------------------------------------------------------------
-get-images() {
+function get-images {
   printuse "get-images <url>" 1 $# $1 || return 1
   local image_root="$ZDOWNLOADDIR/image"
   mkdirp "$image_root"
@@ -399,7 +401,7 @@ get-images() {
 # -------------------------------------------------------------------
 # get url for an npm package
 # -------------------------------------------------------------------
-npm-url() {
+function npm-url {
   printuse "npm-url <package>" 1 $# $1 || return 1
   printf -- "https://www.npmjs.com/package/%s" "$1"
 }
@@ -407,7 +409,7 @@ npm-url() {
 # -------------------------------------------------------------------
 # grep an npm package page
 # -------------------------------------------------------------------
-npm-grep() {
+function npm-grep {
   printuse "npm-grep <filter>" 1 $# $1 || return 1
   local url="$(npm-url "$1")"
   [[ -n "$2" ]] && curls $url | grep "$2"
@@ -417,7 +419,7 @@ npm-grep() {
 # -------------------------------------------------------------------
 # check if npm package exists, and optionally reserve if it doesn't
 # -------------------------------------------------------------------
-npm-exists() {
+function npm-exists {
   printuse "npm-exists <package>" 1 $# $1 || return 1
   local package="$1"
   local package_root="$USR_SRC_ROOT/$GIT_USERNAME/$package"
@@ -481,7 +483,7 @@ function git-remote-add {
 # -------------------------------------------------------------------
 # pull latest upstream code for a git fork
 # -------------------------------------------------------------------
-update-fork() {
+function update-fork {
   printuse "update-fork [repo_base[/repo_name]]" 0 $# $1 || return 1
   [[ -d "$PWD/.git" ]] || (printerr "directory is not a git repo...\n" && return 2)
   if [[ -n "$1" ]]; then
@@ -495,7 +497,7 @@ update-fork() {
 # -------------------------------------------------------------------
 # pull latest upstream code for a git fork and rebase on top
 # -------------------------------------------------------------------
-update-fork-rebase() {
+function update-fork-rebase {
   printuse "update-fork-rebase [repo_base[/repo_name]]" 0 $# $1 || return 1
   update-fork "$@"
   git rebase upstream/master
@@ -504,26 +506,26 @@ update-fork-rebase() {
 # -------------------------------------------------------------------
 # pull latest upstream code for a git fork and overwrite
 # -------------------------------------------------------------------
-update-fork-reset() {
+function update-fork-reset {
   printuse "update-fork-reset [repo_base[/repo_name]]" 0 $# $1 || return 1
   update-fork "$@"
   git reset --hard upstream/master
 }
 
-exec-ps() {
+function exec-ps {
   printuse "exec-ps <powershell_args>" 1 $# $1 || return 1
   printout "executing [powershell %s]...\n" "$*"
   echo $* | PowerShell -NoLogo -ExecutionPolicy unrestricted -NoProfile -Command -
 }
 
-winpath() {
+function winpath {
   cygpath -w $1 | sed 's/\\/\\\\/g'
 }
 
 # -------------------------------------------------------------------
 # run an iso from disk
 # -------------------------------------------------------------------
-exec-iso() {
+function exec-iso {
   printuse "runiso <iso_path>" 1 $# $1 || return 1
   local iso_path="$1"
   if [[ ! -f "$iso_path" ]]; then
@@ -555,7 +557,7 @@ function contains {
 # -------------------------------------------------------------------
 # download / install the latest visual studio and configure node msvs
 # -------------------------------------------------------------------
-update-vs() {
+function update-vs {
   local network_iso_path="/s/microsoft/vs/vs2015.iso"
   local local_iso_path="$ZDOWNLOADDIR/vs2015.iso"
   local local_install_root="$PF86/vs/"
@@ -600,6 +602,13 @@ function update-npm {
   rezsh
   npm install -g rimraf
   npm install -g mkdirp
+}
+
+# -------------------------------------------------------------------
+# pushes the latest npm code to github
+# -------------------------------------------------------------------
+function save-npm {
+  save-git "$NPM_SRC_ROOT"
 }
 
 # -------------------------------------------------------------------
@@ -839,15 +848,19 @@ function backup-merge-use-our-files {
 # git add, commit and push to github
 # -------------------------------------------------------------------
 function save-git {
-  printuse "save-git repo_root" 1 $# $1 || return 1
-  local repo_root="$1"
+  printuse "save-git [repo_root] [commit_msg]" 0 $# $1 || return 1
+  local repo_root="${1-"$PWD"}"
   local repo_name="${repo_root##*/}"
+  local commit_msg="${2-"updating $repo_name"}"
+
   if [[ ! -d "$repo_root/.git" ]]; then
     printerr "%s does not exist or is not a git repository...\n" "$repo_root"
     return 2
   fi
   pushd "$repo_root" 2>/dev/null
-    git add -A 2>/dev/null && git commit -am "${2-"updating $repo_name"}" 2>/dev/null && git push
+    git add -A 2>/dev/null
+    git commit -am "$commit_msg" 2>/dev/null
+    git push
   popd 2>/dev/null
 }
 
@@ -1010,7 +1023,7 @@ function install-tixinc {
 # -------------------------------------------------------------------
 # update all dotfiles to latest version from github
 # -------------------------------------------------------------------
-update-dotfiles() {
+function update-dotfiles {
   update-uzshenv
   update-zdotdir
   update-vimrc
@@ -1022,7 +1035,7 @@ update-dotfiles() {
 # -------------------------------------------------------------------
 # save local dotfiles to github
 # -------------------------------------------------------------------
-save-dotfiles() {
+function save-dotfiles {
   save-uzshenv
   save-zshenv
   save-zshrc
@@ -1034,7 +1047,7 @@ save-dotfiles() {
 # -------------------------------------------------------------------
 # downloads the latest packages and upgrades
 # -------------------------------------------------------------------
-update-pacman() {
+function update-pacman {
   pacman -Sy
   pacman -Su
 }
@@ -1042,16 +1055,18 @@ update-pacman() {
 # -------------------------------------------------------------------
 # update everything
 # -------------------------------------------------------------------
-update-system() {
+function update-system {
   update-dotfiles
-  [[ $IS_WIN -eq 1 ]] && update-conemu
+  rezsh
   update-npm
+  [[ $IS_WIN -eq 1 ]] && update-conemu
 }
 
 # -------------------------------------------------------------------
 # save everything
 # -------------------------------------------------------------------
-save-system() {
+function save-system {
   [[ $IS_WIN -eq 1 ]] && save-conemu
   save-dotfiles
+  save-npm
 }
