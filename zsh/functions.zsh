@@ -522,6 +522,20 @@ exec-iso() {
 }
 
 # -------------------------------------------------------------------
+# test if string 1 contains string 2
+# -------------------------------------------------------------------
+function contains {
+  printuse "contains <string> <substring> || ..." 2 $# $1 || return 1
+  local string="$1"
+  local substring="$2"
+  if [[ "${string#*$substring}" != "$string" ]]; then
+    return 0
+  else
+    return 1
+  fi
+}
+
+# -------------------------------------------------------------------
 # download / install the latest visual studio and configure node msvs
 # -------------------------------------------------------------------
 update-vs() {
@@ -577,7 +591,7 @@ function update-npm {
 function update-prezto {
   printuse "update-prezto" 0 $# $1 || return 1
   pushd "$ZPREZTODIR" 2>/dev/null
-    update-fork-rebase "sorin-ionescu/prezto"
+    update-fork-rebase sorin-ionescu/prezto
     git pull 2>/dev/null && git submodule update --init --recursive 2>/dev/null
   popd 2>/dev/null
 }
@@ -585,7 +599,7 @@ function update-prezto {
 # -------------------------------------------------------------------
 # describe a function
 # -------------------------------------------------------------------
-descfn() {
+function descfn {
   cat "$ZSCRIPTDIR/functions.zsh" | grep -B 3 -C 0 $1
 }
 
@@ -707,46 +721,54 @@ function update-git {
 # shorthand to update-git a repo to standard location
 # -------------------------------------------------------------------
 function update {
-  printuse "update <repo_id>" 1 $# $1 || return 1
+  printuse "update [repo_base/]repo_name" 1 $# $1 || return 1
   local repo_id="$1"
-  local repo_path="$USR_SRC_ROOT/$repo_id"
-  update-git "$repo_id" "$repo_path"
-  cd "$repo_path"
+  local repo_name="${repo_id#*/}"
+  local repo_base="${repo_id%/*}"
+  [[ -z "$repo_base" ]] && local repo_base="$GIT_USERNAME"
+  local repo_root="$USR_SRC_ROOT/$repo_base/$repo_name"
+  update-git "$repo_id" "$repo_root"
+  cd "$repo_root"
 }
 
 # -------------------------------------------------------------------
 # when git merge happens and you want theirs for a file
 # -------------------------------------------------------------------
-backup-merge-use-their-file() {
-  if [[ -e "$1" ]]; then
-    backup "$1"
-    git checkout --theirs -- "$1"
-    git add "$1"
+function backup-merge-use-their-file {
+  printuse "backup-merge-use-their-file <file_path>" 1 $# $1 || return 1
+  local file_path="$1"
+  if [[ -e "$file_path" ]]; then
+    backup "$file_path"
+    git checkout --theirs -- "$file_path"
+    git add "$file_path"
   fi
 }
 
 # -------------------------------------------------------------------
 # when git merge happens and you want ours for a file
 # -------------------------------------------------------------------
-backup-merge-use-our-file() {
-  if [[ -e "$1" ]]; then
-    backup "$1"
-    git checkout --ours -- "$1"
-    git add "$1"
+function backup-merge-use-our-file {
+  printuse "backup-merge-use-our-file <file_path>" 1 $# $1 || return 1
+  local file_path="$1"
+  if [[ -e "$file_path" ]]; then
+    backup "$file_path"
+    git checkout --ours -- "$file_path"
+    git add "$file_path"
   fi
 }
 
 # -------------------------------------------------------------------
 # get basic status of files in git repo filtered by a grep
 # -------------------------------------------------------------------
-git-status-filter() {
+function git-status-filter {
+  printuse "git-status-filter <filter>" 1 $# $1 || return 1
   git status --porcelain | grep $1 | sed 's/[A-Z]* //g'
 }
 
 # -------------------------------------------------------------------
 # takes backup and overwrites all merge conflicts with their files
 # -------------------------------------------------------------------
-backup-merge-use-their-files() {
+function backup-merge-use-their-files {
   git-status-filter AA | while read file
   do
     backup-merge-use-their-file "$file"
@@ -756,7 +778,7 @@ backup-merge-use-their-files() {
 # -------------------------------------------------------------------
 # takes backup and overwrites all merge conflicts with our files
 # -------------------------------------------------------------------
-backup-merge-use-our-files() {
+function backup-merge-use-our-files {
   git-status-filter AA | while read file
   do
     backup-merge-use-our-file "$file"
@@ -766,7 +788,7 @@ backup-merge-use-our-files() {
 # -------------------------------------------------------------------
 # git add, commit and push to github
 # -------------------------------------------------------------------
-save-git() {
+function save-git {
   printuse "save-git repo_root" 1 $# $1 || return 1
   local repo_root="$1"
   local repo_name="${repo_root##*/}"
@@ -782,7 +804,7 @@ save-git() {
 # -------------------------------------------------------------------
 # save gist to github
 # -------------------------------------------------------------------
-save-gist() {
+function save-gist {
   printuse "save-gist <gist_id> <file_path>" 2 $# $1 || return 1
   local gist_id="$1"
   local gist_root="$USR_SRC_GIST_ROOT/$gist_id"
@@ -803,42 +825,42 @@ save-gist() {
 # -------------------------------------------------------------------
 # save local $ZDOTDIR/.zshrc to github
 # -------------------------------------------------------------------
-save-zshrc() {
+function save-zshrc {
   save-gist "$GIST_ZSHRC_ID" "$ZSHRC_PATH"
 }
 
 # -------------------------------------------------------------------
 # save local ~/.zshenv to github
 # -------------------------------------------------------------------
-save-uzshenv() {
+function save-uzshenv {
   save-gist "$GIST_USR_ZSHENV_ID" "$USR_ZSHENV_PATH"
 }
 
 # -------------------------------------------------------------------
 # save local $ZDOTDIR/.zshenv to github
 # -------------------------------------------------------------------
-save-zshenv() {
+function save-zshenv {
   save-gist "$GIST_ZSHENV_ID" "$ZSHENV_PATH"
 }
 
 # -------------------------------------------------------------------
 # save local ~/.vimrc to github
 # -------------------------------------------------------------------
-save-vimrc() {
+function save-vimrc {
   save-gist "$GIST_VIMRC_ID" "$VIMRC_PATH"
 }
 
 # -------------------------------------------------------------------
 # save $ZPREZTODIR to github
 # -------------------------------------------------------------------
-save-prezto() {
+function save-prezto {
   save-git "$ZPREZTODIR"
 }
 
 # -------------------------------------------------------------------
 # save $ZDOTDIR to github
 # -------------------------------------------------------------------
-save-zdotdir() {
+function save-zdotdir {
   save-git "$ZDOTDIR"
 }
 
@@ -846,44 +868,44 @@ save-zdotdir() {
 # -------------------------------------------------------------------
 # update $ZDOTDIR/.zshrc from github
 # -------------------------------------------------------------------
-update-zshrc() {
+function update-zshrc {
   update-gist "$GIST_ZSHRC_ID" "$ZSHRC_PATH"
 }
 
 # -------------------------------------------------------------------
 # update ~/.zshenv from github
 # -------------------------------------------------------------------
-update-uzshenv() {
+function update-uzshenv {
   update-gist "$GIST_USR_ZSHENV_ID" "$USR_ZSHENV_PATH"
 }
 
 # -------------------------------------------------------------------
 # update $ZDOTDIR/.zshenv from github
 # -------------------------------------------------------------------
-update-zshenv() {
+function update-zshenv {
   update-gist "$GIST_ZSHENV_ID" "$ZSHENV_PATH"
 }
 
 # -------------------------------------------------------------------
 # update ~/.vimrc from github
 # -------------------------------------------------------------------
-update-vimrc() {
+function update-vimrc {
   update-gist "$GIST_VIMRC_ID" "$VIMRC_PATH"
 }
 
 # -------------------------------------------------------------------
 # update $ZDOTDIR from github
 # -------------------------------------------------------------------
-update-zdotdir() {
+function update-zdotdir {
   update-git "$GIT_ZDOTDIR_ID" "$ZDOTDIR"
 }
 
 
-update-conemu() {
+function update-conemu {
   cprf "$ZETCDIR/ConEmu.xml" "$HOME/local/conemu/ConEmu.xml"
 }
 
-save-conemu() {
+function save-conemu {
   cprf "$HOME/local/conemu/ConEmu.xml" "$ZETCDIR/ConEmu.xml"
 }
 
