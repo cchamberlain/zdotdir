@@ -34,6 +34,7 @@ if [[ $IS_MAC -eq 1 ]]; then
   alias refreshbrew='brew outdated | while read cask; do brew upgrade $cask; done'
   # rebuild Launch Services to remove duplicate entries on Open With menu
   alias rebuildopenwith='/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.fram ework/Support/lsregister -kill -r -domain local -domain system -domain user'
+  alias -g clip='pbcopy'
 fi
 if [[ $IS_WIN -eq 1 ]]; then
   # unalias-safe ls

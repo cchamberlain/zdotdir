@@ -16,16 +16,12 @@ function fn-exists {
 
 function storm-merge {
   printuse "storm-merge <path1> <path2> <path3> <output_path>" 4 $# $1 || return 1
-  if [[ $IS_MAC -eq 1 ]]; then
-    wstorm merge "$@"
-  fi
+  "$EDITOR_WEBSTORM" merge "$@"
 }
 
 function storm-diff {
   printuse "storm-diff <path1> <path2>" 2 $# $1 || return 1
-  if [[ $IS_MAC -eq 1 ]]; then
-    wstorm diff "$@"
-  fi
+  "$EDITOR_WEBSTORM" diff "$@"
 }
 
 
@@ -39,8 +35,6 @@ alias nclone='ns clone'
 alias ns3='ns s3'
 alias note='ns note'
 alias agi='ag -i'
-alias agf='ag -ig'
-
 
 # -------------------------------------------------------------------
 # replace something recursively
@@ -91,10 +85,10 @@ function agz {
 function agp {
   printuse "agp <pattern>" 1 $# $1 || return 1
   if [[ $IS_WIN -eq 1 ]]; then
-    agf "$@" "$PF86"
-    agf "$@" "$PF"
+    agi --silent -g "$1" "$PF86"
+    agi --silent -g "$1" "$PF"
   elif [[ $IS_MAC -eq 1 ]]; then
-    agf "$@" /Applications
+    agi --silent -g "$1" /Applications
   fi
 }
 
