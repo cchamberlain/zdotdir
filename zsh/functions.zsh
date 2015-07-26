@@ -342,7 +342,8 @@ publish-npm() {
   else
     local repo_root="$PWD"
   fi
-  local commit_message="${2-:"publishing $(basename $repo_root)"}"
+  local repo_name="${repo_root##*/}"
+  local commit_message="${2-:"publishing $repo_name"}"
 
   [[ -d "$repo_root/.git" ]] || printerr "%s is not a git repository...\n" "$repo_root" && return 2
   pushd "$repo_root" 2>/dev/null
@@ -451,12 +452,12 @@ function git-remote-exists {
 # safe add remote to a git repo (repo optional if in repo)
 # -------------------------------------------------------------------
 function git-remote-add {
-  printuse "git-remote-add <remote> basename[/repo]" 2 $# $1 || return 1
+  printuse "git-remote-add <remote> repo_base[/repo_name]" 2 $# $1 || return 1
   local remote="$1"
-  local basename="${2%/*}"
-  local repo="${2#*/}"
-  [[ -z "$repo" ]] && local repo="${PWD##*/}"
-  local remote_url="https://github.com/$basename/$repo"
+  local repo_base="${2%/*}"
+  local repo_name="${2#*/}"
+  [[ -z "$repo_name" ]] && local repo_name="${PWD##*/}"
+  local remote_url="https://github.com/$repo_base/$repo_name"
   git-remote-exists upstream || git remote add upstream "$remote_url"
 }
 
@@ -464,7 +465,7 @@ function git-remote-add {
 # pull latest upstream code for a git fork
 # -------------------------------------------------------------------
 update-fork() {
-  printuse "update-fork [organization|username[/repo]]" 0 $# $1 || return 1
+  printuse "update-fork [repo_base[/repo_name]]" 0 $# $1 || return 1
   [[ -d "$PWD/.git" ]] || (printerr "directory is not a git repo...\n" && return 2)
   if [[ -n "$1" ]]; then
     git-remote-add upstream "$1"
@@ -478,7 +479,7 @@ update-fork() {
 # pull latest upstream code for a git fork and rebase on top
 # -------------------------------------------------------------------
 update-fork-rebase() {
-  printuse "update-fork-rebase [organization|username[/repo]]" 0 $# $1 || return 1
+  printuse "update-fork-rebase [repo_base[/repo_name]]" 0 $# $1 || return 1
   update-fork "$@"
   git rebase upstream/master
 }
@@ -487,7 +488,7 @@ update-fork-rebase() {
 # pull latest upstream code for a git fork and overwrite
 # -------------------------------------------------------------------
 update-fork-reset() {
-  printuse "update-fork-reset [organization|username[/repo]]" 0 $# $1 || return 1
+  printuse "update-fork-reset [repo_base[/repo_name]]" 0 $# $1 || return 1
   update-fork "$@"
   git reset --hard upstream/master
 }
@@ -687,8 +688,8 @@ update-git() {
   local repo_id="$1"
   local repo_path="$2"
   local root_path="${repo_path%/*}"
-  local basename="$(basename root_path)"
   local repo_name="${repo_path##*/}"
+  local repo_base="${root_path##*/}"
   local git_url="$GIT_USER_URL/$repo_id"
 
   if [[ -d "$repo_path" ]]; then
@@ -704,6 +705,15 @@ update-git() {
       git clone "$git_url" "$repo_name" 2>/dev/null
     popd 2>/dev/null
   fi
+}
+
+update() {
+  printuse "update <repo_id>" 1 $# $1 || return 1
+  local repo_id="$1"
+  local repo_path="$USR_SRC_ROOT/$repo_id"
+  git-update "$repo_id" "$repo_path"
+
+
 }
 
 # -------------------------------------------------------------------
@@ -761,12 +771,13 @@ backup-merge-use-our-files() {
 save-git() {
   printuse "save-git repo_root" 1 $# $1 || return 1
   local repo_root="$1"
+  local repo_name="${repo_root##*/}"
   if [[ ! -d "$repo_root/.git" ]]; then
     printerr "%s does not exist or is not a git repository...\n" "$repo_root"
     return 2
   fi
   pushd "$repo_root" 2>/dev/null
-    git add -A 2>/dev/null && git commit -am "${2-"updating $(basename $1)"}" 2>/dev/null && git push
+    git add -A 2>/dev/null && git commit -am "${2-"updating $repo_name"}" 2>/dev/null && git push
   popd 2>/dev/null
 }
 
@@ -888,6 +899,10 @@ function update-tixinc {
   update-git tixinc/tix-cli "$tixinc_root/tix-cli"
   update-git tixinc/tixinc-js "$tixinc_root/tixinc-js"
   update-git tixinc/tixinc-net "$tixinc_root/tixinc-net"
+  printout "npm linking tixinc repos...\n"
+  link-tixinc
+  printout "npm installing tixinc repos...\n"
+  install-tixinc
   printout "successfully updated all tixinc repos\n"
 }
 
@@ -903,7 +918,22 @@ function link-tixinc {
     npm link ../config
     npm link ../ext
   popd 2>/dev/null
-  
+}
+
+function install-tixinc {
+  local tixinc_root="$HOME/tixinc"
+  pushd "$tixinc_root/tix-cli" 2>/dev/null
+    npm install
+  popd 2>/dev/null
+  pushd "$tixinc_root/config" 2>/dev/null
+    npm install
+  popd 2>/dev/null
+  pushd "$tixinc_root/ext" 2>/dev/null
+    npm install
+  popd 2>/dev/null
+  pushd "$tixinc_root/tixinc-js" 2>/dev/null
+    npm install
+  popd 2>/dev/null
 }
 
 
