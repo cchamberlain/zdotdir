@@ -718,17 +718,50 @@ function update-git {
 }
 
 # -------------------------------------------------------------------
+# resolve a git repo base from a dirty repo id
+# -------------------------------------------------------------------
+function resolve-repo-base {
+  printuse "resolve-repo-base [repo_base/]repo_name" 1 $# $1 || return 1
+  local repo_base="${1%/*}"
+  [[ "$repo_base" == "$1" ]] && local repo_base="$GIT_USERNAME"
+  printout "%s" "$repo_base"
+}
+
+# -------------------------------------------------------------------
+# resolve a git repo name from a dirty repo id
+# -------------------------------------------------------------------
+function resolve-repo-name {
+  printuse "resolve-repo-name [repo_base/]repo_name" 1 $# $1 || return 1
+  printout "%s" "${1#*/}"
+}
+
+# -------------------------------------------------------------------
+# resolve a git repo id -> (base_name ?? GIT_USERNAME)/repo_name
+# -------------------------------------------------------------------
+function resolve-repo-id {
+  printuse "resolve-repo-id [repo_base/]repo_name" 1 $# $1 || return 1
+  printout "%s/%s" "$(resolve-repo-base $1)" "$(resolve-repo-name $1)"
+}
+
+# -------------------------------------------------------------------
 # shorthand to update-git a repo to standard location
 # -------------------------------------------------------------------
 function update {
   printuse "update [repo_base/]repo_name" 1 $# $1 || return 1
-  local repo_id="$1"
-  local repo_name="${repo_id#*/}"
-  local repo_base="${repo_id%/*}"
-  [[ -z "$repo_base" ]] && local repo_base="$GIT_USERNAME"
-  local repo_root="$USR_SRC_ROOT/$repo_base/$repo_name"
+  local repo_id="$(resolve-repo-id $1)"
+  local repo_root="$USR_SRC_ROOT/$repo_id"
   update-git "$repo_id" "$repo_root"
   cd "$repo_root"
+}
+
+# -------------------------------------------------------------------
+# shorthand to save-git a repo in standard location
+# -------------------------------------------------------------------
+function save {
+  printuse "save [repo_base/]repo_name" 1 $# $1 || return 1
+  local repo_id="$(resolve-repo-id $1)"
+  local repo_root="$USR_SRC_ROOT/$repo_id"
+  save-git "$repo_root"
 }
 
 # -------------------------------------------------------------------
