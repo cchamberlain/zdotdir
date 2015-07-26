@@ -24,6 +24,18 @@ function storm-diff {
   "$EDITOR_WEBSTORM" diff "$@"
 }
 
+function hack {
+  usage "hack [basename/]repo" 1 $# $1 || return 1
+  update $1
+  atom .
+}
+
+function stormhack {
+  usage "wshack [basename/]repo" 1 $# $1 || return 1
+  update $1
+  "$EDITOR_WEBSTORM" "$PWD"
+}
+
 
 # -------------------------------------------------------------------
 # aliases that are tightly bound to stuff in here

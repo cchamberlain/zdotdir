@@ -49,6 +49,7 @@ elif [[ $IS_MAC -eq 1 ]]; then
   export TERM=xterm-256color
   export CHROME_PATH="$(which chrome)"
   export PATH="$USR_BIN_ROOT:$NPM_CONFIG_PREFIX/bin:$PATH:~/bin:/usr/local/bin:/usr/local/sbin:~/bin"
+  export EDITOR_WEBSTORM="wstorm"
 fi
 
 # vi mode lag fix
@@ -59,7 +60,6 @@ export ARCHFLAGS='-arch x86_64'
 
 export LESS='--ignore-case --raw-control-chars'
 export PAGER='less'
-export EDITOR='subl -w'
 
 export PKG_CONFIG_PATH="/usr/lib/pkgconfig"
 
