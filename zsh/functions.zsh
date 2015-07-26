@@ -10,9 +10,24 @@ function rezsh {
   . "$ZSHRC_PATH"
 }
 
-fn_exists() {
+function fn-exists {
   type $1 | grep -q 'shell function'
 }
+
+function storm-merge {
+  printuse "storm-merge <path1> <path2> <path3> <output_path>" 4 $# $1 || return 1
+  if [[ $IS_MAC -eq 1 ]]; then
+    wstorm merge "$@"
+  fi
+}
+
+function storm-diff {
+  printuse "storm-diff <path1> <path2>" 2 $# $1 || return 1
+  if [[ $IS_MAC -eq 1 ]]; then
+    wstorm diff "$@"
+  fi
+}
+
 
 # -------------------------------------------------------------------
 # aliases that are tightly bound to stuff in here
@@ -70,10 +85,17 @@ function agz {
   agi "$@" "$ZDOTDIR"
 }
 
+# -------------------------------------------------------------------
+# search in program directories
+# -------------------------------------------------------------------
 function agp {
   printuse "agp <pattern>" 1 $# $1 || return 1
-  agf "$@" "$PF86"
-  agf "$@" "$PF"
+  if [[ $IS_WIN -eq 1 ]]; then
+    agf "$@" "$PF86"
+    agf "$@" "$PF"
+  elif [[ $IS_MAC -eq 1 ]]; then
+    agf "$@" /Applications
+  fi
 }
 
 # ------------------------------------------------------------------

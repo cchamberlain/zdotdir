@@ -95,8 +95,8 @@ curls() {
 # editors
 # -------------------------------------------------------------------
 alias edit="$EDITOR"
-alias hack="$EDITOR_ATOM"
-alias webstorm="$EDITOR_WEBSTORM"
+# alias hack="$EDITOR_ATOM"
+# alias webstorm="$EDITOR_WEBSTORM"
 
 alias zshrc='vim "$ZSHRC_PATH"'
 alias zshenv='vim "$ZSHENV_PATH"'
