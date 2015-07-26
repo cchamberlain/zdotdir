@@ -549,21 +549,17 @@ update-vs() {
 # -------------------------------------------------------------------
 # pull latest upstream msys2 packages and reset
 # -------------------------------------------------------------------
-update-msys2-packages() {
-  if [[ ! -d "$MSYS2_PACKAGES_ROOT" ]]; then
-    clone "$GIT_MSYS2_PACKAGES_ID"
-  fi
+function update-msys2-packages {
+  update "$GIT_MSYS2_PACKAGES_ID"
   pushd "$MSYS2_PACKAGES_ROOT" 2>/dev/null
-    git remote add upstream "https://github.com/Alexpux/MSYS2-packages" &>/dev/null
-    git fetch --all
-    git reset --hard upstream/master
+    update-fork-reset alexpux/msys2-packages
   popd 2>/dev/null
 }
 
 # -------------------------------------------------------------------
 # pull latest npm and reset
 # -------------------------------------------------------------------
-update-npm() {
+function update-npm {
   printuse "update-npm" 0 $# $1 || return 1
   pushd "$NPM_SRC_ROOT" 2>/dev/null
     update-fork-reset npm/npm
@@ -578,7 +574,7 @@ update-npm() {
 # -------------------------------------------------------------------
 # pull latest prezto and rebase
 # -------------------------------------------------------------------
-update-prezto() {
+function update-prezto {
   printuse "update-prezto" 0 $# $1 || return 1
   pushd "$ZPREZTODIR" 2>/dev/null
     update-fork-rebase "sorin-ionescu/prezto"
@@ -596,25 +592,25 @@ descfn() {
 # -------------------------------------------------------------------
 # find all git repositories relative to current directory recursively
 # -------------------------------------------------------------------
-ls-git-recursive() {
+function ls-git-recursive {
   ls -R --directory --color=never */.git | sed 's/\/.git//'
 }
 
 # -------------------------------------------------------------------
 # git pull on all directories recursively
 # -------------------------------------------------------------------
-pull-recursive() {
+function pull-recursive {
   ls-git-recursive | xargs -P10 -I{} git -C {} pull || printf -- "could not update %s" {}
 }
 
 # -------------------------------------------------------------------
 # git pull on all directories recursively
 # -------------------------------------------------------------------
-status-recursive() {
+function status-recursive {
   ls-git-recursive | xargs -P10 -I{} git -C {} status
 }
 
-get-random() {
+function get-random {
   printuse "get-random count" 1 $# $1 || return 1
   rand="$(head -c 500 /dev/urandom | tr -dc 'a-zA-Z0-9~!@#$%^&*_-' | fold -w "$1" | head -n 1)"
   printout "%s" "$rand"
@@ -623,7 +619,7 @@ get-random() {
 # -------------------------------------------------------------------
 # take a backup of path and delete it
 # -------------------------------------------------------------------
-backup() {
+function backup {
   printuse "backup <path>" 1 $# $1 || return 1
   local src_path="$1"
   [[ ! -e "$1" ]] && printerr "%s does not exist...\n" "$src_path" && return 2
@@ -637,7 +633,7 @@ backup() {
 # -------------------------------------------------------------------
 # force copy a directory or path and backup dest if it exists
 # -------------------------------------------------------------------
-cprf() {
+function cprf {
   printuse "cprf <src_path> <dest_path>" 2 $# $1 || return 1
   local src_path="$1"
   local dest_path="$2"
@@ -651,7 +647,7 @@ cprf() {
 # -------------------------------------------------------------------
 # update a gist in user gist directory and file system from github
 # -------------------------------------------------------------------
-update-gist() {
+function update-gist {
   printuse "update-gist <gist_id> <file_path> [skip_sync]" 2 $# $1 || return 1
   local gist_id="$1"
   local file_path="$2"
@@ -683,7 +679,7 @@ update-gist() {
 # -------------------------------------------------------------------
 # clone or pull a git repo from github to your machine
 # -------------------------------------------------------------------
-update-git() {
+function update-git {
   printuse "update-git <repo_id> <repo_path>" 2 $# $1 || return 1
   local repo_id="$1"
   local repo_path="$2"
@@ -707,13 +703,15 @@ update-git() {
   fi
 }
 
-update() {
+# -------------------------------------------------------------------
+# shorthand to update-git a repo to standard location
+# -------------------------------------------------------------------
+function update {
   printuse "update <repo_id>" 1 $# $1 || return 1
   local repo_id="$1"
   local repo_path="$USR_SRC_ROOT/$repo_id"
-  git-update "$repo_id" "$repo_path"
-
-
+  update-git "$repo_id" "$repo_path"
+  cd "$repo_path"
 }
 
 # -------------------------------------------------------------------
