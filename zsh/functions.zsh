@@ -24,6 +24,7 @@ alias nclone='ns clone'
 alias ns3='ns s3'
 alias note='ns note'
 alias agi='ag -i'
+alias agf='ag -ig'
 
 
 # -------------------------------------------------------------------
@@ -71,8 +72,8 @@ function agz {
 
 function agp {
   printuse "agp <pattern>" 1 $# $1 || return 1
-  agi "$@" "$PF86"
-  agi "$@" "$PF"
+  agf "$@" "$PF86"
+  agf "$@" "$PF"
 }
 
 # ------------------------------------------------------------------
