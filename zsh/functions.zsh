@@ -25,13 +25,13 @@ function storm-diff {
 }
 
 function hack {
-  usage "hack [basename/]repo" 1 $# $1 || return 1
+  printuse "hack [basename/]repo" 1 $# $1 || return 1
   update $1
   atom .
 }
 
 function stormhack {
-  usage "wshack [basename/]repo" 1 $# $1 || return 1
+  printuse "wshack [basename/]repo" 1 $# $1 || return 1
   update $1
   "$EDITOR_WEBSTORM" "$PWD"
 }
