@@ -680,24 +680,24 @@ function update-gist {
 # clone or pull a git repo from github to your machine
 # -------------------------------------------------------------------
 function update-git {
-  printuse "update-git <repo_id> <repo_path>" 2 $# $1 || return 1
+  printuse "update-git <repo_id> <repo_root>" 2 $# $1 || return 1
   local repo_id="$1"
-  local repo_path="$2"
-  local root_path="${repo_path%/*}"
-  local repo_name="${repo_path##*/}"
-  local repo_base="${root_path##*/}"
-  local git_url="$GIT_USER_URL/$repo_id"
+  local repo_root="$2"
+  local base_root="${repo_root%/*}"
+  local repo_name="${repo_root##*/}"
+  local repo_base="${base_root##*/}"
+  local git_url="$GIT_BASE_URL/$repo_id"
 
-  if [[ -d "$repo_path" ]]; then
-    pushd "$repo_path" 2>/dev/null
-      printout "updating %s source...\n" "$repo_path"
+  if [[ -d "$repo_root" ]]; then
+    pushd "$repo_root" 2>/dev/null
+      printout "updating %s source...\n" "$repo_root"
       git pull 2>/dev/null
       git pull --tags 2>/dev/null
     popd 2>/dev/null
   else
-    mkdirp "$root_path"
-    pushd "$root_path" 2>/dev/null
-      printout "cloning %s to %s/%s...\n" "$git_url" "$root_path" "$repo_name"
+    mkdirp "$base_root"
+    pushd "$base_root" 2>/dev/null
+      printout "cloning %s to %s...\n" "$git_url" "$repo_root"
       git clone "$git_url" "$repo_name" 2>/dev/null
     popd 2>/dev/null
   fi
