@@ -24,14 +24,22 @@ function storm-diff {
   "$EDITOR_WEBSTORM" diff "$@"
 }
 
+
+
 function hack {
-  printuse "hack [basename/]repo" 1 $# $1 || return 1
+  printuse "hack [[basename/]repo]" 0 $# $1 || return 1
   update $1
   atom .
 }
 
+function vimhack {
+  printuse "hack [[basename/]repo]" 0 $# $1 || return 1
+  update $1
+  vim .
+}
+
 function stormhack {
-  printuse "wshack [basename/]repo" 1 $# $1 || return 1
+  printuse "wshack [[basename/]repo]" 0 $# $1 || return 1
   update $1
   "$EDITOR_WEBSTORM" "$PWD"
 }
@@ -141,7 +149,7 @@ function mergedir {
   printuse "mergedir <dir_one> [<dir_two>] <dir_dest>" 2 $# $1 || return 1
   local dir_one="$1"
   local dir_two="$2"
-  local dir_dest="${3-:}"
+  local dir_dest="${3-:./}"
   mkdirp "$dir_dest"
   mv $dir_one/* "$dir_dest" && [ "$dir_one" -ef "$dir_dest" ] || rmdir "$dir_one"
   mv $dir_two/* "$dir_dest" && [ "$dir_two" -ef "$dir_dest" ] || rmdir "$dir_two"
@@ -777,15 +785,18 @@ function resolve-repo-name {
 # resolve a git repo id -> (base_name ?? GIT_USERNAME)/repo_name
 # -------------------------------------------------------------------
 function resolve-repo-id {
-  printuse "resolve-repo-id [repo_base/]repo_name" 1 $# $1 || return 1
-  printout "%s/%s" "$(resolve-repo-base $1)" "$(resolve-repo-name $1)"
+  printuse "resolve-repo-id [repo_base/]repo_name" 0 $# $1 || return 1
+  local raw_repo_id="${1-${PWD##*/*/}}"
+  local repo_base="$(resolve-repo-base $raw_repo_id)"
+  local repo_name="$(resolve-repo-name $raw_repo_id)"
+  printout "%s/%s" "$repo_base" "$repo_name"
 }
 
 # -------------------------------------------------------------------
-# shorthand to update-git a repo to standard location
+# shorthand to update-git a repo to standard location or CWD
 # -------------------------------------------------------------------
 function update {
-  printuse "update [repo_base/]repo_name" 1 $# $1 || return 1
+  printuse "update [[repo_base/]repo_name]" 0 $# $1 || return 1
   local repo_id="$(resolve-repo-id $1)"
   local repo_root="$USR_SRC_ROOT/$repo_id"
   update-git "$repo_id" "$repo_root"
@@ -793,10 +804,10 @@ function update {
 }
 
 # -------------------------------------------------------------------
-# shorthand to save-git a repo in standard location
+# shorthand to save-git a repo in standard location or CWD
 # -------------------------------------------------------------------
 function save {
-  printuse "save [repo_base/]repo_name" 1 $# $1 || return 1
+  printuse "save [[repo_base/]repo_name]" 0 $# $1 || return 1
   local repo_id="$(resolve-repo-id $1)"
   local repo_root="$USR_SRC_ROOT/$repo_id"
   save-git "$repo_root"

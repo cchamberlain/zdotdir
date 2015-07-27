@@ -16,9 +16,10 @@ if [[ $IS_MAC -eq 1 ]]; then
   unalias-safe gls
   . /usr/local/Cellar/coreutils/8.24/bin
   alias ls='gls --color=auto'
-  alias lsd="ls -pgo --group-directories-first"
-  alias sed="gsed"
-  alias tr="gtr"
+  alias lsd='ls -pgo --group-directories-first'
+  alias sed='gsed'
+  alias tr='gtr'
+  alias rm='grm'
   alias ql='qlmanage -p 2>/dev/null' # OS X Quick Look
   alias oo='open .' # open current directory in OS X Finder
   alias 'today=calendar -A 0 -f /usr/share/calendar/calendar.mark | sort'
@@ -38,9 +39,9 @@ if [[ $IS_MAC -eq 1 ]]; then
 fi
 if [[ $IS_WIN -eq 1 ]]; then
   # unalias-safe ls
-  export LS_IGNORE="-I 'NTUSER*' -I 'ntuser*'"
-  alias ls="ls --color $LS_IGNORE"
-  alias lsd="ls -pgo --group-directories-first $LS_IGNORE"
+  export LS_IGNORE='-I "NTUSER*" -I "ntuser*"'
+  alias ls='ls --color $LS_IGNORE'
+  alias lsd='ls -pgo --group-directories-first $LS_IGNORE'
 fi
 
 # -------------------------------------------------------------------
