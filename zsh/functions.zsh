@@ -10,6 +10,18 @@ function rezsh {
   . "$ZSHRC_PATH"
 }
 
+export ZCONTEXT="$GIT_USERNAME"
+function ctx {
+  printuse "ctx [context]" 0 $# $1 || return 1
+  [[ -n "$1" ]] && export ZCONTEXT="$1"
+  printout "%s" "$ZCONTEXT"
+}
+
+function noctx {
+  printuse "noctx" 0 $# $1 || return 1
+  unset ZCONTEXT
+}
+
 function fn-exists {
   type $1 | grep -q 'shell function'
 }
@@ -23,8 +35,6 @@ function storm-diff {
   printuse "storm-diff <path1> <path2>" 2 $# $1 || return 1
   "$EDITOR_WEBSTORM" diff "$@"
 }
-
-
 
 function hack {
   printuse "hack [[basename/]repo]" 0 $# $1 || return 1
@@ -44,17 +54,6 @@ function stormhack {
   "$EDITOR_WEBSTORM" "$PWD"
 }
 
-
-# -------------------------------------------------------------------
-# aliases that are tightly bound to stuff in here
-# -------------------------------------------------------------------
-alias printout='printf --'
-alias printerr='>&2 printf --'
-alias printsym='cat "$ZASSETSDIR/symbols/cool_symbols"'
-alias nclone='ns clone'
-alias ns3='ns s3'
-alias note='ns note'
-alias agi='ag -i'
 
 # -------------------------------------------------------------------
 # replace something recursively
@@ -769,7 +768,7 @@ function update-git {
 function resolve-repo-base {
   printuse "resolve-repo-base [repo_base/]repo_name" 1 $# $1 || return 1
   local repo_base="${1%/*}"
-  [[ "$repo_base" == "$1" ]] && local repo_base="$GIT_USERNAME"
+  [[ "$repo_base" == "$1" ]] && local repo_base="$ZCONTEXT"
   printout "%s" "$repo_base"
 }
 

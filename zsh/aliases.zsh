@@ -206,3 +206,16 @@ alias nomz='ps aux | less'
 alias nomnom='killall'
 alias cya='reboot'
 alias kthxbai='halt'
+
+
+# -------------------------------------------------------------------
+# other aliases for functions
+# -------------------------------------------------------------------
+alias printout='printf --'
+alias printerr='>&2 printf --'
+alias printsym='cat "$ZASSETSDIR/symbols/cool_symbols"'
+alias nclone='ns clone'
+alias ns3='ns s3'
+alias note='ns note'
+alias agi='ag -i'
+
