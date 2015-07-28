@@ -10,6 +10,25 @@ function rezsh {
   . "$ZSHRC_PATH"
 }
 
+# ------------------------------------------------------------------
+# print usage with checking to see if min args were passed
+# ------------------------------------------------------------------
+function printuse {
+  local usage=$1
+  local min_args=$2
+  local arg_count=$3
+  local first_arg=$4
+  if [[ $# -lt 3 ]]; then
+    printerr "%busage: %bprintuse \"<usage>\" <min_args> <arg_count> <first_arg> %b|| return 1%b\n\tminimum args: 3\n\tprovided: %b%s%b\n" "$fg[blue]" "$fg[green]" "$reset_color" "$fg[magenta]" "$fg[red]" "$#" "$reset_color"
+    return 2
+  elif [[ $arg_count -lt $min_args ]] || [[ "$first_arg" == "-h" ]] || [[ "$first_arg" == "--help" ]]; then
+    printerr "%busage: %b%s%b\n\tminimum args: %s\n\tprovided: %b%s%b\n" "$fg[blue]" "$fg[green]" "$usage" "$fg[magenta]" "$min_args" "$fg[red]" "$arg_count" "$reset_color"
+    return 1
+  else
+    return 0
+  fi
+}
+
 function ctx {
   printuse "ctx [context]" 0 $# $1 || return 1
   [[ -n "$1" ]] && export ZCONTEXT="$1"
@@ -124,24 +143,6 @@ function checks {
   env | grep '^Z'
 }
 
-# ------------------------------------------------------------------
-# print usage with checking to see if min args were passed
-# ------------------------------------------------------------------
-function printuse {
-  local usage=$1
-  local min_args=$2
-  local arg_count=$3
-  local first_arg=$4
-  if [[ $# -lt 3 ]]; then
-    printerr "%busage: %bprintuse \"<usage>\" <min_args> <arg_count> <first_arg> %b|| return 1%b\n\tminimum args: 3\n\tprovided: %b%s%b\n" "$fg[blue]" "$fg[green]" "$reset_color" "$fg[magenta]" "$fg[red]" "$#" "$reset_color"
-    return 2
-  elif [[ $arg_count -lt $min_args ]] || [[ "$first_arg" == "-h" ]] || [[ "$first_arg" == "--help" ]]; then
-    printerr "%busage: %b%s%b\n\tminimum args: %s\n\tprovided: %b%s%b\n" "$fg[blue]" "$fg[green]" "$usage" "$fg[magenta]" "$min_args" "$fg[red]" "$arg_count" "$reset_color"
-    return 1
-  else
-    return 0
-  fi
-}
 
 # ------------------------------------------------------------------
 # namedir my_path -> names the current working directory as ~my_path
@@ -886,7 +887,7 @@ function save-git {
   pushd "$repo_root" 2>/dev/null
     git add -A 2>/dev/null
     git commit -am "$commit_msg" 2>/dev/null
-    npm version patch
+    [[ -f "$repo_root/package.json" ]] && npm version patch
     git push
   popd 2>/dev/null
 }
