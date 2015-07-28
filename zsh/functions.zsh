@@ -898,7 +898,7 @@ function save-git {
     git add -A 2>/dev/null
     git commit -am "$commit_msg" 2>/dev/null
     [[ -f "$repo_root/package.json" ]] && npm version patch
-    git push
+    git push --follow-tags
   popd 2>/dev/null
 }
 
