@@ -29,6 +29,8 @@ function printuse {
   fi
 }
 
+export ZCONTEXT="$GIT_USERNAME"
+
 function ctx {
   printuse "ctx [context]" 0 $# $1 || return 1
   [[ -n "$1" ]] && export ZCONTEXT="$1"
@@ -37,9 +39,8 @@ function ctx {
 
 function noctx {
   printuse "noctx" 0 $# $1 || return 1
-  export ZCONTEXT="$GIT_USERNAME"
+  ctx "$GIT_USERNAME"
 }
-noctx
 
 function makecert {
   $PF86/Windows\ Kits/8.0/bin/x64/makecert.exe "$@"
@@ -815,6 +816,15 @@ function save {
   local repo_id="$(resolve-repo-id $1)"
   local repo_root="$USR_SRC_ROOT/$repo_id"
   save-git "$repo_root"
+}
+
+# -------------------------------------------------------------------
+# shorthand to save-git and npm publish a repo in standard or CWD
+# -------------------------------------------------------------------
+function publish {
+  printuse "publish [[repo_base/]repo_name]" 0 $# $1 || return 1
+  save "$@"
+  npm publish
 }
 
 # -------------------------------------------------------------------
