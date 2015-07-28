@@ -45,7 +45,7 @@ if [[ $IS_WIN -eq 1 ]]; then
   export CHROME_PATH=$PF86/Google/Chrome/Application/chrome.exe
   export EDITOR_VS=$PF86/Microsoft\ Visual\ Studio\ 12.0/Common7/IDE/devenv.exe
   export EDITOR_WEBSTORM=$PF86/JetBrains/WebStorm\ 10.0.4/bin/WebStorm64.exe
-  export PATH="/usr/local/bin:/usr/bin:/bin:/opt/bin:/mingw64/bin:$LOCAL_ROOT/bin:$LOCAL_ROOT/npm:$LOCAL_ROOT/iojs:$LOCAL_ROOT/tcc:/c/WINDOWS/system32:/c/WINDOWS:/c/WINDOWS/System32/WindowsPowerShell/v1.0:$PF86/Heroku/bin:$LOCAL_ROOT/chocolatey/bin:$HOME/AppData/Local/atom/bin"
+  export PATH="/usr/local/bin:/usr/bin:/bin:/opt/bin:/mingw64/bin:$LOCAL_ROOT/bin:$LOCAL_ROOT/npm:$LOCAL_ROOT/iojs:$LOCAL_ROOT/tcc:/c/WINDOWS/system32:/c/WINDOWS:$PF86/Windows\ Kits/8.0/bin/x64:/c/WINDOWS/System32/WindowsPowerShell/v1.0:$PF86/Heroku/bin:$LOCAL_ROOT/chocolatey/bin:$HOME/AppData/Local/atom/bin"
 elif [[ $IS_MAC -eq 1 ]]; then
   export TERM=xterm-256color
   export CHROME_PATH="$(which chrome)"

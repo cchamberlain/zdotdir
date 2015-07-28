@@ -10,7 +10,6 @@ function rezsh {
   . "$ZSHRC_PATH"
 }
 
-export ZCONTEXT="$GIT_USERNAME"
 function ctx {
   printuse "ctx [context]" 0 $# $1 || return 1
   [[ -n "$1" ]] && export ZCONTEXT="$1"
@@ -19,7 +18,12 @@ function ctx {
 
 function noctx {
   printuse "noctx" 0 $# $1 || return 1
-  unset ZCONTEXT
+  export ZCONTEXT="$GIT_USERNAME"
+}
+noctx
+
+function makecert {
+  $PF86/Windows\ Kits/8.0/bin/x64/makecert.exe "$@"
 }
 
 function fn-exists {
@@ -882,6 +886,7 @@ function save-git {
   pushd "$repo_root" 2>/dev/null
     git add -A 2>/dev/null
     git commit -am "$commit_msg" 2>/dev/null
+    npm version patch
     git push
   popd 2>/dev/null
 }

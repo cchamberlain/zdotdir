@@ -118,6 +118,7 @@ alias hacknpm='hackjs "$NPM_SRC_ROOT"'
 if [[ $IS_WIN -eq 1 ]]; then
   alias visualstudio='"$EDITOR_VS"'
   alias hosts='edit "/c/windows/system32/drivers/etc/hosts"'
+  alias apphosts='edit "$HOME/Documents/IISExpress/config/ApplicationHost.config"'
 
   win_resolve() {
     local file_path="$1"
