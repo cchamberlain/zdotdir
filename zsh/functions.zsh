@@ -798,6 +798,16 @@ function resolve-repo-id {
 }
 
 # -------------------------------------------------------------------
+# shorthand to jump to a standard location or CWD
+# -------------------------------------------------------------------
+function go {
+  printuse "go [[repo_base/]repo_name]" 0 $# $1 || return 1
+  local repo_id="$(resolve-repo-id $1)"
+  local repo_root="$USR_SRC_ROOT/$repo_id"
+  cd "$repo_root"
+}
+
+# -------------------------------------------------------------------
 # shorthand to update-git a repo to standard location or CWD
 # -------------------------------------------------------------------
 function update {
