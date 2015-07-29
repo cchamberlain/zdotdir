@@ -46,6 +46,50 @@ function makecert {
   $PF86/Windows\ Kits/8.0/bin/x64/makecert.exe "$@"
 }
 
+function appcmd {
+  $PF86/IIS\ Express/appcmd.exe "$@"
+}
+
+function makecert-ssl {
+  printuse "makecert-ssl <host>" 1 $# $1 || return 1
+  local host="$1"
+  makecert -r -pe -n "CN=$host" -b 01/01/2000 -e 01/01/2036 -eku 1.3.6.1.5.5.7.3.1 -ss my -sr localMachine -sky exchange -sp "Microsoft RSA SChannel Cryptographic Provider" -sy 12
+}
+
+function addcert-ssl {
+  printuse "addcert-ssl <port> <cert_hash>" 2 $# $1 || return 1
+
+  #6f98570eaaf1d21b0fc6f1b1d77f73976b843b9b
+  #elevate privs
+  #netsh
+  #http add sslcert ipport=0.0.0.0:7002 appid={214124cd-d05b-4309-9af9-9caa44b2b74a} certhash=6f98570eaaf1d21b0fc6f1b1d77f73976b843b9b
+
+  local port="$1"
+  local cert_hash="$2"
+  netsh http add sslcert ipport=0.0.0.0:"$port" appid={214124cd-d05b-4309-9af9-9caa44b2b74a} certhash="$cert_hash"
+}
+
+function addacl {
+  printuse "addacl <url>" 1 $# $1 || return 1
+  netsh http add urlacl url="$1" user=everyone
+}
+
+function openport {
+  printuse "openport <TCP/UDP> <port>" 2 $# $1 || return 1
+  local port_type="$1"
+  local port="$2"
+  netsh firewall add portopening "$port_type" "$port" IISExpressWeb enable ALL
+}
+
+function addapphost {
+  printuse "addapphost <site_name> <scheme> <port> <host>" 4 $# $1 || return 1
+  local site_name="$1"
+  local scheme="$2"
+  local port="$3"
+  local host="$4"
+  appcmd set site /site.name:"$site_name" /+bindings.[protocol="$scheme",bindingInformation="*:$port:$host"]
+}
+
 function fn-exists {
   type $1 | grep -q 'shell function'
 }
