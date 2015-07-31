@@ -663,6 +663,7 @@ function update-msys2-packages {
 # -------------------------------------------------------------------
 function update-npm {
   printuse "update-npm" 0 $# $1 || return 1
+  update "$GIT_NPM_ID"
   pushd "$NPM_SRC_ROOT" 2>/dev/null
     update-fork-reset npm/npm
     ./configure
