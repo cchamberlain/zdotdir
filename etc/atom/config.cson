@@ -1,0 +1,41 @@
+"*":
+  "exception-reporting":
+    userId: "a033da22-32ae-96c7-4173-bae5fe67adac"
+  welcome:
+    showOnStartup: false
+  core:
+    themes: [
+      "one-dark-ui"
+      "solarized-dark-syntax"
+    ]
+    autoHideMenuBar: true
+  linter: {}
+  editor:
+    invisibles: {}
+    showIndentGuide: true
+    showInvisibles: true
+    fontFamily: "Source Sans Pro Semibold"
+    fontSize: 12
+    softTabs: false
+  "vim-mode":
+    useClipboardAsDefaultRegister: true
+    useSmartcaseForSearch: true
+  hashrocket: {}
+  "gist-it":
+    userToken: "71af32918872d0c395925a39fb7c468bfb6a4c37"
+  "atom-beautify":
+    _analyticsUserId: "241601f0-b992-4999-9e4a-85e552b37027"
+    analytics: false
+    js_brace_style: "expand"
+    js_break_chained_methods: true
+    js_end_with_newline: true
+  wakatime:
+    ignore: [
+      "^/var/"
+      "^/tmp/"
+      "^/private/"
+      "COMMIT_EDITMSG$"
+      "PULLREQ_EDITMSG$"
+      "MERGE_MSG$"
+    ]
+    apikey: "6b0529d8-5443-44ba-97f4-d536720c7c4c"

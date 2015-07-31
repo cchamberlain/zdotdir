@@ -16,3 +16,4 @@ fi
 . "$ZSCRIPTDIR/aliases.zsh"
 . "$ZSCRIPTDIR/functions.zsh"
 . "$ZSCRIPTDIR/history.zsh"
+
