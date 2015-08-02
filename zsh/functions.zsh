@@ -936,6 +936,14 @@ function backup-merge-use-our-files {
   done
 }
 
+function create-github-repo {
+  printuse "create-github-repo <repo_name> [repo_description]" 1 $# $1 || return 1
+  local repo_name="$1"
+  local repo_description="${2-"GitHub repo for $repo_name"}"
+  json_body="$(printout '{"name":"%s","description":"%s"}' "$repo_name" "$repo_description")"
+  curl -u "$GIT_USERNAME" https://api.github.com/user/repos -d "$json_body"
+}
+
 # -------------------------------------------------------------------
 # git add, commit and push to github
 # -------------------------------------------------------------------
@@ -943,18 +951,29 @@ function save-git {
   printuse "save-git [repo_root] [commit_msg]" 0 $# $1 || return 1
   local repo_root="${1-"$PWD"}"
   local repo_name="${repo_root##*/}"
+  local init_msg="${2-"initializing $repo_name..."}"
   local commit_msg="${2-"updating $repo_name"}"
 
   if [[ ! -d "$repo_root/.git" ]]; then
-    printerr "%s does not exist or is not a git repository...\n" "$repo_root"
-    return 2
+    printerr "%s does not exist, creating...\n" "$repo_root"
+    mkdirp "$repo_root"
+    pushd "$repo_root" 2>/dev/null
+      create-github-repo "$repo_name" || (printerr "error creating github repo %s" "$repo_name" && return 2)
+      git init
+      git add .
+      git commit -m "$init_msg"
+      local remote_url="https://github.com/$GIT_USERNAME/$repo_name"
+      git remote add origin "$remote_url"
+      git push origin master
+    popd 2>/dev/null
+  else
+    pushd "$repo_root" 2>/dev/null
+      git add -A 2>/dev/null
+      git commit -am "$commit_msg" 2>/dev/null
+      [[ -f "$repo_root/package.json" ]] && npm version patch
+      git push --follow-tags
+    popd 2>/dev/null
   fi
-  pushd "$repo_root" 2>/dev/null
-    git add -A 2>/dev/null
-    git commit -am "$commit_msg" 2>/dev/null
-    [[ -f "$repo_root/package.json" ]] && npm version patch
-    git push --follow-tags
-  popd 2>/dev/null
 }
 
 # -------------------------------------------------------------------

@@ -1,0 +1,8 @@
+1.Open Registry Editor.
+2.Navigate to the following Registry key: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\DnsCache\Parameters
+
+Tip: How to jump to the desired Registry key with one click.
+
+3.Create a new DWORD value "MaxCacheTtl" and set the value to 1. This value indicates the TTL for positive DNS query responses. By lowering it to 1, it effectively disables the client-side DNS cache.
+4.Create a new DWORD "MaxNegativeCacheTtl" and set the value to 0. This is the TTL value for negative responses. By setting it to 0, negative responses won't be cached either.
+5.Restart your PC.
