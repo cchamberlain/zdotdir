@@ -42,6 +42,7 @@ if [[ $IS_WIN -eq 1 ]]; then
   export LS_IGNORE='-I "NTUSER*" -I "ntuser*"'
   alias ls='ls --color $LS_IGNORE'
   alias lsd='ls -pgo --group-directories-first $LS_IGNORE'
+  alias movies='cd /e/movies'
 fi
 
 # -------------------------------------------------------------------
