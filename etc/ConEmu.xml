@@ -1,28 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <key name="Software">
 	<key name="ConEmu">
-		<key name=".Vanilla" modified="2015-08-02 13:22:26" build="150728">
-			<value name="ColorTable00" type="dword" data="00232700"/>
-			<value name="ColorTable01" type="dword" data="0000bfa8"/>
-			<value name="ColorTable02" type="dword" data="00009985"/>
+		<key name=".Vanilla" modified="2015-08-02 13:42:59" build="150728">
+			<value name="ColorTable00" type="dword" data="00323800"/>
+			<value name="ColorTable01" type="dword" data="0096a535"/>
+			<value name="ColorTable02" type="dword" data="00748501"/>
 			<value name="ColorTable03" type="dword" data="0098a12a"/>
-			<value name="ColorTable04" type="dword" data="00164bcb"/>
+			<value name="ColorTable04" type="dword" data="001502cd"/>
 			<value name="ColorTable05" type="dword" data="00c4716c"/>
-			<value name="ColorTable06" type="dword" data="00009985"/>
+			<value name="ColorTable06" type="dword" data="00ae6b43"/>
 			<value name="ColorTable07" type="dword" data="00d5e8ee"/>
 			<value name="ColorTable08" type="dword" data="00c4716c"/>
 			<value name="ColorTable09" type="dword" data="00d28b26"/>
-			<value name="ColorTable10" type="dword" data="0000bfa8"/>
+			<value name="ColorTable10" type="dword" data="0001b120"/>
 			<value name="ColorTable11" type="dword" data="0098a12a"/>
-			<value name="ColorTable12" type="dword" data="002f32dc"/>
+			<value name="ColorTable12" type="dword" data="003420f1"/>
 			<value name="ColorTable13" type="dword" data="008236d3"/>
-			<value name="ColorTable14" type="dword" data="000089b5"/>
+			<value name="ColorTable14" type="dword" data="000289d4"/>
 			<value name="ColorTable15" type="dword" data="00e3f6fd"/>
-			<value name="ColorTable16" type="dword" data="00009985"/>
-			<value name="ColorTable17" type="dword" data="00800000"/>
-			<value name="ColorTable18" type="dword" data="00008000"/>
+			<value name="ColorTable16" type="dword" data="00748501"/>
+			<value name="ColorTable17" type="dword" data="008d3d0e"/>
+			<value name="ColorTable18" type="dword" data="00009019"/>
 			<value name="ColorTable19" type="dword" data="00c4716c"/>
-			<value name="ColorTable20" type="dword" data="00000080"/>
+			<value name="ColorTable20" type="dword" data="00005483"/>
 			<value name="ColorTable21" type="dword" data="00800080"/>
 			<value name="ColorTable22" type="dword" data="00008080"/>
 			<value name="ColorTable23" type="dword" data="0098a12a"/>
@@ -30,13 +30,13 @@
 			<value name="ColorTable25" type="dword" data="00ff0000"/>
 			<value name="ColorTable26" type="dword" data="008236d3"/>
 			<value name="ColorTable27" type="dword" data="00ffff00"/>
-			<value name="ColorTable28" type="dword" data="000000ff"/>
+			<value name="ColorTable28" type="dword" data="003420f1"/>
 			<value name="ColorTable29" type="dword" data="00ff00ff"/>
 			<value name="ColorTable30" type="dword" data="0000ffff"/>
 			<value name="ColorTable31" type="dword" data="00ffffff"/>
 			<value name="ExtendColors" type="hex" data="01"/>
 			<value name="ExtendColorIdx" type="hex" data="01"/>
-			<value name="TextColorIdx" type="hex" data="10"/>
+			<value name="TextColorIdx" type="hex" data="02"/>
 			<value name="BackColorIdx" type="hex" data="10"/>
 			<value name="PopTextColorIdx" type="hex" data="10"/>
 			<value name="PopBackColorIdx" type="hex" data="10"/>
@@ -126,16 +126,16 @@
 			<value name="bgImageColors" type="dword" data="ffffffff"/>
 			<value name="bgOperation" type="hex" data="02"/>
 			<value name="bgPluginAllowed" type="hex" data="01"/>
-			<value name="AlphaValue" type="hex" data="eb"/>
-			<value name="AlphaValueSeparate" type="hex" data="01"/>
+			<value name="AlphaValue" type="hex" data="f3"/>
+			<value name="AlphaValueSeparate" type="hex" data="00"/>
 			<value name="AlphaValueInactive" type="hex" data="bb"/>
 			<value name="UserScreenTransparent" type="hex" data="00"/>
 			<value name="ColorKeyTransparent" type="hex" data="00"/>
 			<value name="ColorKeyValue" type="dword" data="00010101"/>
 			<value name="UseCurrentSizePos" type="hex" data="01"/>
 			<value name="WindowMode" type="dword" data="0000051f"/>
-			<value name="ConWnd Width" type="dword" data="0000007d"/>
-			<value name="ConWnd Height" type="dword" data="00000040"/>
+			<value name="ConWnd Width" type="dword" data="0000007f"/>
+			<value name="ConWnd Height" type="dword" data="00000035"/>
 			<value name="Cascaded" type="hex" data="00"/>
 			<value name="ConWnd X" type="dword" data="0000003e"/>
 			<value name="ConWnd Y" type="dword" data="fffffffd"/>
@@ -293,7 +293,7 @@
 			<value name="HideInactiveConsoleTabs" type="hex" data="00"/>
 			<value name="ShowFarWindows" type="hex" data="01"/>
 			<value name="TryToCenter" type="hex" data="01"/>
-			<value name="CenterConsolePad" type="dword" data="00000006"/>
+			<value name="CenterConsolePad" type="dword" data="00000002"/>
 			<value name="ShowScrollbar" type="hex" data="00"/>
 			<value name="ScrollBarAppearDelay" type="dword" data="000000c8"/>
 			<value name="ScrollBarDisappearDelay" type="dword" data="000003e8"/>
@@ -521,18 +521,9 @@
 			<value name="DndLKey" type="hex" data="00"/>
 			<value name="DndRKey" type="hex" data="a2"/>
 			<value name="WndDragKey" type="dword" data="00121101"/>
-			<key name="Tasks" modified="2015-08-02 13:22:26" build="150728">
-				<value name="Count" type="dword" data="00000008"/>
-				<key name="Task1" modified="2015-08-02 13:22:26" build="150728">
-					<value name="Name" type="string" data="{zsh-direct}"/>
-					<value name="Hotkey" type="dword" data="00000000"/>
-					<value name="GuiArgs" type="string" data=""/>
-					<value name="Cmd1" type="string" data="-new_console:t:&quot;zsh&quot;"/>
-					<value name="Active" type="dword" data="00000000"/>
-					<value name="Count" type="dword" data="00000001"/>
-					<value name="Flags" type="dword" data="00000000"/>
-				</key>
-				<key name="Task2" modified="2015-08-02 13:22:26" build="150728">
+			<key name="Tasks" modified="2015-08-02 14:08:55" build="150728">
+				<value name="Count" type="dword" data="00000007"/>
+				<key name="Task1" modified="2015-08-02 14:09:29" build="150728">
 					<value name="Name" type="string" data="{zsh}"/>
 					<value name="Hotkey" type="dword" data="0012115a"/>
 					<value name="GuiArgs" type="string" data=""/>
@@ -541,7 +532,7 @@
 					<value name="Count" type="dword" data="00000001"/>
 					<value name="Flags" type="dword" data="00000000"/>
 				</key>
-				<key name="Task3" modified="2015-08-02 13:22:26" build="150728">
+				<key name="Task2" modified="2015-08-02 14:09:29" build="150728">
 					<value name="Name" type="string" data="{zsh - admin}"/>
 					<value name="Hotkey" type="dword" data="1012115a"/>
 					<value name="GuiArgs" type="string" data=""/>
@@ -550,7 +541,7 @@
 					<value name="Count" type="dword" data="00000001"/>
 					<value name="Flags" type="dword" data="00000000"/>
 				</key>
-				<key name="Task4" modified="2015-08-02 13:22:26" build="150728">
+				<key name="Task3" modified="2015-08-02 14:09:29" build="150728">
 					<value name="Name" type="string" data="{cmd}"/>
 					<value name="Hotkey" type="dword" data="00121143"/>
 					<value name="GuiArgs" type="string" data="/dir &quot;%USERPROFILE%&quot;"/>
@@ -559,7 +550,7 @@
 					<value name="Count" type="dword" data="00000001"/>
 					<value name="Flags" type="dword" data="00000000"/>
 				</key>
-				<key name="Task5" modified="2015-08-02 13:22:26" build="150728">
+				<key name="Task4" modified="2015-08-02 14:09:29" build="150728">
 					<value name="Name" type="string" data="{cmd - admin}"/>
 					<value name="Hotkey" type="dword" data="10121143"/>
 					<value name="GuiArgs" type="string" data="/dir &quot;%USERPROFILE%&quot;"/>
@@ -568,7 +559,7 @@
 					<value name="Count" type="dword" data="00000001"/>
 					<value name="Flags" type="dword" data="00000000"/>
 				</key>
-				<key name="Task6" modified="2015-08-02 13:22:26" build="150728">
+				<key name="Task5" modified="2015-08-02 14:09:29" build="150728">
 					<value name="Name" type="string" data="{powershell}"/>
 					<value name="Hotkey" type="dword" data="00121150"/>
 					<value name="GuiArgs" type="string" data="/dir &quot;%USERPROFILE%&quot;"/>
@@ -577,7 +568,7 @@
 					<value name="Count" type="dword" data="00000001"/>
 					<value name="Flags" type="dword" data="00000000"/>
 				</key>
-				<key name="Task7" modified="2015-08-02 13:22:26" build="150728">
+				<key name="Task6" modified="2015-08-02 14:09:29" build="150728">
 					<value name="Name" type="string" data="{PowerShell (Admin)}"/>
 					<value name="Hotkey" type="dword" data="10121150"/>
 					<value name="GuiArgs" type="string" data="/dir &quot;%USERPROFILE%&quot;"/>
@@ -586,7 +577,16 @@
 					<value name="Count" type="dword" data="00000001"/>
 					<value name="Flags" type="dword" data="00000000"/>
 				</key>
-				<key name="Task8" modified="2015-08-02 13:22:26" build="150728">
+				<key name="Task7" modified="2015-08-02 14:09:29" build="150728">
+					<value name="Name" type="string" data="{ansi colors}"/>
+					<value name="Hotkey" type="dword" data="00000000"/>
+					<value name="GuiArgs" type="string" data=""/>
+					<value name="Cmd1" type="string" data="cmd /k type &quot;%ConEmuBaseDir%\Addons\AnsiColors16t.ans&quot; -cur_console:n"/>
+					<value name="Active" type="dword" data="00000000"/>
+					<value name="Count" type="dword" data="00000001"/>
+					<value name="Flags" type="dword" data="00000000"/>
+				</key>
+				<key name="Task8" modified="2015-08-02 13:42:59" build="150728">
 					<value name="Name" type="string" data="{ansi colors}"/>
 					<value name="Flags" type="dword" data="00000000"/>
 					<value name="Hotkey" type="dword" data="00000000"/>
@@ -629,8 +629,8 @@
 					<value name="Count" type="dword" data="00000001"/>
 				</key>
 			</key>
-			<key name="Colors" modified="2015-08-02 13:22:26" build="150728">
-				<key name="Palette1" modified="2015-08-02 13:22:26" build="150728">
+			<key name="Colors" modified="2015-08-02 14:09:29" build="150728">
+				<key name="Palette1" modified="2015-08-02 14:09:29" build="150728">
 					<value name="Name" type="string" data="Monokai"/>
 					<value name="ExtendColors" type="hex" data="00"/>
 					<value name="ExtendColorIdx" type="hex" data="0e"/>
@@ -671,8 +671,8 @@
 					<value name="ColorTable30" type="dword" data="0000ffff"/>
 					<value name="ColorTable31" type="dword" data="00ffffff"/>
 				</key>
-				<value name="Count" type="dword" data="00000002"/>
-				<key name="Palette2" modified="2015-08-02 13:22:26" build="150728">
+				<value name="Count" type="dword" data="00000003"/>
+				<key name="Palette2" modified="2015-08-02 14:09:29" build="150728">
 					<value name="Name" type="string" data="solarized-zsh"/>
 					<value name="ExtendColors" type="hex" data="01"/>
 					<value name="ExtendColorIdx" type="hex" data="01"/>
@@ -713,6 +713,47 @@
 					<value name="ColorTable30" type="dword" data="0000ffff"/>
 					<value name="ColorTable31" type="dword" data="00ffffff"/>
 				</key>
+				<key name="Palette3" modified="2015-08-02 14:09:29" build="150728">
+					<value name="Name" type="string" data="solarized-zsh-windows-10"/>
+					<value name="ExtendColors" type="hex" data="01"/>
+					<value name="ExtendColorIdx" type="hex" data="01"/>
+					<value name="TextColorIdx" type="hex" data="02"/>
+					<value name="BackColorIdx" type="hex" data="10"/>
+					<value name="PopTextColorIdx" type="hex" data="10"/>
+					<value name="PopBackColorIdx" type="hex" data="10"/>
+					<value name="ColorTable00" type="dword" data="00323800"/>
+					<value name="ColorTable01" type="dword" data="0096a535"/>
+					<value name="ColorTable02" type="dword" data="00748501"/>
+					<value name="ColorTable03" type="dword" data="0098a12a"/>
+					<value name="ColorTable04" type="dword" data="001502cd"/>
+					<value name="ColorTable05" type="dword" data="00c4716c"/>
+					<value name="ColorTable06" type="dword" data="00ae6b43"/>
+					<value name="ColorTable07" type="dword" data="00d5e8ee"/>
+					<value name="ColorTable08" type="dword" data="00c4716c"/>
+					<value name="ColorTable09" type="dword" data="00d28b26"/>
+					<value name="ColorTable10" type="dword" data="0001b120"/>
+					<value name="ColorTable11" type="dword" data="0098a12a"/>
+					<value name="ColorTable12" type="dword" data="003420f1"/>
+					<value name="ColorTable13" type="dword" data="008236d3"/>
+					<value name="ColorTable14" type="dword" data="000289d4"/>
+					<value name="ColorTable15" type="dword" data="00e3f6fd"/>
+					<value name="ColorTable16" type="dword" data="00748501"/>
+					<value name="ColorTable17" type="dword" data="008d3d0e"/>
+					<value name="ColorTable18" type="dword" data="00009019"/>
+					<value name="ColorTable19" type="dword" data="00c4716c"/>
+					<value name="ColorTable20" type="dword" data="00005483"/>
+					<value name="ColorTable21" type="dword" data="00800080"/>
+					<value name="ColorTable22" type="dword" data="00008080"/>
+					<value name="ColorTable23" type="dword" data="0098a12a"/>
+					<value name="ColorTable24" type="dword" data="0098a12a"/>
+					<value name="ColorTable25" type="dword" data="00ff0000"/>
+					<value name="ColorTable26" type="dword" data="008236d3"/>
+					<value name="ColorTable27" type="dword" data="00ffff00"/>
+					<value name="ColorTable28" type="dword" data="003420f1"/>
+					<value name="ColorTable29" type="dword" data="00ff00ff"/>
+					<value name="ColorTable30" type="dword" data="0000ffff"/>
+					<value name="ColorTable31" type="dword" data="00ffffff"/>
+				</key>
 			</key>
 			<value name="ProcessCmdStart" type="hex" data="01"/>
 			<value name="Multi.ShowSearch" type="hex" data="00"/>
@@ -737,7 +778,7 @@
 			<value name="StatusBar.Hide.Dpi" type="hex" data="01"/>
 			<value name="TabFlashChanged" type="dword" data="00000008"/>
 			<value name="TabModifiedSuffix" type="string" data="[*]"/>
-			<key name="HotKeys" modified="2015-08-02 13:22:26" build="150728">
+			<key name="HotKeys" modified="2015-08-02 13:42:59" build="150728">
 				<value name="KeyMacroVersion" type="hex" data="02"/>
 				<value name="Multi.Modifier" type="dword" data="00000011"/>
 				<value name="Multi.ArrowsModifier" type="dword" data="0000005b"/>
@@ -920,9 +961,9 @@
 			<value name="ConsoleFontWidth" type="dword" data="00000003"/>
 			<value name="ConsoleFontHeight" type="dword" data="00000005"/>
 			<value name="MonitorConsoleLang" type="hex" data="03"/>
-			<key name="Apps" modified="2015-08-02 13:22:26" build="150728">
+			<key name="Apps" modified="2015-08-02 14:09:29" build="150728">
 				<value name="Count" type="dword" data="00000003"/>
-				<key name="App1" modified="2015-08-02 13:22:26" build="150728">
+				<key name="App1" modified="2015-08-02 14:09:29" build="150728">
 					<value name="AppNames" type="string" data="powershell.exe"/>
 					<value name="Elevated" type="hex" data="00"/>
 					<value name="OverridePalette" type="hex" data="01"/>
@@ -946,7 +987,7 @@
 					<value name="ClipboardClickPromptPosition" type="hex" data="00"/>
 					<value name="ClipboardDeleteLeftWord" type="hex" data="00"/>
 				</key>
-				<key name="App2" modified="2015-08-02 13:22:26" build="150728">
+				<key name="App2" modified="2015-08-02 14:09:29" build="150728">
 					<value name="AppNames" type="string" data="tcc.exe|cmd.exe"/>
 					<value name="Elevated" type="hex" data="00"/>
 					<value name="OverridePalette" type="hex" data="01"/>
@@ -970,7 +1011,7 @@
 					<value name="ClipboardClickPromptPosition" type="hex" data="00"/>
 					<value name="ClipboardDeleteLeftWord" type="hex" data="00"/>
 				</key>
-				<key name="App3" modified="2015-08-02 13:22:26" build="150728">
+				<key name="App3" modified="2015-08-02 14:09:29" build="150728">
 					<value name="AppNames" type="string" data="vim.exe"/>
 					<value name="Elevated" type="hex" data="00"/>
 					<value name="OverridePalette" type="hex" data="00"/>
