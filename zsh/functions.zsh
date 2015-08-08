@@ -104,6 +104,18 @@ function storm-diff {
   "$EDITOR_WEBSTORM" diff "$@"
 }
 
+function pyhack {
+  printuse "pyhack [python_scipt]" 0 $# $1 || return 1
+  local python_script="$1"
+  if [[ -n "$python_script" ]]; then
+    local script_path="$ZPYTHONDIR/$python_script"
+    [[ -f "$script_path.py" ]] && vim "$script_path.py" && return 0
+    vim "$script_path"
+    return 0
+  fi
+  atom "$ZPYTHONDIR"
+}
+
 function hack {
   printuse "hack [[basename/]repo]" 0 $# $1 || return 1
   update $1

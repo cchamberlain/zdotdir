@@ -221,3 +221,4 @@ alias ns3='ns s3'
 alias note='ns note'
 alias agi='ag -i'
 
+alias twisted='proxy_server.py'

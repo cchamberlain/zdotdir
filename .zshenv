@@ -25,6 +25,7 @@ fi
 export ZDOTDIR="${ZDOTDIR:-"$HOME/.zsh"}"
 export ZNODEDIR="$ZDOTDIR/node"
 export ZSCRIPTDIR="$ZDOTDIR/zsh"
+export ZPYTHONDIR="$ZDOTDIR/python"
 export ZETCDIR="$ZDOTDIR/etc"
 export ZASSETSDIR="$ZDOTDIR/assets"
 export ZDOWNLOADDIR="$ZDOTDIR/download"
