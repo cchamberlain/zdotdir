@@ -110,7 +110,7 @@ alias aliases='vim "$ZSCRIPTDIR/aliases.zsh"'
 alias fns='vim "$ZSCRIPTDIR/functions.zsh"'
 alias color='vim "$ZSCRIPTDIR/colors.zsh"'
 alias paradox='vim "$ZPREZTODIR/modules/prompt/functions/prompt_paradox_setup"'
-alias zdotdir='cd "$ZDOTDIR"'
+alias zdotdir='ctx cchamberlain && cd "$ZDOTDIR"'
 alias cchamberlain='ctx cchamberlain && cd "$HOME/cchamberlain"'
 alias tixinc='ctx tixinc && cd "$HOME/tixinc"'
 
