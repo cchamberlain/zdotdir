@@ -17,3 +17,5 @@ fi
 . "$ZSCRIPTDIR/functions.zsh"
 . "$ZSCRIPTDIR/history.zsh"
 
+[[ -f "$ZPERSONAL_PATH" ]] && . "$ZPERSONAL_PATH"
+

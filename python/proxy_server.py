@@ -2,12 +2,12 @@
 from twisted.internet import reactor
 from twisted.web import http
 from twisted.web.proxy import Proxy, ProxyRequest, ProxyClientFactory, ProxyClient
-from ImageFile import Parser
+#from ImageFile import Parser
 from StringIO import StringIO
- 
+
 class InterceptingProxyClient(ProxyClient):
     def __init__(self, *args, **kwargs):
-        ProxyClient.__init__(self, *args, **kwargs)        
+        ProxyClient.__init__(self, *args, **kwargs)
         self.overrides = []
         self.restricted_headers = [
             'accept-charset',
@@ -35,7 +35,7 @@ class InterceptingProxyClient(ProxyClient):
 
         self.all_headers = []
         self.unsent_restricted_headers = []
- 
+
     def sendHeader(self, name, value):
         if "postman-" in name:
             new_header = name[8:]
@@ -77,19 +77,19 @@ class InterceptingProxyClient(ProxyClient):
         if not self._finished:
             self.father.responseHeaders.setRawHeaders("client", ["location"])
         ProxyClient.handleResponseEnd(self)
- 
+
 class InterceptingProxyClientFactory(ProxyClientFactory):
     protocol = InterceptingProxyClient
- 
+
 class InterceptingProxyRequest(ProxyRequest):
     protocols = {'http': InterceptingProxyClientFactory, 'https': InterceptingProxyClientFactory}
- 
+
 class InterceptingProxy(Proxy):
     requestFactory = InterceptingProxyRequest
- 
+
 factory = http.HTTPFactory()
 factory.protocol = InterceptingProxy
- 
+
 port = 8000
 
 reactor.listenTCP(8000, factory)

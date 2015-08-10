@@ -134,8 +134,8 @@
 			<value name="ColorKeyValue" type="dword" data="00010101"/>
 			<value name="UseCurrentSizePos" type="hex" data="01"/>
 			<value name="WindowMode" type="dword" data="0000051f"/>
-			<value name="ConWnd Width" type="dword" data="00000057"/>
-			<value name="ConWnd Height" type="dword" data="00000037"/>
+			<value name="ConWnd Width" type="dword" data="00000063"/>
+			<value name="ConWnd Height" type="dword" data="00000031"/>
 			<value name="Cascaded" type="hex" data="00"/>
 			<value name="ConWnd X" type="dword" data="0000003e"/>
 			<value name="ConWnd Y" type="dword" data="fffffffd"/>

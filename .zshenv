@@ -31,6 +31,7 @@ export ZASSETSDIR="$ZDOTDIR/assets"
 export ZDOWNLOADDIR="$ZDOTDIR/download"
 export ZHELPDIR="$ZDOTDIR/help"
 export ZPREZTODIR="$ZDOTDIR/.zprezto"
+export ZPERSONALDIR="$HOME/.personal"
 
 # DOTFILES
 export ZSHENV_PATH="$ZDOTDIR/.zshenv"
@@ -39,6 +40,7 @@ export ZPREZTORC_PATH="$ZDOTDIR/.zpreztorc"
 export ZPROFILE_PATH="$ZDOTDIR/.zprofile"
 export ZLOGIN_PATH="$ZDOTDIR/.zlogin"
 export ZLOGOUT_PATH="$ZDOTDIR/.zlogout"
+export ZPERSONAL_PATH="$ZPERSONALDIR/.zpersonal"
 export NPMRC_PATH="$HOME/.npmrc"
 export VIMRC_PATH="$HOME/.vimrc"
 
