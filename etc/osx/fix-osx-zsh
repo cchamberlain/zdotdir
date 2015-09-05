@@ -1,0 +1,13 @@
+pushd ~/.zsh
+  for file in .z*; do
+    tr -d '\015' <$file >$file
+  done
+popd
+
+pushd ~/.zsh/zsh
+  for file in *; do
+    tr -d '\015' <$file >$file
+  done
+popd
+
+tr -d '\015' <~/.zsh/.zprezto/init.zsh >~/.zsh/.zprezto/init.zsh
