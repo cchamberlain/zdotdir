@@ -387,6 +387,10 @@ function everything {
   }
 }
 
+if [[ IS_MAC -eq 1 ]]; then
+  function code { VSCODE_CWD="$PWD" open -n -b "com.microsoft.VSCode" --args $* ;}
+fi
+
 # -------------------------------------------------------------------
 # profile startup time of app (defaults zsh)
 # -------------------------------------------------------------------
