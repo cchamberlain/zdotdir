@@ -1,0 +1,13 @@
+pushd ~/.zsh
+  for file in .z*; do
+    [[ -f "$file" ]] && gsed -i $'s/\r$//' $file
+  done;
+  pushd zsh
+    for file in *; do
+      [[ -f "$file" ]] && gsed -i $'s/\r$//' $file
+    done;
+  popd
+  pushd .zprezto
+    [[ -f "init.zsh" ]] && gsed -i $'s/\r$//' init.zsh
+  popd
+popd
