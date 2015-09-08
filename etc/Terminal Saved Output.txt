@@ -1,0 +1,2299 @@
+Last login: Sat Sep  5 10:56:50 on ttys000
+
+ cchamberlain@MINIBEAST  ~ 
+ ❯❯❯ ls
+Adlm                      Movies      bitstampstreaming  genymotion-log.zip  sugar
+Adobe                     Music       books              gist                tinderfy
+Applications              Pictures    c                  hackr               tinderizer
+Applications (Parallels)  Public      cchamberlain       hidden              tixinc
+Creative Cloud Files      README.md   chambersoft        install-txt         tv
+Desktop                   TixInc.bak  config             local               video
+Documents                 XVim        csrc               package_root        zshrc
+Downloads                 aspnet      dotfiles           physics
+Dropbox                   automation  ext                physics6
+Library                   bin         games              src
+
+ cchamberlain@MINIBEAST  ~ 
+ ❯❯❯ cd cchamberlain/hackr
+
+ cchamberlain@MINIBEAST  ~/c/hackr   master ⁝ ? 
+ ❯❯❯ ls
+LICENSE    bin     config-client.json  etc  net           package.json  srv
+README.md  client  config-server.json  lib  node_modules  server.js     ts
+
+ cchamberlain@MINIBEAST  ~/c/hackr   master ⁝ ? 
+ ❯❯❯ cd net
+
+ cchamberlain@MINIBEAST  ~/c/h/net   master ⁝ ? 
+ ❯❯❯ cd web
+
+ cchamberlain@MINIBEAST  ~/c/h/n/web   master ⁝ ? 
+ ❯❯❯ dnvm list
+
+Active Version              Runtime Architecture OperatingSystem Alias
+------ -------              ------- ------------ --------------- -----
+       1.0.0-beta7          coreclr x64          darwin          
+  *    1.0.0-beta7          mono                 linux/osx       default
+       1.0.0-beta8-15564    mono                 linux/osx       
+
+
+ cchamberlain@MINIBEAST  ~/c/h/n/web   master ⁝ ? 
+ ❯❯❯ which dnvm
+dnvm () {
+	if [ $# -lt 1 ]
+	then
+		__dnvm_description
+		printf "%b\n" "Use ${Yel}$_DNVM_COMMAND_NAME [help|-h|-help|--help] ${RCol} to display help text."
+		echo ""
+		return
+	fi
+	case $1 in
+		("help"|"-h"|"-help"|"--help") __dnvm_help ;;
+		("update-self") __dnvm_update_self ;;
+		("upgrade") shift
+			$_DNVM_COMMAND_NAME install latest -p $@ ;;
+		("install") [ $# -lt 2 ] && __dnvm_help && return
+			shift
+			local persistent=
+			local versionOrAlias=
+			local alias=
+			local force=
+			local unstable=
+			local os=
+			local runtime=
+			local arch=
+			local global=0
+			local acceptSudo=0
+			while [ $# -ne 0 ]
+			do
+				if [[ $1 = "-p" || $1 = "-persistent" ]]
+				then
+					local persistent="-p"
+				elif [[ $1 = "-a" || $1 = "-alias" ]]
+				then
+					local alias=$2
+					shift
+				elif [[ $1 = "-f" || $1 = "-force" ]]
+				then
+					local force="-f"
+				elif [[ $1 = "-u" || $1 = "-unstable" ]]
+				then
+					local unstable="-u"
+				elif [[ $1 = "-r" || $1 = "-runtime" ]]
+				then
+					local runtime=$2
+					shift
+				elif [[ $1 = "-OS" ]]
+				then
+					local os=$2
+					shift
+				elif [[ $1 = "-y" ]]
+				then
+					local acceptSudo=1
+				elif [[ $1 = "-arch" ]]
+				then
+					local arch=$2
+					shift
+					if [[ $arch != "x86" && $arch != "x64" ]]
+					then
+						printf "%b\n" "${Red}Architecture must be x86 or x64.${RCol}"
+						return 1
+					fi
+				elif [[ $1 = "-g" || $1 = "-global" ]]
+				then
+					local global=1
+				elif [[ -n $1 ]]
+				then
+					[[ -n $versionOrAlias ]] && echo "Invalid option $1" && __dnvm_help && return 1
+					local versionOrAlias=$1
+				fi
+				shift
+			done
+			if [[ $arch = "x86" && $runtime = "coreclr" && $os != "win" ]]
+			then
+				printf "%b\n" "${Red}Core CLR doesn't currently have a 32 bit build. You must use x64.${RCol}"
+				return 1
+			fi
+			if [ -z $unstable ]
+			then
+				DNX_ACTIVE_FEED="$DNX_FEED" 
+				if [ -z "$DNX_ACTIVE_FEED" ]
+				then
+					DNX_ACTIVE_FEED="$_DNVM_DEFAULT_FEED" 
+				else
+					printf "%b\n" "${Yel}Default stable feed ($_DNVM_DEFAULT_FEED) is being overridden by the value of the DNX_FEED variable ($DNX_FEED). ${RCol}"
+				fi
+			else
+				DNX_ACTIVE_FEED="$DNX_UNSTABLE_FEED" 
+				if [ -z "$DNX_ACTIVE_FEED" ]
+				then
+					DNX_ACTIVE_FEED="$_DNVM_DEFAULT_UNSTABLE_FEED" 
+				else
+					printf "%b\n" "${Yel}Default unstable feed ($_DNVM_DEFAULT_UNSTABLE_FEED) is being overridden by the value of the DNX_UNSTABLE_FEED variable ($DNX_UNSTABLE_FEED). ${RCol}"
+				fi
+			fi
+			if [[ -z $os ]]
+			then
+				os=$(__dnvm_current_os) 
+			fi
+			if [[ $os = "osx" ]]
+			then
+				os="darwin" 
+			fi
+			if [[ -z $runtime ]]
+			then
+				runtime=$(__dnvm_os_runtime_defaults "$os") 
+			fi
+			if [[ -z $arch ]]
+			then
+				arch=$(__dnvm_runtime_bitness_defaults "$runtime") 
+			fi
+			if [[ $runtime = "mono" ]] && ! __dnvm_has "mono"
+			then
+				printf "%b\n" "${Yel}It appears you don't have Mono available. Remember to get Mono before trying to run $DNVM_RUNTIME_SHORT_NAME application. ${RCol}" >&2
+			fi
+			local runtimeDir=$_DNVM_USER_PACKAGES
+			if [ $global == 1 ]
+			then
+				runtimeDir=$_DNVM_GLOBAL_PACKAGES 
+			fi
+			if [[ "$versionOrAlias" != *.nupkg ]]
+			then
+				if [[ "$versionOrAlias" = "latest" ]]
+				then
+					echo "Determining latest version"
+					read versionOrAlias downloadUrl < <(__dnvm_find_latest "$runtime" "$arch" "$os")
+					[[ $? = 1 ]] && echo "Error: Could not find latest version from feed $DNX_ACTIVE_FEED" && return 1
+					printf "%b\n" "Latest version is ${Cya}$versionOrAlias ${RCol}"
+				else
+					local runtimeFullName=$(__dnvm_requested_version_or_alias "$versionOrAlias" "$runtime" "$arch" "$os")
+					local runtimeVersion=$(__dnvm_package_version "$runtimeFullName")
+					read versionOrAlias downloadUrl < <(__dnvm_find_package "$runtime" "$arch" "$os" "$runtimeVersion")
+					[[ $? = 1 ]] && echo "Error: Could not find version $runtimeVersion in feed $DNX_ACTIVE_FEED" && return 1
+				fi
+				local runtimeFullName=$(__dnvm_requested_version_or_alias "$versionOrAlias" "$runtime" "$arch" "$os")
+				local runtimeFolder="$runtimeDir/$runtimeFullName"
+				local exist=0
+				for folder in `echo $DNX_HOME | tr ":" "\n"`
+				do
+					if [ -e "$folder/runtimes/$runtimeFullName" ]
+					then
+						echo "$runtimeFullName already installed in $folder"
+						exist=1 
+					fi
+				done
+				if [[ $exist != 1 ]]
+				then
+					__dnvm_download "$runtimeFullName" "$downloadUrl" "$runtimeFolder" "$force" "$acceptSudo"
+				fi
+				[[ $? = 1 ]] && return 1
+				if [[ "$os" = $(__dnvm_current_os) ]]
+				then
+					$_DNVM_COMMAND_NAME use "$versionOrAlias" "$persistent" "-runtime" "$runtime" "-arch" "$arch"
+					[[ -n $alias ]] && $_DNVM_COMMAND_NAME alias "$alias" "$versionOrAlias"
+				fi
+			else
+				local runtimeFullName=$(basename $versionOrAlias | sed "s/\(.*\)\.nupkg/\1/")
+				local runtimeVersion=$(__dnvm_package_version "$runtimeFullName")
+				local runtimeFolder="$runtimeDir/$runtimeFullName"
+				local runtimeFile="$runtimeFolder/$runtimeFullName.nupkg"
+				local runtimeClr=$(__dnvm_package_runtime "$runtimeFullName")
+				if [ -n "$force" ]
+				then
+					printf "%b\n" "${Yel}Forcing download by deleting $runtimeFolder directory ${RCol}"
+					rm -i -rf "$runtimeFolder"
+				fi
+				if [ -e "$runtimeFolder" ]
+				then
+					echo "$runtimeFullName already installed"
+				else
+					local useSudo=
+					mkdir -p -p "$runtimeFolder" > /dev/null 2>&1
+					if [ ! -d $runtimeFolder ]
+					then
+						if ! __dnvm_promptSudo $acceptSudo
+						then
+							useSudo=sudo 
+							sudo mkdir -p "$runtimeFolder" > /dev/null 2>&1 || return 1
+						else
+							return 1
+						fi
+					fi
+					cp -i -a "$versionOrAlias" "$runtimeFile"
+					__dnvm_unpack "$runtimeFile" "$runtimeFolder" $useSudo
+					[[ $? = 1 ]] && return 1
+				fi
+				$_DNVM_COMMAND_NAME use "$runtimeVersion" "$persistent" -r "$runtimeClr"
+				[[ -n $alias ]] && $_DNVM_COMMAND_NAME alias "$alias" "$runtimeVersion"
+			fi ;;
+		("use"|"run"|"exec") [[ $1 = "use" && $# -lt 2 ]] && __dnvm_help && return
+			local cmd=$1
+			local persistent=
+			local arch=
+			local runtime=
+			shift
+			if [ $cmd == "use" ]
+			then
+				local versionOrAlias=
+				while [ $# -ne 0 ]
+				do
+					if [[ $1 = "-p" || $1 = "-persistent" ]]
+					then
+						local persistent="true"
+					elif [[ $1 = "-a" || $1 = "-arch" ]]
+					then
+						local arch=$2
+						shift
+					elif [[ $1 = "-r" || $1 = "-runtime" ]]
+					then
+						local runtime=$2
+						shift
+					elif [[ $1 = -* ]]
+					then
+						echo "Invalid option $1" && __dnvm_help && return 1
+					elif [[ -n $1 ]]
+					then
+						[[ -n $versionOrAlias ]] && echo "Invalid option $1" && __dnvm_help && return 1
+						local versionOrAlias=$1
+					fi
+					shift
+				done
+			else
+				local versionOrAlias=$1
+				shift
+			fi
+			if [[ $cmd = "use" && $versionOrAlias = "none" ]]
+			then
+				echo "Removing $_DNVM_RUNTIME_SHORT_NAME from process PATH"
+				PATH=$(__dnvm_strip_path "$PATH" "/bin") 
+				if [[ -n $persistent && -e "$_DNVM_ALIAS_DIR/default.alias" ]]
+				then
+					echo "Setting default $_DNVM_RUNTIME_SHORT_NAME to none"
+					rm -i "$_DNVM_ALIAS_DIR/default.alias"
+				fi
+				return 0
+			fi
+			local runtimeFullName=$(__dnvm_requested_version_or_alias "$versionOrAlias" "$runtime" "$arch" "$(__dnvm_current_os)")
+			local runtimeBin=$(__dnvm_locate_runtime_bin_from_full_name "$runtimeFullName")
+			if [[ -z $runtimeBin ]]
+			then
+				echo "Cannot find $runtimeFullName, do you need to run '$_DNVM_COMMAND_NAME install $versionOrAlias'?"
+				return 1
+			fi
+			case $cmd in
+				("run") local hostpath="$runtimeBin/dnx"
+					if [[ -e $hostpath ]]
+					then
+						$hostpath $@
+					else
+						echo "Cannot find $_DNVM_RUNTIME_SHORT_NAME in $runtimeBin. It may have been corrupted. Use '$_DNVM_COMMAND_NAME install $versionOrAlias -f' to attempt to reinstall it"
+					fi ;;
+				("exec") (
+						PATH=$(__dnvm_strip_path "$PATH" "/bin") 
+						PATH=$(__dnvm_prepend_path "$PATH" "$runtimeBin") 
+						$@
+					) ;;
+				("use") echo "Adding" $runtimeBin "to process PATH"
+					PATH=$(__dnvm_strip_path "$PATH" "/bin") 
+					PATH=$(__dnvm_prepend_path "$PATH" "$runtimeBin") 
+					if [[ -n $persistent ]]
+					then
+						local runtimeVersion=$(__dnvm_package_version "$runtimeFullName")
+						$_DNVM_COMMAND_NAME alias default "$runtimeVersion"
+					fi ;;
+			esac ;;
+		("alias") [[ $# -gt 7 ]] && __dnvm_help && return
+			[[ ! -e "$_DNVM_ALIAS_DIR/" ]] && mkdir -p "$_DNVM_ALIAS_DIR/" > /dev/null
+			if [[ $# = 1 ]]
+			then
+				echo ""
+				local format="%-25s %s\n"
+				printf "$format" "Alias" "Name"
+				printf "$format" "-----" "----"
+				if [ -d "$_DNVM_ALIAS_DIR" ]
+				then
+					for __dnvm_file in $(find "$_DNVM_ALIAS_DIR" -name *.alias)
+					do
+						local alias="$(basename $__dnvm_file | sed 's/\.alias//')"
+						local name="$(cat $__dnvm_file)"
+						printf "$format" "$alias" "$name"
+					done
+				fi
+				echo ""
+				return
+			fi
+			shift
+			local name="$1"
+			if [[ $# = 1 ]]
+			then
+				[[ ! -e "$_DNVM_ALIAS_DIR/$name.alias" ]] && echo "There is no alias called '$name'" && return
+				cat "$_DNVM_ALIAS_DIR/$name.alias"
+				echo ""
+				return
+			fi
+			shift
+			local versionOrAlias="$1"
+			shift
+			while [ $# -ne 0 ]
+			do
+				if [[ $1 = "-a" || $1 = "-arch" ]]
+				then
+					local arch=$2
+					shift
+				elif [[ $1 = "-r" || $1 = "-runtime" ]]
+				then
+					local runtime=$2
+					shift
+				elif [[ $1 = "-OS" ]]
+				then
+					local os=$2
+					shift
+				fi
+				shift
+			done
+			local runtimeFullName=$(__dnvm_requested_version_or_alias "$versionOrAlias" "$runtime" "$arch" "$os")
+			(
+				[[ ! -d "$_DNVM_USER_PACKAGES/$runtimeFullName" ]] && [[ ! -d "$_DNVM_GLOBAL_PACKAGES/$runtimeFullName" ]]
+			) && echo "$runtimeFullName is not an installed $_DNVM_RUNTIME_SHORT_NAME version" && return 1
+			local action="Setting"
+			[[ -e "$_DNVM_ALIAS_DIR/$name.alias" ]] && action="Updating" 
+			echo "$action alias '$name' to '$runtimeFullName'"
+			echo "$runtimeFullName" > "$_DNVM_ALIAS_DIR/$name.alias" ;;
+		("unalias") [[ $# -ne 2 ]] && __dnvm_help && return
+			local name=$2
+			local aliasPath="$_DNVM_ALIAS_DIR/$name.alias"
+			[[ ! -e "$aliasPath" ]] && echo "Cannot remove alias, '$name' is not a valid alias name" && return 1
+			echo "Removing alias $name"
+			rm -i "$aliasPath" >> /dev/null 2>&1 ;;
+		("list") [[ $# -gt 2 ]] && __dnvm_help && return
+			[[ ! -d $_DNVM_USER_PACKAGES ]] && echo "$_DNVM_RUNTIME_FRIENDLY_NAME is not installed." && return 1
+			local searchGlob="$_DNVM_RUNTIME_PACKAGE_NAME-*"
+			local runtimes=""
+			for location in `echo $DNX_HOME | tr ":" "\n"`
+			do
+				location+="/runtimes" 
+				local oruntimes="$(find $location -name "$searchGlob" \( -type d -or -type l \) -prune -exec basename {} \;)"
+				for v in `echo $oruntimes | tr "\n" " "`
+				do
+					runtimes+="$v:$location"$'\n' 
+				done
+			done
+			[[ -z $runtimes ]] && echo 'No runtimes installed. You can run `dnvm install latest` or `dnvm upgrade` to install a runtime.' && return
+			echo ""
+			local arr
+			arr=() 
+			local i=1
+			local format="%-20s %s\n"
+			if [ -d "$_DNVM_ALIAS_DIR" ]
+			then
+				for __dnvm_file in $(find "$_DNVM_ALIAS_DIR" -name *.alias)
+				do
+					if [ ! -d "$_DNVM_USER_PACKAGES/$(cat $__dnvm_file)" ] && [ ! -d "$_DNVM_GLOBAL_PACKAGES/$(cat $__dnvm_file)" ]
+					then
+						arr[$i]="$(basename $__dnvm_file | sed 's/\.alias//')/missing/$(cat $__dnvm_file)" 
+						runtimes="$runtimes $(cat $__dnvm_file)" 
+					else
+						arr[$i]="$(basename $__dnvm_file | sed 's/\.alias//')/$(cat $__dnvm_file)" 
+					fi
+					let i+=1
+				done
+			fi
+			if [[ $2 = "-detailed" ]]
+			then
+				local widestAlias=5
+				for f in `echo $runtimes`
+				do
+					local pkgName=$(__dnvm_package_name "$f")
+					local pkgVersion=$(__dnvm_package_version "$f")
+					local alias=""
+					local delim=""
+					for i in "${arr[@]}"
+					do
+						if [[ ${i##*/} = "$pkgName.$pkgVersion" ]]
+						then
+							alias+="$delim${i%%/*}" 
+							delim=", " 
+							if [[ "${i%/*}" =~ \/missing$ ]]
+							then
+								alias+=" (missing)" 
+							fi
+						fi
+					done
+					if [ "${#alias}" -gt "$widestAlias" ]
+					then
+						widestAlias=${#alias} 
+					fi
+				done
+				local formatString="%-6s %-20s %-7s %-12s %-15s %-${widestAlias}s %s\n"
+				printf "$formatString" "Active" "Version" "Runtime" "Architecture" "OperatingSystem" "Alias" "Location"
+				printf "$formatString" "------" "-------" "-------" "------------" "---------------" "-----" "--------"
+			else
+				local formatString="%-6s %-20s %-7s %-12s %-15s %s\n"
+				printf "$formatString" "Active" "Version" "Runtime" "Architecture" "OperatingSystem" "Alias"
+				printf "$formatString" "------" "-------" "-------" "------------" "---------------" "-----"
+			fi
+			for f in `echo -e "$runtimes" | sort -t. -k2 -k3 -k4 -k1`
+			do
+				local location=`echo $f | sed 's/.*\([:]\)//'`
+				f=`echo $f | sed 's/\([:]\).*//'` 
+				local formattedHome=`(echo $location | sed s=$HOME=~=g)`
+				local active=""
+				[[ $PATH = *"$location/$f/bin"* ]] && local active="  *"
+				local pkgRuntime=$(__dnvm_package_runtime "$f")
+				local pkgName=$(__dnvm_package_name "$f")
+				local pkgVersion=$(__dnvm_package_version "$f")
+				local pkgArch=$(__dnvm_package_arch "$f")
+				local pkgOs=$(__dnvm_package_os "$f")
+				local alias=""
+				local delim=""
+				for i in "${arr[@]}"
+				do
+					if [[ ${i##*/} = "$pkgName.$pkgVersion" ]]
+					then
+						alias+="$delim${i%%/*}" 
+						delim=", " 
+						if [[ "${i%/*}" =~ \/missing$ ]]
+						then
+							alias+=" (missing)" 
+							formattedHome="" 
+						fi
+					fi
+				done
+				if [[ $2 = "-detailed" ]]
+				then
+					printf "$formatString" "$active" "$pkgVersion" "$pkgRuntime" "$pkgArch" "$pkgOs" "$alias" "$formattedHome"
+				else
+					printf "$formatString" "$active" "$pkgVersion" "$pkgRuntime" "$pkgArch" "$pkgOs" "$alias"
+				fi
+			done
+			echo "" ;;
+		(*) echo "Unknown command $1"
+			return 1 ;;
+	esac
+	return 0
+}
+
+ cchamberlain@MINIBEAST  ~/c/h/n/web   master ⁝ ? 
+ ❯❯❯ which
+
+ cchamberlain@MINIBEAST  ~/c/h/n/web   master ⁝ ? 
+ ❯❯❯ gwhich dnvm
+zsh: correct gwhich to which [nyae]? n
+zsh: command not found: gwhich
+
+ ✘ cchamberlain@MINIBEAST  ~/c/h/n/web   master ⁝ ? 
+ ❯❯❯ dnvm upgrade
+Determining latest version
+Latest version is 1.0.0-beta7 
+dnx-mono.1.0.0-beta7 already installed in /Users/cchamberlain/.dnx
+Adding /Users/cchamberlain/.dnx/runtimes/dnx-mono.1.0.0-beta7/bin to process PATH
+Updating alias 'default' to 'dnx-mono.1.0.0-beta7'
+dnvm:323: file exists: /Users/cchamberlain/.dnx/alias/default.alias
+
+ cchamberlain@MINIBEAST  ~/c/h/n/web   master ⁝ ? 
+ ❯❯❯ dnu upgrade
+Specify --help for a list of available options and commands.
+System.Exception: TODO: Error: unrecognized argument 'upgrade'
+  at Microsoft.Dnx.Runtime.Common.CommandLine.CommandLineApplication.HandleUnexpectedArg (Microsoft.Dnx.Runtime.Common.CommandLine.CommandLineApplication command, System.String[] args, Int32 index, System.String argTypeName) <0x10e68c8f0 + 0x001a2> in <filename unknown>:0 
+  at Microsoft.Dnx.Runtime.Common.CommandLine.CommandLineApplication.Execute (System.String[] args) <0x10e68b9d0 + 0x009d8> in <filename unknown>:0 
+  at Microsoft.Dnx.Tooling.Program.Main (System.String[] args) <0x10e682a70 + 0x00707> in <filename unknown>:0 
+  at (wrapper managed-to-native) System.Reflection.MonoMethod:InternalInvoke (System.Reflection.MonoMethod,object,object[],System.Exception&)
+  at System.Reflection.MonoMethod.Invoke (System.Object obj, BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) <0x10be9dfd0 + 0x000a3> in <filename unknown>:0 
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw () in <filename unknown>:line 0
+   at Microsoft.Dnx.Runtime.Common.EntryPointExecutor.Execute (System.Reflection.Assembly assembly, System.String[] args, IServiceProvider serviceProvider) in <filename unknown>:line 0
+   at Microsoft.Dnx.Host.Bootstrapper.RunAsync (System.Collections.Generic.List`1 args, IRuntimeEnvironment env, System.Runtime.Versioning.FrameworkName targetFramework) in <filename unknown>:line 0
+
+ ✘ cchamberlain@MINIBEAST  ~/c/h/n/web   master ⁝ ? 
+ ❯❯❯ dnu restore
+Microsoft .NET Development Utility Mono-x64-1.0.0-beta7-15532
+
+  CACHE https://www.myget.org/F/aspnetvnext/api/v2/
+  CACHE https://www.nuget.org/api/v2/
+Restoring packages for /Users/cchamberlain/cchamberlain/hackr/net/web/project.json
+  CACHE https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='EntityFramework.SQLite'
+  CACHE https://www.nuget.org/api/v2/FindPackagesById()?id='EntityFramework.SQLite'
+  CACHE https://www.nuget.org/api/v2/package/EntityFramework.SQLite/7.0.0-beta1
+  CACHE https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='EntityFramework.Commands'
+  CACHE https://www.nuget.org/api/v2/FindPackagesById()?id='EntityFramework.Commands'
+  CACHE https://www.nuget.org/api/v2/package/EntityFramework.Commands/7.0.0-beta1
+  CACHE https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Mvc'
+  CACHE https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Mvc'
+  CACHE https://www.nuget.org/api/v2/package/Microsoft.AspNet.Mvc/6.0.0-beta1
+  CACHE https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Mvc.TagHelpers'
+  CACHE https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Mvc.TagHelpers'
+  CACHE https://www.nuget.org/api/v2/package/Microsoft.AspNet.Mvc.TagHelpers/6.0.0-beta1
+  CACHE https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Authentication.Cookies'
+  CACHE https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Authentication.Cookies'
+  CACHE https://www.nuget.org/api/v2/package/Microsoft.AspNet.Authentication.Cookies/1.0.0-beta4
+  CACHE https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Authentication.Facebook'
+  CACHE https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Authentication.Facebook'
+  CACHE https://www.nuget.org/api/v2/package/Microsoft.AspNet.Authentication.Facebook/1.0.0-beta4
+  CACHE https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Authentication.Google'
+  CACHE https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Authentication.Google'
+  CACHE https://www.nuget.org/api/v2/package/Microsoft.AspNet.Authentication.Google/1.0.0-beta4
+  CACHE https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Authentication.MicrosoftAccount'
+  CACHE https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Authentication.MicrosoftAccount'
+  CACHE https://www.nuget.org/api/v2/package/Microsoft.AspNet.Authentication.MicrosoftAccount/1.0.0-beta4
+  CACHE https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Authentication.Twitter'
+  CACHE https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Authentication.Twitter'
+  CACHE https://www.nuget.org/api/v2/package/Microsoft.AspNet.Authentication.Twitter/1.0.0-beta4
+  CACHE https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Diagnostics'
+  CACHE https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Diagnostics'
+  CACHE https://www.nuget.org/api/v2/package/Microsoft.AspNet.Diagnostics/1.0.0-beta1
+  CACHE https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Mvc.Razor'
+^C
+>>> elapsed time 54s                                                                      
+
+ ✘ cchamberlain@MINIBEAST  ~/c/h/n/web   master ⁝ ? 
+ ❯❯❯ dnu --clear-cache
+Specify --help for a list of available options and commands.
+System.Exception: TODO: Error: unrecognized option '--clear-cache'
+  at Microsoft.Dnx.Runtime.Common.CommandLine.CommandLineApplication.HandleUnexpectedArg (Microsoft.Dnx.Runtime.Common.CommandLine.CommandLineApplication command, System.String[] args, Int32 index, System.String argTypeName) <0x1102d5950 + 0x001a2> in <filename unknown>:0 
+  at Microsoft.Dnx.Runtime.Common.CommandLine.CommandLineApplication.Execute (System.String[] args) <0x1102d49d0 + 0x00399> in <filename unknown>:0 
+  at Microsoft.Dnx.Tooling.Program.Main (System.String[] args) <0x1102cba70 + 0x00707> in <filename unknown>:0 
+  at (wrapper managed-to-native) System.Reflection.MonoMethod:InternalInvoke (System.Reflection.MonoMethod,object,object[],System.Exception&)
+  at System.Reflection.MonoMethod.Invoke (System.Object obj, BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) <0x10da1afd0 + 0x000a3> in <filename unknown>:0 
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw () in <filename unknown>:line 0
+   at Microsoft.Dnx.Runtime.Common.EntryPointExecutor.Execute (System.Reflection.Assembly assembly, System.String[] args, IServiceProvider serviceProvider) in <filename unknown>:line 0
+   at Microsoft.Dnx.Host.Bootstrapper.RunAsync (System.Collections.Generic.List`1 args, IRuntimeEnvironment env, System.Runtime.Versioning.FrameworkName targetFramework) in <filename unknown>:line 0
+
+ ✘ cchamberlain@MINIBEAST  ~/c/h/n/web   master ⁝ ? 
+ ❯❯❯ dnu --help
+Microsoft .NET Development Utility Mono-x64-1.0.0-beta7-15532
+
+Usage: dnu [options] [command]
+
+Options:
+  -v|--verbose  Show verbose output
+  -?|-h|--help  Show help information
+  --version     Show version information
+
+Commands:
+  build     Produce assemblies for the project in given directory
+  commands  Commands related to managing application commands (install, uninstall)
+  install   Install the given dependency
+  list      Print the dependencies of a given project
+  pack      Build NuGet packages for the project in given directory
+  packages  Commands related to managing local and remote packages folders
+  publish   Publish application for deployment
+  restore   Restore packages
+  sources   Commands related managing packages source code from external repositories.
+  wrap      Wrap a csproj/assembly into a project.json, which can be referenced by project.json files
+  feeds     Commands related to managing package feeds currently in use
+
+Use "dnu [command] --help" for more information about a command.
+
+ cchamberlain@MINIBEAST  ~/c/h/n/web   master ⁝ ? 
+ ❯❯❯ dnu list
+Microsoft .NET Development Utility Mono-x64-1.0.0-beta7-15532
+
+Listing dependencies for web (/Users/cchamberlain/cchamberlain/hackr/net/web/project.json)
+
+[Target framework DNX,Version=v4.6 (dnx46)]
+
+Framework references:
+  fx/Microsoft.CSharp  - Unresolved
+  fx/mscorlib  - Unresolved
+  fx/System  - Unresolved
+  fx/System.Core  - Unresolved
+
+Unresolved references:
+* EntityFramework.Commands 7.0.0-beta* - Unresolved
+* EntityFramework.SQLite 7.0.0-beta* - Unresolved
+* Microsoft.AspNet.Authentication.Cookies 1.0.0-beta* - Unresolved
+* Microsoft.AspNet.Authentication.Facebook 1.0.0-beta* - Unresolved
+* Microsoft.AspNet.Authentication.Google 1.0.0-beta* - Unresolved
+* Microsoft.AspNet.Authentication.MicrosoftAccount 1.0.0-beta* - Unresolved
+* Microsoft.AspNet.Authentication.Twitter 1.0.0-beta* - Unresolved
+* Microsoft.AspNet.Diagnostics 1.0.0-beta* - Unresolved
+* Microsoft.AspNet.Diagnostics.Entity 7.0.0-beta* - Unresolved
+* Microsoft.AspNet.Identity.EntityFramework 3.0.0-beta* - Unresolved
+* Microsoft.AspNet.Mvc 6.0.0-beta* - Unresolved
+* Microsoft.AspNet.Mvc.TagHelpers 6.0.0-beta* - Unresolved
+* Microsoft.AspNet.Server.IIS 1.0.0-beta* - Unresolved
+* Microsoft.AspNet.Server.Kestrel 1.0.0-beta* - Unresolved
+* Microsoft.AspNet.Server.WebListener 1.0.0-beta* - Unresolved
+* Microsoft.AspNet.StaticFiles 1.0.0-beta* - Unresolved
+* Microsoft.AspNet.Tooling.Razor 1.0.0-beta* - Unresolved
+* Microsoft.Framework.Configuration.Abstractions 1.0.0-beta* - Unresolved
+* Microsoft.Framework.Configuration.Json 1.0.0-beta* - Unresolved
+* Microsoft.Framework.Configuration.UserSecrets 1.0.0-beta* - Unresolved
+* Microsoft.Framework.Logging 1.0.0-beta* - Unresolved
+* Microsoft.Framework.Logging.Console 1.0.0-beta* - Unresolved
+* Microsoft.Framework.Logging.Debug 1.0.0-beta* - Unresolved
+
+
+[Target framework DNXCore,Version=v5.0 (dnxcore50)]
+
+Unresolved references:
+* EntityFramework.Commands 7.0.0-beta* - Unresolved
+* EntityFramework.SQLite 7.0.0-beta* - Unresolved
+* Microsoft.AspNet.Authentication.Cookies 1.0.0-beta* - Unresolved
+* Microsoft.AspNet.Authentication.Facebook 1.0.0-beta* - Unresolved
+* Microsoft.AspNet.Authentication.Google 1.0.0-beta* - Unresolved
+* Microsoft.AspNet.Authentication.MicrosoftAccount 1.0.0-beta* - Unresolved
+* Microsoft.AspNet.Authentication.Twitter 1.0.0-beta* - Unresolved
+* Microsoft.AspNet.Diagnostics 1.0.0-beta* - Unresolved
+* Microsoft.AspNet.Diagnostics.Entity 7.0.0-beta* - Unresolved
+* Microsoft.AspNet.Identity.EntityFramework 3.0.0-beta* - Unresolved
+* Microsoft.AspNet.Mvc 6.0.0-beta* - Unresolved
+* Microsoft.AspNet.Mvc.TagHelpers 6.0.0-beta* - Unresolved
+* Microsoft.AspNet.Server.IIS 1.0.0-beta* - Unresolved
+* Microsoft.AspNet.Server.Kestrel 1.0.0-beta* - Unresolved
+* Microsoft.AspNet.Server.WebListener 1.0.0-beta* - Unresolved
+* Microsoft.AspNet.StaticFiles 1.0.0-beta* - Unresolved
+* Microsoft.AspNet.Tooling.Razor 1.0.0-beta* - Unresolved
+* Microsoft.Framework.Configuration.Abstractions 1.0.0-beta* - Unresolved
+* Microsoft.Framework.Configuration.Json 1.0.0-beta* - Unresolved
+* Microsoft.Framework.Configuration.UserSecrets 1.0.0-beta* - Unresolved
+* Microsoft.Framework.Logging 1.0.0-beta* - Unresolved
+* Microsoft.Framework.Logging.Console 1.0.0-beta* - Unresolved
+* Microsoft.Framework.Logging.Debug 1.0.0-beta* - Unresolved
+
+
+ cchamberlain@MINIBEAST  ~/c/h/n/web   master ⁝ ? 
+ ❯❯❯ dnu
+Microsoft .NET Development Utility Mono-x64-1.0.0-beta7-15532
+
+Usage: dnu [options] [command]
+
+Options:
+  -v|--verbose  Show verbose output
+  -?|-h|--help  Show help information
+  --version     Show version information
+
+Commands:
+  build     Produce assemblies for the project in given directory
+  commands  Commands related to managing application commands (install, uninstall)
+  install   Install the given dependency
+  list      Print the dependencies of a given project
+  pack      Build NuGet packages for the project in given directory
+  packages  Commands related to managing local and remote packages folders
+  publish   Publish application for deployment
+  restore   Restore packages
+  sources   Commands related managing packages source code from external repositories.
+  wrap      Wrap a csproj/assembly into a project.json, which can be referenced by project.json files
+  feeds     Commands related to managing package feeds currently in use
+
+Use "dnu [command] --help" for more information about a command.
+
+ ✘ cchamberlain@MINIBEAST  ~/c/h/n/web   master ⁝ ? 
+ ❯❯❯ dnu restore --no-cache
+Microsoft .NET Development Utility Mono-x64-1.0.0-beta7-15532
+
+  GET https://www.myget.org/F/aspnetvnext/api/v2/
+  OK https://www.myget.org/F/aspnetvnext/api/v2/ 1150ms
+  GET https://www.nuget.org/api/v2/
+  OK https://www.nuget.org/api/v2/ 393ms
+Restoring packages for /Users/cchamberlain/cchamberlain/hackr/net/web/project.json
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='EntityFramework.SQLite'
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='EntityFramework.SQLite'
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='EntityFramework.Commands'
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='EntityFramework.Commands'
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Mvc'
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Mvc'
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Mvc.TagHelpers'
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Mvc.TagHelpers'
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Authentication.Cookies'
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Authentication.Cookies'
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Authentication.Facebook'
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Authentication.Facebook'
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Authentication.Google'
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Authentication.Google'
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Authentication.MicrosoftAccount'
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Authentication.MicrosoftAccount'
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Authentication.Twitter'
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Authentication.Twitter'
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Diagnostics'
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Diagnostics'
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Diagnostics.Entity'
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Diagnostics.Entity'
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Identity.EntityFramework'
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Identity.EntityFramework'
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Server.IIS'
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Server.IIS'
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Server.WebListener'
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Server.WebListener'
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.StaticFiles'
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.StaticFiles'
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Tooling.Razor'
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Tooling.Razor'
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.Framework.Configuration.Abstractions'
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.Framework.Configuration.Abstractions'
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.Framework.Configuration.Json'
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.Framework.Configuration.Json'
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.Framework.Configuration.UserSecrets'
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.Framework.Configuration.UserSecrets'
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.Framework.Logging'
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.Framework.Logging'
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.Framework.Logging.Console'
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.Framework.Logging.Console'
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.Framework.Logging.Debug'
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.Framework.Logging.Debug'
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Server.Kestrel'
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Server.Kestrel'
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='EntityFramework.SQLite' 99ms
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='EntityFramework.Commands' 268ms
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Mvc' 530ms
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='EntityFramework.SQLite' 608ms
+  GET https://www.nuget.org/api/v2/package/EntityFramework.SQLite/7.0.0-beta1
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Mvc.TagHelpers' 620ms
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Authentication.Cookies' 715ms
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Authentication.Facebook' 806ms
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Authentication.Google' 898ms
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Authentication.MicrosoftAccount' 992ms
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='EntityFramework.Commands' 1041ms
+  GET https://www.nuget.org/api/v2/package/EntityFramework.Commands/7.0.0-beta1
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Authentication.Twitter' 1085ms
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Diagnostics' 1181ms
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Diagnostics.Entity' 1279ms
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Identity.EntityFramework' 1381ms
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Mvc' 1465ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.AspNet.Mvc/6.0.0-beta1
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Server.IIS' 1476ms
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Server.WebListener' 1574ms
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.StaticFiles' 1669ms
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Mvc.TagHelpers' 1751ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.AspNet.Mvc.TagHelpers/6.0.0-beta1
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Tooling.Razor' 1762ms
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.Framework.Configuration.Abstractions' 1853ms
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.Framework.Configuration.Json' 1960ms
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Authentication.Cookies' 2017ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.AspNet.Authentication.Cookies/1.0.0-beta4
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.Framework.Configuration.UserSecrets' 2057ms
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.Framework.Logging' 2159ms
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.Framework.Logging.Console' 2253ms
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Authentication.Facebook' 2295ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.AspNet.Authentication.Facebook/1.0.0-beta4
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.Framework.Logging.Debug' 2340ms
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Server.Kestrel' 2437ms
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Authentication.Google' 2576ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.AspNet.Authentication.Google/1.0.0-beta4
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Authentication.MicrosoftAccount' 2834ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.AspNet.Authentication.MicrosoftAccount/1.0.0-beta4
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Authentication.Twitter' 3103ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.AspNet.Authentication.Twitter/1.0.0-beta4
+  OK https://www.nuget.org/api/v2/package/EntityFramework.SQLite/7.0.0-beta1 2635ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='EntityFramework.Migrations'
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='EntityFramework.Migrations'
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.Data.SQLite'
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.Data.SQLite'
+  OK https://www.nuget.org/api/v2/package/EntityFramework.Commands/7.0.0-beta1 2260ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Hosting'
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Hosting'
+  OK https://www.nuget.org/api/v2/package/Microsoft.AspNet.Mvc/6.0.0-beta1 1844ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Mvc.Razor'
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Mvc.Razor'
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Xml.XmlDocument'
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='System.Xml.XmlDocument'
+  OK https://www.nuget.org/api/v2/package/Microsoft.AspNet.Mvc.TagHelpers/6.0.0-beta1 1590ms
+  OK https://www.nuget.org/api/v2/package/Microsoft.AspNet.Authentication.Cookies/1.0.0-beta4 1342ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Authentication'
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Authentication'
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Newtonsoft.Json'
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Newtonsoft.Json'
+  OK https://www.nuget.org/api/v2/package/Microsoft.AspNet.Authentication.Facebook/1.0.0-beta4 1078ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Authentication.OAuth'
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Authentication.OAuth'
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='EntityFramework.Migrations' 99ms
+  GET https://www.nuget.org/api/v2/package/EntityFramework.Migrations/7.0.0-beta1
+  OK https://www.nuget.org/api/v2/package/Microsoft.AspNet.Authentication.Google/1.0.0-beta4 827ms
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Diagnostics' 3404ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.AspNet.Diagnostics/1.0.0-beta1
+  OK https://www.nuget.org/api/v2/package/Microsoft.AspNet.Authentication.MicrosoftAccount/1.0.0-beta4 581ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Dynamic.Runtime'
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='System.Dynamic.Runtime'
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.ObjectModel'
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='System.ObjectModel'
+  OK https://www.nuget.org/api/v2/package/Microsoft.AspNet.Authentication.Twitter/1.0.0-beta4 333ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Net.Http.WinHttpHandler'
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='System.Net.Http.WinHttpHandler'
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.Data.SQLite' 194ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.Data.SQLite/1.0.0-beta1
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Hosting' 289ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.AspNet.Hosting/1.0.0-beta1
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Mvc.Razor' 380ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.AspNet.Mvc.Razor/6.0.0-beta1
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Diagnostics.Entity' 3689ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.AspNet.Diagnostics.Entity/7.0.0-beta1
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='System.Xml.XmlDocument' 483ms
+  GET https://www.nuget.org/api/v2/package/System.Xml.XmlDocument/4.0.0-beta-22231
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Authentication' 524ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.AspNet.Authentication/1.0.0-beta4
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Identity.EntityFramework' 3967ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.AspNet.Identity.EntityFramework/3.0.0-beta1
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Newtonsoft.Json' 639ms
+  GET https://www.nuget.org/api/v2/package/Newtonsoft.Json/6.0.6
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Authentication.OAuth' 715ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.AspNet.Authentication.OAuth/1.0.0-beta4
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Server.IIS' 4229ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.AspNet.Server.IIS/1.0.0-beta1
+  OK https://www.nuget.org/api/v2/package/EntityFramework.Migrations/7.0.0-beta1 850ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='EntityFramework.Relational'
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='EntityFramework.Relational'
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.CSharp'
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.CSharp'
+  OK https://www.nuget.org/api/v2/package/Microsoft.AspNet.Diagnostics/1.0.0-beta1 901ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.FeatureModel'
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.FeatureModel'
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Http'
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Http'
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.PipelineCore'
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.PipelineCore'
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.RequestContainer'
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.RequestContainer'
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Collections'
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='System.Collections'
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.ComponentModel'
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='System.ComponentModel'
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='System.Dynamic.Runtime' 968ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Diagnostics.Debug'
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='System.ObjectModel' 1070ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='System.Diagnostics.Debug'
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Server.WebListener' 4501ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Diagnostics.Tools'
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='System.Net.Http.WinHttpHandler' 1147ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='System.Diagnostics.Tools'
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.StaticFiles' 4770ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Globalization'
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Tooling.Razor' 5111ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='System.Globalization'
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.Framework.Configuration.Abstractions' 5375ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.IO'
+  OK https://www.nuget.org/api/v2/package/Microsoft.Data.SQLite/1.0.0-beta1 1946ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='System.IO'
+  OK https://www.nuget.org/api/v2/package/Microsoft.AspNet.Hosting/1.0.0-beta1 1864ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.IO.FileSystem'
+  OK https://www.nuget.org/api/v2/package/Microsoft.AspNet.Mvc.Razor/6.0.0-beta1 1823ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='System.IO.FileSystem'
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='EntityFramework.Relational' 1265ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Linq'
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.CSharp' 1362ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='System.Linq'
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.Framework.Configuration.Json' 5658ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Reflection'
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.FeatureModel' 1393ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='System.Reflection'
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Http' 1491ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Reflection.Extensions'
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.PipelineCore' 1586ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='System.Reflection.Extensions'
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.Framework.Configuration.UserSecrets' 5946ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Resources.ResourceManager'
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.RequestContainer' 1685ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='System.Resources.ResourceManager'
+  OK https://www.nuget.org/api/v2/package/Microsoft.AspNet.Diagnostics.Entity/7.0.0-beta1 2382ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Runtime'
+  OK https://www.nuget.org/api/v2/package/System.Xml.XmlDocument/4.0.0-beta-22231 2308ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='System.Runtime'
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='System.Collections' 1785ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Runtime.Extensions'
+  OK https://www.nuget.org/api/v2/package/Microsoft.AspNet.Authentication/1.0.0-beta4 2255ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='System.Runtime.Extensions'
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='System.ComponentModel' 1888ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Threading'
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.Framework.Logging' 6211ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='System.Threading'
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='System.Diagnostics.Debug' 1815ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Threading.Tasks'
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='System.Diagnostics.Tools' 1815ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='System.Threading.Tasks'
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.Framework.Logging.Console' 6486ms
+  GET https://www.nuget.org/api/v2/package/System.Dynamic.Runtime/4.0.10-beta-22816
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='System.Globalization' 1382ms
+  GET https://www.nuget.org/api/v2/package/System.ObjectModel/4.0.10-beta-22816
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='System.IO' 1179ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.AspNet.Server.WebListener/1.0.0-beta1
+  OK https://www.nuget.org/api/v2/package/Microsoft.AspNet.Identity.EntityFramework/3.0.0-beta1 2699ms
+  GET https://www.nuget.org/api/v2/package/System.Net.Http.WinHttpHandler/4.0.0-beta-22816
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='System.IO.FileSystem' 1242ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.AspNet.StaticFiles/1.0.0-beta1
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.Framework.Logging.Debug' 6761ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.AspNet.Tooling.Razor/1.0.0-beta4
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='System.Linq' 1254ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.Framework.Configuration.Abstractions/1.0.0-beta5
+  OK https://www.nuget.org/api/v2/package/Newtonsoft.Json/6.0.6 2899ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Data.Common'
+  OK https://www.nuget.org/api/v2/package/Microsoft.AspNet.Authentication.OAuth/1.0.0-beta4 2820ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='System.Data.Common'
+  OK https://www.nuget.org/api/v2/package/Microsoft.AspNet.Server.IIS/1.0.0-beta1 2695ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Runtime.InteropServices'
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='System.Reflection' 1299ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='System.Runtime.InteropServices'
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Server.Kestrel' 7051ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Security.DataProtection'
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='System.Reflection.Extensions' 1259ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Security.DataProtection'
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='System.Resources.ResourceManager' 1296ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.Framework.ConfigurationModel'
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='EntityFramework.Migrations' 4035ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.Framework.ConfigurationModel'
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='System.Runtime' 1308ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.Framework.DependencyInjection'
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='System.Runtime.Extensions' 1369ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.Framework.DependencyInjection'
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.Data.SQLite' 4301ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.Framework.OptionsModel'
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='System.Threading' 1389ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.Framework.OptionsModel'
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='System.Threading.Tasks' 1319ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Console'
+  OK https://www.nuget.org/api/v2/package/System.Dynamic.Runtime/4.0.10-beta-22816 1333ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='System.Console'
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Hosting' 4565ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Diagnostics.Contracts'
+  OK https://www.nuget.org/api/v2/package/System.ObjectModel/4.0.10-beta-22816 1413ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='System.Diagnostics.Contracts'
+  OK https://www.nuget.org/api/v2/package/Microsoft.AspNet.Server.WebListener/1.0.0-beta1 1378ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Mvc.Core'
+  OK https://www.nuget.org/api/v2/package/System.Net.Http.WinHttpHandler/4.0.0-beta-22816 1405ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Mvc.Core'
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Mvc.Razor' 4828ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Mvc.Razor.Host'
+  OK https://www.nuget.org/api/v2/package/Microsoft.AspNet.StaticFiles/1.0.0-beta1 1403ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Mvc.Razor.Host'
+  OK https://www.nuget.org/api/v2/package/Microsoft.AspNet.Tooling.Razor/1.0.0-beta4 1462ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.CodeAnalysis.CSharp'
+  OK https://www.nuget.org/api/v2/package/Microsoft.Framework.Configuration.Abstractions/1.0.0-beta5 1461ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.CodeAnalysis.CSharp'
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='System.Data.Common' 1487ms
+  GET https://www.nuget.org/api/v2/package/EntityFramework.Relational/7.0.0-beta1
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Xml.XmlDocument' 5110ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.CSharp/4.0.0-beta-22231
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='System.Runtime.InteropServices' 1496ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.Framework.Configuration.Json/1.0.0-beta5
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Security.DataProtection' 1436ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.AspNet.FeatureModel/1.0.0-beta1
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.Framework.ConfigurationModel' 1360ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.AspNet.Http/1.0.0-beta1
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Authentication' 5346ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.AspNet.PipelineCore/1.0.0-beta1
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.Framework.DependencyInjection' 1283ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.Framework.Configuration.UserSecrets/1.0.0-beta5
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.Framework.OptionsModel' 1272ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.AspNet.RequestContainer/1.0.0-beta1
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Newtonsoft.Json' 5591ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Threading.ExecutionContext'
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='System.Console' 1149ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='System.Threading.ExecutionContext'
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='System.Diagnostics.Contracts' 1162ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Xml.ReaderWriter'
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Mvc.Core' 1098ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='System.Xml.ReaderWriter'
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Authentication.OAuth' 5874ms
+  GET https://www.nuget.org/api/v2/package/System.Collections/4.0.10-beta-22231
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Mvc.Razor.Host' 1117ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.DataProtection'
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.CodeAnalysis.CSharp' 1046ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.DataProtection'
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Dynamic.Runtime' 6103ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Http.Interfaces'
+  OK https://www.nuget.org/api/v2/package/EntityFramework.Relational/7.0.0-beta1 1132ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Http.Interfaces'
+  OK https://www.nuget.org/api/v2/package/Microsoft.CSharp/4.0.0-beta-22231 1160ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Http.Core'
+  OK https://www.nuget.org/api/v2/package/Microsoft.Framework.Configuration.Json/1.0.0-beta5 1142ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Http.Core'
+  OK https://www.nuget.org/api/v2/package/Microsoft.AspNet.FeatureModel/1.0.0-beta1 1128ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Http.Extensions'
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.ObjectModel' 6379ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Http.Extensions'
+  OK https://www.nuget.org/api/v2/package/Microsoft.AspNet.Http/1.0.0-beta1 1113ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.Framework.Logging.Interfaces'
+  OK https://www.nuget.org/api/v2/package/Microsoft.AspNet.PipelineCore/1.0.0-beta1 1210ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.Framework.Logging.Interfaces'
+  OK https://www.nuget.org/api/v2/package/Microsoft.Framework.Configuration.UserSecrets/1.0.0-beta5 1199ms
+  GET https://www.nuget.org/api/v2/package/System.ComponentModel/4.0.0-beta-22231
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Net.Http.WinHttpHandler' 6623ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.Framework.Logging/1.0.0-beta1
+  OK https://www.nuget.org/api/v2/package/Microsoft.AspNet.RequestContainer/1.0.0-beta1 1183ms
+  GET https://www.nuget.org/api/v2/package/System.Diagnostics.Debug/4.0.10-beta-22231
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='System.Threading.ExecutionContext' 1157ms
+  GET https://www.nuget.org/api/v2/package/System.Diagnostics.Tools/4.0.0-beta-22231
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='System.Xml.ReaderWriter' 1072ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.Framework.Logging.Console/1.0.0-beta1
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='EntityFramework.Relational' 6085ms
+  GET https://www.nuget.org/api/v2/package/System.Globalization/4.0.10-beta-22231
+  OK https://www.nuget.org/api/v2/package/System.Collections/4.0.10-beta-22231 1115ms
+  GET https://www.nuget.org/api/v2/package/System.IO/4.0.10-beta-22231
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.DataProtection' 1066ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Identity'
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Http.Interfaces' 996ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Identity'
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Http.Core' 980ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='EntityFramework.SqlServer'
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.CSharp' 6399ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='EntityFramework.SqlServer'
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Http.Extensions' 923ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Linq.Expressions'
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.Framework.Logging.Interfaces' 903ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='System.Linq.Expressions'
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.FeatureModel' 6602ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Linq.Queryable'
+  OK https://www.nuget.org/api/v2/package/System.ComponentModel/4.0.0-beta-22231 934ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='System.Linq.Queryable'
+  OK https://www.nuget.org/api/v2/package/Microsoft.Framework.Logging/1.0.0-beta1 987ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Security.Claims'
+  OK https://www.nuget.org/api/v2/package/System.Diagnostics.Debug/4.0.10-beta-22231 1056ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='System.Security.Claims'
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Http' 6875ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Security.Principal'
+  OK https://www.nuget.org/api/v2/package/System.Diagnostics.Tools/4.0.0-beta-22231 1064ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='System.Security.Principal'
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.PipelineCore' 7137ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Text.Encoding'
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Identity' 1003ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='System.Text.Encoding'
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='EntityFramework.SqlServer' 986ms
+  GET https://www.nuget.org/api/v2/package/System.IO.FileSystem/4.0.0-beta-22231
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.RequestContainer' 7388ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.Framework.Logging.Debug/1.0.0-beta6
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='System.Linq.Expressions' 916ms
+  GET https://www.nuget.org/api/v2/package/System.Linq/4.0.0-beta-22231
+  OK https://www.nuget.org/api/v2/package/Microsoft.Framework.Logging.Console/1.0.0-beta1 1503ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Loader.IIS.Interop'
+  OK https://www.nuget.org/api/v2/package/System.Globalization/4.0.10-beta-22231 1439ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Loader.IIS.Interop'
+  OK https://www.nuget.org/api/v2/package/System.IO/4.0.10-beta-22231 1425ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Loader.IIS'
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='System.Linq.Queryable' 904ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Loader.IIS'
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='System.Security.Claims' 798ms
+  GET https://www.nuget.org/api/v2/package/System.Reflection/4.0.10-beta-22231
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Collections' 7654ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.AspNet.Server.Kestrel/1.0.0-beta1
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='System.Security.Principal' 817ms
+  GET https://www.nuget.org/api/v2/package/System.Reflection.Extensions/4.0.0-beta-22231
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='System.Text.Encoding' 588ms
+  GET https://www.nuget.org/api/v2/package/System.Resources.ResourceManager/4.0.0-beta-22231
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.ComponentModel' 7918ms
+  GET https://www.nuget.org/api/v2/package/System.Runtime/4.0.20-beta-22231
+  OK https://www.nuget.org/api/v2/package/System.IO.FileSystem/4.0.0-beta-22231 629ms
+  GET https://www.nuget.org/api/v2/package/System.Runtime.Extensions/4.0.10-beta-22231
+  OK https://www.nuget.org/api/v2/package/Microsoft.Framework.Logging.Debug/1.0.0-beta6 647ms
+  GET https://www.nuget.org/api/v2/package/System.Threading/4.0.0-beta-22231
+  OK https://www.nuget.org/api/v2/package/System.Linq/4.0.0-beta-22231 712ms
+  GET https://www.nuget.org/api/v2/package/System.Threading.Tasks/4.0.10-beta-22231
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Loader.IIS.Interop' 727ms
+  GET https://www.nuget.org/api/v2/package/System.Reflection/4.0.10-beta-22816
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Diagnostics.Debug' 8124ms
+  GET https://www.nuget.org/api/v2/package/System.Runtime/4.0.20-beta-22816
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Loader.IIS' 766ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.Net.Http.Server'
+  OK https://www.nuget.org/api/v2/package/System.Reflection/4.0.10-beta-22231 778ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.Net.Http.Server'
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Diagnostics.Tools' 8274ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.Net.WebSocketAbstractions'
+  OK https://www.nuget.org/api/v2/package/Microsoft.AspNet.Server.Kestrel/1.0.0-beta1 844ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.Net.WebSocketAbstractions'
+  OK https://www.nuget.org/api/v2/package/System.Reflection.Extensions/4.0.0-beta-22231 844ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.Win32.Primitives'
+  OK https://www.nuget.org/api/v2/package/System.Resources.ResourceManager/4.0.0-beta-22231 830ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.Win32.Primitives'
+  OK https://www.nuget.org/api/v2/package/System.Runtime/4.0.20-beta-22231 794ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Collections.Concurrent'
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Globalization' 8342ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='System.Collections.Concurrent'
+  OK https://www.nuget.org/api/v2/package/System.Runtime.Extensions/4.0.10-beta-22231 859ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Net.Primitives'
+  OK https://www.nuget.org/api/v2/package/System.Threading/4.0.0-beta-22231 843ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='System.Net.Primitives'
+  OK https://www.nuget.org/api/v2/package/System.Threading.Tasks/4.0.10-beta-22231 830ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Runtime.Handles'
+  OK https://www.nuget.org/api/v2/package/System.Reflection/4.0.10-beta-22816 864ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='System.Runtime.Handles'
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.IO' 8007ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Security.Cryptography.X509Certificates'
+  OK https://www.nuget.org/api/v2/package/System.Runtime/4.0.20-beta-22816 943ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='System.Security.Cryptography.X509Certificates'
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.Net.Http.Server' 807ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Text.Encoding.Extensions'
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.Net.WebSocketAbstractions' 789ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='System.Text.Encoding.Extensions'
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.IO.FileSystem' 8212ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Threading.Overlapped'
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.Win32.Primitives' 749ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='System.Threading.Overlapped'
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='System.Collections.Concurrent' 683ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Threading.ThreadPool'
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='System.Net.Primitives' 715ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='System.Threading.ThreadPool'
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Linq' 8457ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Net.Http'
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='System.Runtime.Handles' 644ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='System.Net.Http'
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='System.Security.Cryptography.X509Certificates' 650ms
+  GET https://www.nuget.org/api/v2/package/System.Threading.Tasks/4.0.10-beta-22816
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='System.Text.Encoding.Extensions' 599ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.FileSystems'
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Reflection' 8571ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.FileSystems'
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='System.Threading.Overlapped' 603ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Razor.Runtime'
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='System.Threading.ThreadPool' 494ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Razor.Runtime'
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Reflection.Extensions' 8704ms
+  GET https://www.nuget.org/api/v2/package/System.Linq/4.0.0-beta-23019
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='System.Net.Http' 514ms
+  GET https://www.nuget.org/api/v2/package/System.Data.Common/1.0.0-beta1
+  OK https://www.nuget.org/api/v2/package/System.Threading.Tasks/4.0.10-beta-22816 526ms
+  GET https://www.nuget.org/api/v2/package/System.Runtime.InteropServices/4.0.20-beta-22231
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.FileSystems' 456ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.AspNet.Security.DataProtection/1.0.0-beta1
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Resources.ResourceManager' 8840ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.Framework.ConfigurationModel/1.0.0-beta1
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Razor.Runtime' 395ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.Framework.DependencyInjection/1.0.0-beta1
+  OK https://www.nuget.org/api/v2/package/System.Linq/4.0.0-beta-23019 406ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.Framework.OptionsModel/1.0.0-beta1
+  OK https://www.nuget.org/api/v2/package/System.Data.Common/1.0.0-beta1 481ms
+  GET https://www.nuget.org/api/v2/package/System.Console/4.0.0-beta-22231
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Runtime' 9000ms
+  GET https://www.nuget.org/api/v2/package/System.Diagnostics.Contracts/4.0.0-beta-22231
+  OK https://www.nuget.org/api/v2/package/System.Runtime.InteropServices/4.0.20-beta-22231 454ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.AspNet.Mvc.Core/6.0.0-beta1
+  OK https://www.nuget.org/api/v2/package/Microsoft.AspNet.Security.DataProtection/1.0.0-beta1 491ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.AspNet.Mvc.Razor.Host/6.0.0-beta1
+  OK https://www.nuget.org/api/v2/package/Microsoft.Framework.ConfigurationModel/1.0.0-beta1 460ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.CodeAnalysis.CSharp/1.0.0-beta1-20141031-01
+  OK https://www.nuget.org/api/v2/package/Microsoft.Framework.DependencyInjection/1.0.0-beta1 549ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='EntityFramework'
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Runtime.Extensions' 9292ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='EntityFramework'
+  OK https://www.nuget.org/api/v2/package/Microsoft.Framework.OptionsModel/1.0.0-beta1 510ms
+  GET https://www.nuget.org/api/v2/package/System.Dynamic.Runtime/4.0.0-beta-22231
+  OK https://www.nuget.org/api/v2/package/System.Console/4.0.0-beta-22231 498ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.Framework.Configuration'
+  OK https://www.nuget.org/api/v2/package/System.Diagnostics.Contracts/4.0.0-beta-22231 512ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.Framework.Configuration'
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Threading' 9450ms
+  GET https://www.nuget.org/api/v2/package/System.Dynamic.Runtime/4.0.10-beta-23019
+  OK https://www.nuget.org/api/v2/package/Microsoft.AspNet.Mvc.Core/6.0.0-beta1 617ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.Framework.Runtime.Interfaces'
+  OK https://www.nuget.org/api/v2/package/Microsoft.AspNet.Mvc.Razor.Host/6.0.0-beta1 572ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.Framework.Runtime.Interfaces'
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='EntityFramework' 531ms
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Threading.Tasks' 9624ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Reflection.TypeExtensions'
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='System.Reflection.TypeExtensions'
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.Framework.Configuration' 520ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Globalization.Extensions'
+  OK https://www.nuget.org/api/v2/package/Microsoft.CodeAnalysis.CSharp/1.0.0-beta1-20141031-01 865ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='System.Globalization.Extensions'
+  OK https://www.nuget.org/api/v2/package/System.Dynamic.Runtime/4.0.0-beta-22231 717ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.HttpFeature'
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Data.Common' 9301ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.HttpFeature'
+  OK https://www.nuget.org/api/v2/package/System.Dynamic.Runtime/4.0.10-beta-23019 568ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.WebUtilities'
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.Framework.Runtime.Interfaces' 526ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.WebUtilities'
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='System.Reflection.TypeExtensions' 437ms
+  GET https://www.nuget.org/api/v2/package/System.Runtime/4.0.20-beta-23019
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Runtime.InteropServices' 9545ms
+  GET https://www.nuget.org/api/v2/package/System.Threading.ExecutionContext/4.0.0-beta-22231
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='System.Globalization.Extensions' 357ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.AspNet.DataProtection/1.0.0-beta4
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.HttpFeature' 375ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.AspNet.Http.Interfaces/1.0.0-beta4
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.WebUtilities' 387ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.AspNet.Http.Core/1.0.0-beta4
+  OK https://www.nuget.org/api/v2/package/System.Runtime/4.0.20-beta-23019 405ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.AspNet.Http.Extensions/1.0.0-beta4
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Security.DataProtection' 9730ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.AspNet.Http.Extensions/1.0.0-beta1
+  OK https://www.nuget.org/api/v2/package/System.Threading.ExecutionContext/4.0.0-beta-22231 388ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.Framework.Logging.Interfaces/1.0.0-beta4
+  OK https://www.nuget.org/api/v2/package/Microsoft.AspNet.DataProtection/1.0.0-beta4 469ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.Framework.Logging.Interfaces/1.0.0-beta1
+  OK https://www.nuget.org/api/v2/package/Microsoft.AspNet.Http.Interfaces/1.0.0-beta4 449ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Diagnostics.TraceSource'
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.Framework.ConfigurationModel' 9782ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='System.Diagnostics.TraceSource'
+  OK https://www.nuget.org/api/v2/package/Microsoft.AspNet.Http.Core/1.0.0-beta4 447ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.AspNet.Identity/3.0.0-beta1
+  OK https://www.nuget.org/api/v2/package/Microsoft.AspNet.Http.Extensions/1.0.0-beta4 406ms
+  GET https://www.nuget.org/api/v2/package/EntityFramework.SqlServer/7.0.0-beta1
+  OK https://www.nuget.org/api/v2/package/Microsoft.AspNet.Http.Extensions/1.0.0-beta1 489ms
+  GET https://www.nuget.org/api/v2/package/System.Linq.Expressions/4.0.0-beta-22231
+  OK https://www.nuget.org/api/v2/package/Microsoft.Framework.Logging.Interfaces/1.0.0-beta4 510ms
+  GET https://www.nuget.org/api/v2/package/System.Linq.Expressions/4.0.10-beta-22816
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.Framework.DependencyInjection' 9987ms
+  GET https://www.nuget.org/api/v2/package/System.Linq.Queryable/4.0.0-beta-22231
+  OK https://www.nuget.org/api/v2/package/Microsoft.Framework.Logging.Interfaces/1.0.0-beta1 495ms
+  GET https://www.nuget.org/api/v2/package/System.Security.Claims/4.0.0-beta-22231
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='System.Diagnostics.TraceSource' 448ms
+  GET https://www.nuget.org/api/v2/package/System.Security.Principal/4.0.0-beta-22231
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.Framework.OptionsModel' 10061ms
+  GET https://www.nuget.org/api/v2/package/System.Text.Encoding/4.0.10-beta-22231
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Console' 10192ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.IO.FileSystem.Primitives'
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Diagnostics.Contracts' 10333ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='System.IO.FileSystem.Primitives'
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='System.IO.FileSystem.Primitives' 100ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.Framework.Logging.Abstractions'
+  OK https://www.nuget.org/api/v2/package/Microsoft.AspNet.Identity/3.0.0-beta1 1239ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.Framework.Logging.Abstractions'
+  OK https://www.nuget.org/api/v2/package/EntityFramework.SqlServer/7.0.0-beta1 1180ms
+  GET https://www.nuget.org/api/v2/package/System.Collections/4.0.10-beta-23109
+  OK https://www.nuget.org/api/v2/package/System.Linq.Expressions/4.0.0-beta-22231 1115ms
+  GET https://www.nuget.org/api/v2/package/System.Globalization/4.0.10-beta-23109
+  OK https://www.nuget.org/api/v2/package/System.Linq.Expressions/4.0.10-beta-22816 1054ms
+  GET https://www.nuget.org/api/v2/package/System.Linq/4.0.0-beta-23109
+  OK https://www.nuget.org/api/v2/package/System.Linq.Queryable/4.0.0-beta-22231 1057ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.AspNet.Loader.IIS.Interop/1.0.0-beta1
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Mvc.Core' 10464ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.AspNet.Loader.IIS/1.0.0-beta1
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.Framework.Logging.Abstractions' 94ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Reflection.Primitives'
+  OK https://www.nuget.org/api/v2/package/System.Security.Claims/4.0.0-beta-22231 1022ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='System.Reflection.Primitives'
+  OK https://www.nuget.org/api/v2/package/System.Security.Principal/4.0.0-beta-22231 964ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Threading.Thread'
+  OK https://www.nuget.org/api/v2/package/System.Text.Encoding/4.0.10-beta-22231 859ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='System.Threading.Thread'
+  OK https://www.nuget.org/api/v2/package/System.Collections/4.0.10-beta-23109 217ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Diagnostics.Tracing'
+  OK https://www.nuget.org/api/v2/package/System.Globalization/4.0.10-beta-23109 255ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='System.Diagnostics.Tracing'
+  OK https://www.nuget.org/api/v2/package/System.Linq/4.0.0-beta-23109 310ms
+  GET https://www.nuget.org/api/v2/package/System.IO/4.0.10-beta-22816
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Mvc.Razor.Host' 10619ms
+  GET https://www.nuget.org/api/v2/package/System.IO/4.0.0-beta-23019
+  OK https://www.nuget.org/api/v2/package/Microsoft.AspNet.Loader.IIS.Interop/1.0.0-beta1 371ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.Net.Http.Server/1.0.0-beta1
+  OK https://www.nuget.org/api/v2/package/Microsoft.AspNet.Loader.IIS/1.0.0-beta1 443ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.Net.WebSocketAbstractions/1.0.0-beta1
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='System.Reflection.Primitives' 501ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.Win32.Primitives/4.0.0-beta-22231
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.CodeAnalysis.CSharp' 10777ms
+  GET https://www.nuget.org/api/v2/package/System.Collections.Concurrent/4.0.0-beta-22231
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='System.Threading.Thread' 564ms
+  GET https://www.nuget.org/api/v2/package/System.Net.Primitives/4.0.10-beta-22231
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='System.Diagnostics.Tracing' 522ms
+  GET https://www.nuget.org/api/v2/package/System.Net.Primitives/4.0.10-beta-22816
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Threading.ExecutionContext' 10316ms
+  GET https://www.nuget.org/api/v2/package/System.Runtime.Handles/4.0.0-beta-22231
+  OK https://www.nuget.org/api/v2/package/System.IO/4.0.10-beta-22816 554ms
+  GET https://www.nuget.org/api/v2/package/System.Security.Cryptography.X509Certificates/4.0.0-beta-22231
+  OK https://www.nuget.org/api/v2/package/System.IO/4.0.0-beta-23019 619ms
+  GET https://www.nuget.org/api/v2/package/System.Security.Cryptography.X509Certificates/4.0.0-beta-22816
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Xml.ReaderWriter' 10464ms
+  GET https://www.nuget.org/api/v2/package/System.Text.Encoding.Extensions/4.0.10-beta-22231
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.DataProtection' 10558ms
+  GET https://www.nuget.org/api/v2/package/System.Threading.Overlapped/4.0.0-beta-22231
+  OK https://www.nuget.org/api/v2/package/Microsoft.Net.Http.Server/1.0.0-beta1 1249ms
+  GET https://www.nuget.org/api/v2/package/System.Threading.ThreadPool/4.0.10-beta-22231
+  OK https://www.nuget.org/api/v2/package/Microsoft.Net.WebSocketAbstractions/1.0.0-beta1 1191ms
+  GET https://www.nuget.org/api/v2/package/System.Net.Http/4.0.0-beta-22816
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Http.Interfaces' 10598ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.AspNet.FileSystems/1.0.0-beta1
+  OK https://www.nuget.org/api/v2/package/Microsoft.Win32.Primitives/4.0.0-beta-22231 1145ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.AspNet.Razor.Runtime/4.0.0-beta4
+  OK https://www.nuget.org/api/v2/package/System.Collections.Concurrent/4.0.0-beta-22231 1125ms
+  GET https://www.nuget.org/api/v2/package/System.Collections/4.0.10-beta-23019
+  OK https://www.nuget.org/api/v2/package/System.Net.Primitives/4.0.10-beta-22231 1080ms
+  GET https://www.nuget.org/api/v2/package/System.Resources.ResourceManager/4.0.0-beta-23019
+  OK https://www.nuget.org/api/v2/package/System.Net.Primitives/4.0.10-beta-22816 1000ms
+  GET https://www.nuget.org/api/v2/package/System.Diagnostics.Debug/4.0.10-beta-23019
+  OK https://www.nuget.org/api/v2/package/System.Runtime.Handles/4.0.0-beta-22231 939ms
+  GET https://www.nuget.org/api/v2/package/System.Runtime.Extensions/4.0.10-beta-23019
+  OK https://www.nuget.org/api/v2/package/System.Security.Cryptography.X509Certificates/4.0.0-beta-22231 933ms
+  GET https://www.nuget.org/api/v2/package/System.Collections/4.0.0-beta-23019
+  OK https://www.nuget.org/api/v2/package/System.Security.Cryptography.X509Certificates/4.0.0-beta-22816 881ms
+  GET https://www.nuget.org/api/v2/package/System.Globalization/4.0.0-beta-23019
+  OK https://www.nuget.org/api/v2/package/System.Text.Encoding.Extensions/4.0.10-beta-22231 727ms
+  GET https://www.nuget.org/api/v2/package/System.Reflection/4.0.0-beta-23019
+  OK https://www.nuget.org/api/v2/package/System.Threading.Overlapped/4.0.0-beta-22231 477ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Text.RegularExpressions'
+  OK https://www.nuget.org/api/v2/package/System.Threading.ThreadPool/4.0.10-beta-22231 319ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='System.Text.RegularExpressions'
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Http.Core' 10832ms
+  GET https://www.nuget.org/api/v2/package/System.Runtime/4.0.0-beta-23019
+  OK https://www.nuget.org/api/v2/package/System.Net.Http/4.0.0-beta-22816 391ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.Win32.Registry'
+  OK https://www.nuget.org/api/v2/package/Microsoft.AspNet.FileSystems/1.0.0-beta1 435ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.Win32.Registry'
+  OK https://www.nuget.org/api/v2/package/Microsoft.AspNet.Razor.Runtime/4.0.0-beta4 518ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Security.Cryptography.Encryption'
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Http.Extensions' 10967ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='System.Security.Cryptography.Encryption'
+  OK https://www.nuget.org/api/v2/package/System.Collections/4.0.10-beta-23019 580ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Security.Cryptography.Encryption.Aes'
+  OK https://www.nuget.org/api/v2/package/System.Resources.ResourceManager/4.0.0-beta-23019 645ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='System.Security.Cryptography.Encryption.Aes'
+  OK https://www.nuget.org/api/v2/package/System.Diagnostics.Debug/4.0.10-beta-23019 702ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Security.Cryptography.Hashing.Algorithms'
+  OK https://www.nuget.org/api/v2/package/System.Runtime.Extensions/4.0.10-beta-23019 765ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='System.Security.Cryptography.Hashing.Algorithms'
+  OK https://www.nuget.org/api/v2/package/System.Collections/4.0.0-beta-23019 818ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Security.Cryptography.RandomNumberGenerator'
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.Framework.Logging.Interfaces' 11255ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='System.Security.Cryptography.RandomNumberGenerator'
+  OK https://www.nuget.org/api/v2/package/System.Globalization/4.0.0-beta-23019 874ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Security.Principal.Windows'
+  OK https://www.nuget.org/api/v2/package/System.Reflection/4.0.0-beta-23019 939ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='System.Security.Principal.Windows'
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='System.Text.RegularExpressions' 890ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Xml.XDocument'
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Identity' 10887ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='System.Xml.XDocument'
+  OK https://www.nuget.org/api/v2/package/System.Runtime/4.0.0-beta-23019 982ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Mvc.HeaderValueAbstractions'
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.Win32.Registry' 908ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Mvc.HeaderValueAbstractions'
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='System.Security.Cryptography.Encryption' 885ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Mvc.ModelBinding'
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='EntityFramework.SqlServer' 11017ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Mvc.ModelBinding'
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='System.Security.Cryptography.Encryption.Aes' 869ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Routing'
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='System.Security.Cryptography.Hashing.Algorithms' 802ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Routing'
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='System.Security.Cryptography.RandomNumberGenerator' 809ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Security'
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Linq.Expressions' 11204ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Security'
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='System.Security.Principal.Windows' 751ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.AspNet.Razor.Runtime/4.0.0-beta1
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='System.Xml.XDocument' 738ms
+  GET https://www.nuget.org/api/v2/package/System.Threading.Tasks/4.0.0-beta-23019
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Mvc.HeaderValueAbstractions' 690ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.Framework.Configuration/1.0.0-beta5
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Linq.Queryable' 11303ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.CodeAnalysis.Common'
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Mvc.ModelBinding' 608ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.CodeAnalysis.Common'
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Routing' 573ms
+  GET https://www.nuget.org/api/v2/package/System.ObjectModel/4.0.0-beta-23019
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Security' 513ms
+  GET https://www.nuget.org/api/v2/package/System.Diagnostics.Debug/4.0.0-beta-23019
+  OK https://www.nuget.org/api/v2/package/Microsoft.AspNet.Razor.Runtime/4.0.0-beta1 586ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Reflection.Emit'
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Security.Claims' 11549ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='System.Reflection.Emit'
+  OK https://www.nuget.org/api/v2/package/System.Threading.Tasks/4.0.0-beta-23019 566ms
+  GET https://www.nuget.org/api/v2/package/System.Threading/4.0.0-beta-23019
+  OK https://www.nuget.org/api/v2/package/Microsoft.Framework.Configuration/1.0.0-beta5 560ms
+  GET https://www.nuget.org/api/v2/package/System.Runtime.Extensions/4.0.0-beta-23019
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.CodeAnalysis.Common' 532ms
+  GET https://www.nuget.org/api/v2/package/System.Linq.Expressions/4.0.10-beta-23019
+  OK https://www.nuget.org/api/v2/package/System.ObjectModel/4.0.0-beta-23019 549ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.Framework.Runtime.Interfaces/1.0.0-beta1
+  OK https://www.nuget.org/api/v2/package/System.Diagnostics.Debug/4.0.0-beta-23019 549ms
+  GET https://www.nuget.org/api/v2/package/System.Reflection.TypeExtensions/4.0.0-beta-22231
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Security.Principal' 11806ms
+  GET https://www.nuget.org/api/v2/package/System.Reflection.TypeExtensions/4.0.0-beta-23019
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='System.Reflection.Emit' 455ms
+  GET https://www.nuget.org/api/v2/package/System.Globalization.Extensions/4.0.0-beta-22231
+  OK https://www.nuget.org/api/v2/package/System.Threading/4.0.0-beta-23019 534ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.AspNet.HttpFeature/1.0.0-beta1
+  OK https://www.nuget.org/api/v2/package/System.Runtime.Extensions/4.0.0-beta-23019 533ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.AspNet.WebUtilities/1.0.0-beta1
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Text.Encoding' 11817ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Private.Uri'
+  OK https://www.nuget.org/api/v2/package/System.Linq.Expressions/4.0.10-beta-23019 575ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='System.Private.Uri'
+  OK https://www.nuget.org/api/v2/package/Microsoft.Framework.Runtime.Interfaces/1.0.0-beta1 509ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Cryptography.Internal'
+  OK https://www.nuget.org/api/v2/package/System.Reflection.TypeExtensions/4.0.0-beta-22231 502ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Cryptography.Internal'
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Loader.IIS.Interop' 11771ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.DataProtection.Interfaces'
+  OK https://www.nuget.org/api/v2/package/System.Reflection.TypeExtensions/4.0.0-beta-23019 584ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.DataProtection.Interfaces'
+  OK https://www.nuget.org/api/v2/package/System.Globalization.Extensions/4.0.0-beta-22231 591ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.Framework.DependencyInjection.Interfaces'
+  OK https://www.nuget.org/api/v2/package/Microsoft.AspNet.HttpFeature/1.0.0-beta1 563ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.Framework.DependencyInjection.Interfaces'
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Loader.IIS' 12016ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.Framework.OptionsModel/1.0.0-beta4
+  OK https://www.nuget.org/api/v2/package/Microsoft.AspNet.WebUtilities/1.0.0-beta1 566ms
+  GET https://www.nuget.org/api/v2/package/System.Linq/4.0.0-beta-22816
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='System.Private.Uri' 527ms
+  GET https://www.nuget.org/api/v2/package/System.Reflection.Extensions/4.0.0-beta-22816
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Cryptography.Internal' 488ms
+  GET https://www.nuget.org/api/v2/package/System.Reflection.TypeExtensions/4.0.0-beta-22816
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.DataProtection.Interfaces' 492ms
+  GET https://www.nuget.org/api/v2/package/System.Text.Encoding.Extensions/4.0.10-beta-22816
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.Net.Http.Server' 11485ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.Net.WebSocketAbstractions/1.0.0-beta4
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.Framework.DependencyInjection.Interfaces' 432ms
+  GET https://www.nuget.org/api/v2/package/System.Security.Claims/4.0.0-beta-22816
+  OK https://www.nuget.org/api/v2/package/Microsoft.Framework.OptionsModel/1.0.0-beta4 465ms
+  GET https://www.nuget.org/api/v2/package/System.Security.Principal/4.0.0-beta-22816
+  OK https://www.nuget.org/api/v2/package/System.Linq/4.0.0-beta-22816 532ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.AspNet.FeatureModel/1.0.0-beta4
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.Net.WebSocketAbstractions' 11574ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.AspNet.Http/1.0.0-beta4
+  OK https://www.nuget.org/api/v2/package/System.Reflection.Extensions/4.0.0-beta-22816 542ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.AspNet.WebUtilities/1.0.0-beta4
+  OK https://www.nuget.org/api/v2/package/System.Reflection.TypeExtensions/4.0.0-beta-22816 526ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.Framework.WebEncoders.Core'
+  OK https://www.nuget.org/api/v2/package/System.Text.Encoding.Extensions/4.0.10-beta-22816 519ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.Framework.WebEncoders.Core'
+  OK https://www.nuget.org/api/v2/package/Microsoft.Net.WebSocketAbstractions/1.0.0-beta4 593ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.Net.Http.Headers'
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.Win32.Primitives' 11824ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.Net.Http.Headers'
+  OK https://www.nuget.org/api/v2/package/System.Security.Claims/4.0.0-beta-22816 596ms
+  GET https://www.nuget.org/api/v2/package/System.Collections/4.0.10-beta-22816
+  OK https://www.nuget.org/api/v2/package/System.Security.Principal/4.0.0-beta-22816 560ms
+  GET https://www.nuget.org/api/v2/package/System.ComponentModel/4.0.0-beta-22816
+  OK https://www.nuget.org/api/v2/package/Microsoft.AspNet.FeatureModel/1.0.0-beta4 569ms
+  GET https://www.nuget.org/api/v2/package/System.Diagnostics.Debug/4.0.10-beta-22816
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Collections.Concurrent' 11922ms
+  GET https://www.nuget.org/api/v2/package/System.Diagnostics.Tools/4.0.0-beta-22816
+  OK https://www.nuget.org/api/v2/package/Microsoft.AspNet.Http/1.0.0-beta4 661ms
+  GET https://www.nuget.org/api/v2/package/System.Globalization/4.0.10-beta-22816
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.Framework.WebEncoders.Core' 562ms
+  GET https://www.nuget.org/api/v2/package/System.Runtime.Extensions/4.0.10-beta-22816
+  OK https://www.nuget.org/api/v2/package/Microsoft.AspNet.WebUtilities/1.0.0-beta4 742ms
+  GET https://www.nuget.org/api/v2/package/System.Runtime.InteropServices/4.0.20-beta-22816
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Net.Primitives' 12101ms
+  GET https://www.nuget.org/api/v2/package/System.Text.Encoding/4.0.10-beta-22816
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.Net.Http.Headers' 565ms
+  GET https://www.nuget.org/api/v2/package/System.IO.FileSystem/4.0.0-beta-22816
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Runtime.Handles' 12228ms
+  GET https://www.nuget.org/api/v2/package/System.Collections.Concurrent/4.0.10-beta-22816
+  OK https://www.nuget.org/api/v2/package/System.Collections/4.0.10-beta-22816 778ms
+  GET https://www.nuget.org/api/v2/package/System.Diagnostics.TraceSource/4.0.0-beta-22231
+  OK https://www.nuget.org/api/v2/package/System.ComponentModel/4.0.0-beta-22816 802ms
+  GET https://www.nuget.org/api/v2/package/System.IO.FileSystem.Primitives/4.0.0-beta-22231
+  OK https://www.nuget.org/api/v2/package/System.Diagnostics.Debug/4.0.10-beta-22816 823ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Security.Cookies'
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Security.Cryptography.X509Certificates' 12406ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Security.Cookies'
+  OK https://www.nuget.org/api/v2/package/System.Diagnostics.Tools/4.0.0-beta-22816 886ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Security.Cryptography.DeriveBytes'
+  OK https://www.nuget.org/api/v2/package/System.Globalization/4.0.10-beta-22816 908ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='System.Security.Cryptography.DeriveBytes'
+  OK https://www.nuget.org/api/v2/package/System.Runtime.Extensions/4.0.10-beta-22816 897ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Security.Cryptography.Hashing'
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Text.Encoding.Extensions' 12588ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='System.Security.Cryptography.Hashing'
+  OK https://www.nuget.org/api/v2/package/System.Runtime.InteropServices/4.0.20-beta-22816 996ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Data.SqlClient'
+  OK https://www.nuget.org/api/v2/package/System.Text.Encoding/4.0.10-beta-22816 1016ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='System.Data.SqlClient'
+  OK https://www.nuget.org/api/v2/package/System.IO.FileSystem/4.0.0-beta-22816 1112ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.Framework.Logging.Abstractions/1.0.0-beta6
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Security.Cookies' 593ms
+  GET https://www.nuget.org/api/v2/package/System.Runtime/4.0.20-beta-23109
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Threading.Overlapped' 12729ms
+  GET https://www.nuget.org/api/v2/package/System.Runtime/4.0.0-beta-23109
+  OK https://www.nuget.org/api/v2/package/System.Collections.Concurrent/4.0.10-beta-22816 980ms
+  GET https://www.nuget.org/api/v2/package/System.Resources.ResourceManager/4.0.0-beta-23109
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='System.Security.Cryptography.DeriveBytes' 562ms
+  GET https://www.nuget.org/api/v2/package/System.Diagnostics.Debug/4.0.10-beta-23109
+  OK https://www.nuget.org/api/v2/package/System.Diagnostics.TraceSource/4.0.0-beta-22231 1019ms
+  GET https://www.nuget.org/api/v2/package/System.Runtime.Extensions/4.0.10-beta-23109
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='System.Security.Cryptography.Hashing' 483ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Diagnostics.Process'
+  OK https://www.nuget.org/api/v2/package/System.IO.FileSystem.Primitives/4.0.0-beta-22231 970ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='System.Diagnostics.Process'
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Threading.ThreadPool' 12852ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Net.NetworkInformation'
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='System.Data.SqlClient' 446ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='System.Net.NetworkInformation'
+  OK https://www.nuget.org/api/v2/package/Microsoft.Framework.Logging.Abstractions/1.0.0-beta6 464ms
+  GET https://www.nuget.org/api/v2/package/System.Reflection.Primitives/4.0.0-beta-22231
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Net.Http' 12990ms
+  GET https://www.nuget.org/api/v2/package/System.Reflection.Primitives/4.0.0-beta-22816
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.FileSystems' 13049ms
+  GET https://www.nuget.org/api/v2/package/System.Reflection.Primitives/4.0.0-beta-23019
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='System.Diagnostics.Process' 709ms
+  GET https://www.nuget.org/api/v2/package/System.Threading.Thread/4.0.0-beta-22231
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='System.Net.NetworkInformation' 744ms
+  GET https://www.nuget.org/api/v2/package/System.Diagnostics.Tracing/4.0.10-beta-22231
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Razor.Runtime' 13231ms
+  GET https://www.nuget.org/api/v2/package/System.Text.Encoding/4.0.0-beta-23019
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='EntityFramework' 12461ms
+  GET https://www.nuget.org/api/v2/package/System.Xml.ReaderWriter/4.0.0-beta-23019
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.Framework.Configuration' 12592ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.Net.WebSockets'
+  OK https://www.nuget.org/api/v2/package/System.Runtime/4.0.20-beta-23109 1907ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.Net.WebSockets'
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.Net.WebSockets' 102ms
+  GET https://www.nuget.org/api/v2/package/System.Runtime.Handles/4.0.0-beta-22816
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.Framework.Runtime.Interfaces' 12716ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Security.Cryptography.Encoding'
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Reflection.TypeExtensions' 12740ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='System.Security.Cryptography.Encoding'
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='System.Security.Cryptography.Encoding' 101ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Razor'
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Globalization.Extensions' 12854ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Razor'
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Razor' 121ms
+  GET https://www.nuget.org/api/v2/package/System.Text.RegularExpressions/4.0.10-beta-22231
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.HttpFeature' 13077ms
+  GET https://www.nuget.org/api/v2/package/System.Text.RegularExpressions/4.0.10-beta-22816
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.WebUtilities' 13267ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.Win32.Registry/4.0.0-beta-22231
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Diagnostics.TraceSource' 12781ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.Win32.Registry/4.0.0-beta-22816
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.IO.FileSystem.Primitives' 12186ms
+  GET https://www.nuget.org/api/v2/package/System.Security.Cryptography.Encryption/4.0.0-beta-22231
+  OK https://www.nuget.org/api/v2/package/System.Runtime/4.0.0-beta-23109 3706ms
+  GET https://www.nuget.org/api/v2/package/System.Security.Cryptography.Encryption/4.0.0-beta-22816
+  OK https://www.nuget.org/api/v2/package/System.Resources.ResourceManager/4.0.0-beta-23109 3656ms
+  GET https://www.nuget.org/api/v2/package/System.Security.Cryptography.Encryption.Aes/4.0.0-beta-22231
+  OK https://www.nuget.org/api/v2/package/System.Diagnostics.Debug/4.0.10-beta-23109 3701ms
+  GET https://www.nuget.org/api/v2/package/System.Security.Cryptography.Encryption.Aes/4.0.0-beta-22816
+  OK https://www.nuget.org/api/v2/package/System.Runtime.Extensions/4.0.10-beta-23109 3800ms
+  GET https://www.nuget.org/api/v2/package/System.Security.Cryptography.Hashing.Algorithms/4.0.0-beta-22231
+  OK https://www.nuget.org/api/v2/package/System.Reflection.Primitives/4.0.0-beta-22231 3539ms
+  GET https://www.nuget.org/api/v2/package/System.Security.Cryptography.Hashing.Algorithms/4.0.0-beta-22816
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.Framework.Logging.Abstractions' 12101ms
+  GET https://www.nuget.org/api/v2/package/System.Security.Cryptography.RandomNumberGenerator/4.0.0-beta-22231
+  OK https://www.nuget.org/api/v2/package/System.Reflection.Primitives/4.0.0-beta-22816 3452ms
+  GET https://www.nuget.org/api/v2/package/System.Security.Cryptography.RandomNumberGenerator/4.0.0-beta-22816
+  OK https://www.nuget.org/api/v2/package/System.Reflection.Primitives/4.0.0-beta-23019 3221ms
+  GET https://www.nuget.org/api/v2/package/System.Security.Principal.Windows/4.0.0-beta-22231
+  OK https://www.nuget.org/api/v2/package/System.Threading.Thread/4.0.0-beta-22231 3177ms
+  GET https://www.nuget.org/api/v2/package/System.Security.Principal.Windows/4.0.0-beta-22816
+  OK https://www.nuget.org/api/v2/package/System.Diagnostics.Tracing/4.0.10-beta-22231 3089ms
+  GET https://www.nuget.org/api/v2/package/System.Xml.XDocument/4.0.0-beta-22231
+  OK https://www.nuget.org/api/v2/package/System.Text.Encoding/4.0.0-beta-23019 3006ms
+  GET https://www.nuget.org/api/v2/package/System.Xml.XDocument/4.0.10-beta-22816
+  OK https://www.nuget.org/api/v2/package/System.Xml.ReaderWriter/4.0.0-beta-23019 2765ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.AspNet.Mvc.HeaderValueAbstractions/1.0.0-beta1
+  OK https://www.nuget.org/api/v2/package/System.Runtime.Handles/4.0.0-beta-22816 2200ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.AspNet.Mvc.ModelBinding/6.0.0-beta1
+  OK https://www.nuget.org/api/v2/package/System.Text.RegularExpressions/4.0.10-beta-22231 1537ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.AspNet.Routing/1.0.0-beta1
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Reflection.Primitives' 12219ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.AspNet.Security/1.0.0-beta1
+  OK https://www.nuget.org/api/v2/package/System.Text.RegularExpressions/4.0.10-beta-22816 1459ms
+  GET https://www.nuget.org/api/v2/package/System.IO/4.0.10-beta-23019
+  OK https://www.nuget.org/api/v2/package/Microsoft.Win32.Registry/4.0.0-beta-22231 1220ms
+  GET https://www.nuget.org/api/v2/package/System.IO.FileSystem/4.0.0-beta-23019
+  OK https://www.nuget.org/api/v2/package/Microsoft.Win32.Registry/4.0.0-beta-22816 936ms
+  GET https://www.nuget.org/api/v2/package/System.Runtime.InteropServices/4.0.20-beta-23019
+  OK https://www.nuget.org/api/v2/package/System.Security.Cryptography.Encryption/4.0.0-beta-22231 666ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.CodeAnalysis.Common/1.0.0-beta1-20141031-01
+  OK https://www.nuget.org/api/v2/package/System.Security.Cryptography.Encryption/4.0.0-beta-22816 696ms
+  GET https://www.nuget.org/api/v2/package/System.Reflection.Emit/4.0.0-beta-23019
+  OK https://www.nuget.org/api/v2/package/System.Security.Cryptography.Encryption.Aes/4.0.0-beta-22231 677ms
+  GET https://www.nuget.org/api/v2/package/System.Reflection.Extensions/4.0.0-beta-23019
+  OK https://www.nuget.org/api/v2/package/System.Security.Cryptography.Encryption.Aes/4.0.0-beta-22816 664ms
+  GET https://www.nuget.org/api/v2/package/System.Private.Uri/4.0.0-beta-23019
+  OK https://www.nuget.org/api/v2/package/System.Security.Cryptography.Hashing.Algorithms/4.0.0-beta-22231 511ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.AspNet.Cryptography.Internal/1.0.0-beta4
+  OK https://www.nuget.org/api/v2/package/System.Security.Cryptography.Hashing.Algorithms/4.0.0-beta-22816 526ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.AspNet.DataProtection.Interfaces/1.0.0-beta4
+  OK https://www.nuget.org/api/v2/package/System.Security.Cryptography.RandomNumberGenerator/4.0.0-beta-22231 523ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.Framework.DependencyInjection.Interfaces/1.0.0-beta4
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Threading.Thread' 12447ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.Framework.ConfigurationModel/1.0.0-beta4
+  OK https://www.nuget.org/api/v2/package/System.Security.Cryptography.RandomNumberGenerator/4.0.0-beta-22816 539ms
+  GET https://www.nuget.org/api/v2/package/System.Threading/4.0.10-beta-22816
+  OK https://www.nuget.org/api/v2/package/System.Security.Principal.Windows/4.0.0-beta-22231 509ms
+  GET https://www.nuget.org/api/v2/package/System.Globalization.Extensions/4.0.0-beta-22816
+  OK https://www.nuget.org/api/v2/package/System.Security.Principal.Windows/4.0.0-beta-22816 528ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.Framework.WebEncoders.Core/1.0.0-beta4
+  OK https://www.nuget.org/api/v2/package/System.Xml.XDocument/4.0.0-beta-22231 523ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.Net.Http.Headers/1.0.0-beta4
+  OK https://www.nuget.org/api/v2/package/System.Xml.XDocument/4.0.10-beta-22816 605ms
+  GET https://www.nuget.org/api/v2/package/System.IO.FileSystem.Primitives/4.0.0-beta-22816
+  OK https://www.nuget.org/api/v2/package/Microsoft.AspNet.Mvc.HeaderValueAbstractions/1.0.0-beta1 623ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.AspNet.Security.Cookies/1.0.0-beta1
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Diagnostics.Tracing' 12623ms
+  GET https://www.nuget.org/api/v2/package/System.Security.Cryptography.DeriveBytes/4.0.0-beta-22231
+  OK https://www.nuget.org/api/v2/package/Microsoft.AspNet.Mvc.ModelBinding/6.0.0-beta1 707ms
+  GET https://www.nuget.org/api/v2/package/System.Security.Cryptography.Hashing/4.0.0-beta-22231
+  OK https://www.nuget.org/api/v2/package/Microsoft.AspNet.Routing/1.0.0-beta1 755ms
+  GET https://www.nuget.org/api/v2/package/System.Data.SqlClient/1.0.0-beta1
+  OK https://www.nuget.org/api/v2/package/Microsoft.AspNet.Security/1.0.0-beta1 779ms
+  GET https://www.nuget.org/api/v2/package/System.Collections.Concurrent/4.0.10-beta-23109
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Text.RegularExpressions' 11182ms
+  GET https://www.nuget.org/api/v2/package/System.Reflection/4.0.10-beta-23109
+  OK https://www.nuget.org/api/v2/package/System.IO/4.0.10-beta-23019 858ms
+  GET https://www.nuget.org/api/v2/package/System.Runtime.InteropServices/4.0.20-beta-23109
+  OK https://www.nuget.org/api/v2/package/System.IO.FileSystem/4.0.0-beta-23019 915ms
+  GET https://www.nuget.org/api/v2/package/System.Diagnostics.Process/4.0.0-beta-22231
+  OK https://www.nuget.org/api/v2/package/System.Runtime.InteropServices/4.0.20-beta-23019 954ms
+  GET https://www.nuget.org/api/v2/package/System.Net.NetworkInformation/4.0.10-beta-22231
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.Win32.Registry' 11301ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/package/EntityFramework/7.0.0-beta6-13585
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Security.Cryptography.Encryption' 11419ms
+  GET https://www.nuget.org/api/v2/package/System.Private.Uri/4.0.0-beta-23109
+  OK https://www.nuget.org/api/v2/package/Microsoft.CodeAnalysis.Common/1.0.0-beta1-20141031-01 1344ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.Net.WebSockets/1.0.0-beta1
+  OK https://www.nuget.org/api/v2/package/System.Reflection.Emit/4.0.0-beta-23019 1329ms
+  GET https://www.nuget.org/api/v2/package/System.Security.Cryptography.Encoding/4.0.0-beta-22231
+  OK https://www.nuget.org/api/v2/package/System.Reflection.Extensions/4.0.0-beta-23019 1344ms
+  GET https://www.nuget.org/api/v2/package/System.Security.Cryptography.Encoding/4.0.0-beta-22816
+  OK https://www.nuget.org/api/v2/package/System.Private.Uri/4.0.0-beta-23019 1338ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.AspNet.Razor/4.0.0-beta4
+  OK https://www.nuget.org/api/v2/package/Microsoft.AspNet.Cryptography.Internal/1.0.0-beta4 1351ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.AspNet.Razor/4.0.0-beta1
+  OK https://www.nuget.org/api/v2/package/Microsoft.AspNet.DataProtection.Interfaces/1.0.0-beta4 1342ms
+  GET https://www.nuget.org/api/v2/package/System.Reflection/4.0.0-beta-23109
+  OK https://www.nuget.org/api/v2/package/Microsoft.Framework.DependencyInjection.Interfaces/1.0.0-beta4 1367ms
+  GET https://www.nuget.org/api/v2/package/System.Security.Cryptography.Hashing/4.0.0-beta-22816
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Security.Cryptography.Encryption.Aes' 11623ms
+  GET https://www.nuget.org/api/v2/package/System.Xml.ReaderWriter/4.0.10-beta-22816
+  OK https://www.nuget.org/api/v2/package/Microsoft.Framework.ConfigurationModel/1.0.0-beta4 1433ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.DataAnnotations'
+  OK https://www.nuget.org/api/v2/package/System.Threading/4.0.10-beta-22816 1509ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.DataAnnotations'
+  OK https://www.nuget.org/api/v2/package/System.Globalization.Extensions/4.0.0-beta-22816 1548ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.ComponentModel.TypeConverter'
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Security.Cryptography.Hashing.Algorithms' 11746ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='System.ComponentModel.TypeConverter'
+  OK https://www.nuget.org/api/v2/package/Microsoft.Framework.WebEncoders.Core/1.0.0-beta4 1620ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Runtime.Serialization.Primitives'
+  OK https://www.nuget.org/api/v2/package/Microsoft.Net.Http.Headers/1.0.0-beta4 1680ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='System.Runtime.Serialization.Primitives'
+  OK https://www.nuget.org/api/v2/package/System.IO.FileSystem.Primitives/4.0.0-beta-22816 1643ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Runtime.Serialization.Xml'
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Security.Cryptography.RandomNumberGenerator' 11860ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='System.Runtime.Serialization.Xml'
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Security.Principal.Windows' 12079ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Xml.XmlSerializer'
+  OK https://www.nuget.org/api/v2/package/Microsoft.AspNet.Security.Cookies/1.0.0-beta1 2177ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='System.Xml.XmlSerializer'
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Xml.XDocument' 12190ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.IO.Compression'
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Mvc.HeaderValueAbstractions' 12337ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='System.IO.Compression'
+  OK https://www.nuget.org/api/v2/package/System.Security.Cryptography.DeriveBytes/4.0.0-beta-22231 2573ms
+  GET https://www.nuget.org/api/v2/package/System.IO.FileSystem.Primitives/4.0.0-beta-23019
+  OK https://www.nuget.org/api/v2/package/System.Security.Cryptography.Hashing/4.0.0-beta-22231 2501ms
+  GET https://www.nuget.org/api/v2/package/System.Runtime.Handles/4.0.0-beta-23019
+  OK https://www.nuget.org/api/v2/package/System.Data.SqlClient/1.0.0-beta1 2617ms
+  GET https://www.nuget.org/api/v2/package/System.Threading.Overlapped/4.0.0-beta-23019
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Mvc.ModelBinding' 12454ms
+  OK https://www.nuget.org/api/v2/package/System.Collections.Concurrent/4.0.10-beta-23109 2572ms
+  GET https://www.nuget.org/api/v2/package/System.Text.Encoding/4.0.10-beta-23019
+  GET https://www.nuget.org/api/v2/package/System.Threading.Tasks/4.0.10-beta-23019
+  OK https://www.nuget.org/api/v2/package/System.Reflection/4.0.10-beta-23109 2580ms
+  GET https://www.nuget.org/api/v2/package/System.Text.Encoding.Extensions/4.0.10-beta-23019
+  OK https://www.nuget.org/api/v2/package/System.Runtime.InteropServices/4.0.20-beta-23109 2613ms
+  GET https://www.nuget.org/api/v2/package/System.Threading/4.0.10-beta-23019
+  OK https://www.nuget.org/api/v2/package/System.Diagnostics.Process/4.0.0-beta-22231 2540ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Collections.Immutable'
+  OK https://www.nuget.org/api/v2/package/System.Net.NetworkInformation/4.0.10-beta-22231 2482ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='System.Collections.Immutable'
+  OK https://www.nuget.org/api/v2/package/System.Private.Uri/4.0.0-beta-23109 2161ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Reflection.Metadata'
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Routing' 12613ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='System.Reflection.Metadata'
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.DataAnnotations' 1884ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Reflection.Emit.ILGeneration'
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='System.ComponentModel.TypeConverter' 1813ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='System.Reflection.Emit.ILGeneration'
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='System.Runtime.Serialization.Primitives' 1820ms
+  GET https://www.nuget.org/api/v2/package/System.Resources.ResourceManager/4.0.0-beta-22816
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Security' 12703ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.Framework.Runtime.Interfaces/1.0.0-beta4
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='System.Runtime.Serialization.Xml' 1733ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.Framework.ConfigurationModel.Interfaces'
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='System.Xml.XmlSerializer' 1367ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.Framework.ConfigurationModel.Interfaces'
+  OK https://www.nuget.org/api/v2/package/Microsoft.Net.WebSockets/1.0.0-beta1 2644ms
+  GET https://www.nuget.org/api/v2/package/System.Diagnostics.Contracts/4.0.0-beta-22816
+  OK https://www.nuget.org/api/v2/package/System.Security.Cryptography.Encoding/4.0.0-beta-22231 2648ms
+  GET https://www.nuget.org/api/v2/package/System.Threading.Tasks/4.0.10-beta-23109
+  OK https://www.nuget.org/api/v2/package/System.Security.Cryptography.Encoding/4.0.0-beta-22816 2637ms
+  GET https://www.nuget.org/api/v2/package/System.Diagnostics.Tracing/4.0.20-beta-23109
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.CodeAnalysis.Common' 12627ms
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='System.IO.Compression' 1114ms
+  GET https://www.nuget.org/api/v2/package/System.Threading/4.0.10-beta-23109
+  GET https://www.nuget.org/api/v2/package/System.IO/4.0.0-beta-23109
+  OK https://www.nuget.org/api/v2/package/Microsoft.AspNet.Razor/4.0.0-beta4 2675ms
+  GET https://www.nuget.org/api/v2/package/System.Reflection.Primitives/4.0.0-beta-23109
+  OK https://www.nuget.org/api/v2/package/Microsoft.AspNet.Razor/4.0.0-beta1 2710ms
+  GET https://www.nuget.org/api/v2/package/System.Runtime.Handles/4.0.0-beta-23109
+  OK https://www.nuget.org/api/v2/package/System.Reflection/4.0.0-beta-23109 2762ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.DataAnnotations/1.0.0-beta1
+  OK https://www.nuget.org/api/v2/package/System.Security.Cryptography.Hashing/4.0.0-beta-22816 2724ms
+  GET https://www.nuget.org/api/v2/package/System.ComponentModel.TypeConverter/4.0.0-beta-22231
+  OK https://www.nuget.org/api/v2/package/System.Xml.ReaderWriter/4.0.10-beta-22816 2710ms
+  GET https://www.nuget.org/api/v2/package/System.Runtime.Serialization.Primitives/4.0.0-beta-22231
+  OK https://www.nuget.org/api/v2/package/System.IO.FileSystem.Primitives/4.0.0-beta-23019 1279ms
+  GET https://www.nuget.org/api/v2/package/System.Runtime.Serialization.Xml/4.0.10-beta-22231
+  OK https://www.nuget.org/api/v2/package/System.Runtime.Handles/4.0.0-beta-23019 1287ms
+  GET https://www.nuget.org/api/v2/package/System.Xml.XmlSerializer/4.0.0-beta-22231
+  OK https://www.nuget.org/api/v2/package/System.Threading.Overlapped/4.0.0-beta-23019 1129ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Threading.Timer'
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Reflection.Emit' 12603ms
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='System.Threading.Timer'
+  OK https://www.nuget.org/api/v2/package/System.Text.Encoding/4.0.10-beta-23019 1183ms
+  GET https://www.nuget.org/api/v2/package/System.IO.Compression/4.0.0-beta-22231
+  OK https://www.nuget.org/api/v2/package/System.Threading.Tasks/4.0.10-beta-23019 1265ms
+  GET https://www.nuget.org/api/v2/package/System.Threading.Thread/4.0.0-beta-22816
+  OK https://www.nuget.org/api/v2/package/System.Text.Encoding.Extensions/4.0.10-beta-23019 1314ms
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Private.Uri' 12146ms
+  OK https://www.nuget.org/api/v2/package/System.Threading/4.0.10-beta-23019 1319ms
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='System.Collections.Immutable' 1359ms
+  GET https://www.nuget.org/api/v2/package/System.Collections.Immutable/1.1.32-beta
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='System.Reflection.Metadata' 1356ms
+  GET https://www.nuget.org/api/v2/package/System.Reflection.Metadata/1.0.17-beta
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Cryptography.Internal' 12299ms
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='System.Reflection.Emit.ILGeneration' 1296ms
+  GET https://www.nuget.org/api/v2/package/System.Reflection.Emit.ILGeneration/4.0.0-beta-23019
+  OK https://www.nuget.org/api/v2/package/System.Resources.ResourceManager/4.0.0-beta-22816 1312ms
+  OK https://www.nuget.org/api/v2/package/Microsoft.Framework.Runtime.Interfaces/1.0.0-beta4 1361ms
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.Framework.ConfigurationModel.Interfaces' 1257ms
+  GET https://www.nuget.org/api/v2/package/Microsoft.Framework.ConfigurationModel.Interfaces/1.0.0-beta4
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.DataProtection.Interfaces' 12490ms
+  OK https://www.nuget.org/api/v2/package/System.Diagnostics.Contracts/4.0.0-beta-22816 1365ms
+  OK https://www.nuget.org/api/v2/package/System.Threading.Tasks/4.0.10-beta-23109 1467ms
+  OK https://www.nuget.org/api/v2/package/System.Diagnostics.Tracing/4.0.20-beta-23109 1510ms
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.Framework.DependencyInjection.Interfaces' 12672ms
+  OK https://www.nuget.org/api/v2/package/System.Threading/4.0.10-beta-23109 1561ms
+  OK https://www.nuget.org/api/v2/package/System.IO/4.0.0-beta-23109 1672ms
+  GET https://www.nuget.org/api/v2/package/System.Text.Encoding/4.0.0-beta-23109
+  GET https://www.nuget.org/api/v2/package/System.Threading.Tasks/4.0.0-beta-23109
+  OK https://www.nuget.org/api/v2/package/System.Reflection.Primitives/4.0.0-beta-23109 1695ms
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.Framework.WebEncoders.Core' 12077ms
+  OK https://www.nuget.org/api/v2/package/System.Runtime.Handles/4.0.0-beta-23109 1699ms
+  OK https://www.nuget.org/api/v2/package/Microsoft.DataAnnotations/1.0.0-beta1 1694ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.ComponentModel.Annotations'
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='System.ComponentModel.Annotations'
+  OK https://www.nuget.org/api/v2/package/System.ComponentModel.TypeConverter/4.0.0-beta-22231 1806ms
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.ComponentModel.Primitives'
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='System.ComponentModel.Primitives'
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.Net.Http.Headers' 12166ms
+  OK https://www.nuget.org/api/v2/package/System.Runtime.Serialization.Primitives/4.0.0-beta-22231 1851ms
+  OK https://www.nuget.org/api/v2/package/System.Runtime.Serialization.Xml/4.0.10-beta-22231 1905ms
+  OK https://www.nuget.org/api/v2/package/System.Xml.XmlSerializer/4.0.0-beta-22231 1976ms
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Security.Cookies' 11418ms
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='System.Threading.Timer' 2009ms
+  GET https://www.nuget.org/api/v2/package/System.Threading.Timer/4.0.0-beta-22231
+  OK https://www.nuget.org/api/v2/package/System.IO.Compression/4.0.0-beta-22231 2053ms
+  OK https://www.nuget.org/api/v2/package/System.Threading.Thread/4.0.0-beta-22816 2055ms
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Security.Cryptography.DeriveBytes' 11610ms
+  OK https://www.nuget.org/api/v2/package/System.Collections.Immutable/1.1.32-beta 1935ms
+  OK https://www.nuget.org/api/v2/package/System.Reflection.Metadata/1.0.17-beta 1917ms
+  OK https://www.nuget.org/api/v2/package/System.Reflection.Emit.ILGeneration/4.0.0-beta-23019 1889ms
+  OK https://www.nuget.org/api/v2/package/Microsoft.Framework.ConfigurationModel.Interfaces/1.0.0-beta4 1718ms
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Security.Cryptography.Hashing' 11675ms
+  OK https://www.nuget.org/api/v2/package/System.Text.Encoding/4.0.0-beta-23109 1319ms
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='System.ComponentModel.Annotations' 1260ms
+  GET https://www.nuget.org/api/v2/package/System.ComponentModel.Annotations/4.0.10-beta-22231
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Data.SqlClient' 11860ms
+  OK https://www.nuget.org/api/v2/package/System.Threading.Tasks/4.0.0-beta-23109 1532ms
+  OK https://www.nuget.org/api/v2/FindPackagesById()?id='System.ComponentModel.Primitives' 1240ms
+  GET https://www.nuget.org/api/v2/package/System.ComponentModel.Primitives/4.0.0-beta-22231
+  OK https://www.nuget.org/api/v2/package/System.Threading.Timer/4.0.0-beta-22231 1013ms
+  OK https://www.nuget.org/api/v2/package/System.ComponentModel.Annotations/4.0.10-beta-22231 300ms
+  OK https://www.nuget.org/api/v2/package/System.ComponentModel.Primitives/4.0.0-beta-22231 270ms
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Diagnostics.Process' 11784ms
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Net.NetworkInformation' 12162ms
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.Net.WebSockets' 11011ms
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='System.Security.Cryptography.Encoding' 10956ms
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Razor' 10867ms
+  OK https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.DataAnnotations' 8246ms
+  OK https://www.myget.org/F/aspnetvnext/api/v2/package/EntityFramework/7.0.0-beta6-13585 9604ms
+----------
+System.Exception: TODO: Circular dependency references not supported. Package 'EntityFramework.Commands'.
+  at Microsoft.Dnx.Tooling.RestoreOperations+<>c__DisplayClass3_0.<ChainPredicate>b__0 (System.String name) <0x10a0f09b0 + 0x00231> in <filename unknown>:0 
+  at Microsoft.Dnx.Tooling.RestoreOperations+<>c__DisplayClass3_0.<ChainPredicate>b__0 (System.String name) <0x10a0f09b0 + 0x001c4> in <filename unknown>:0 
+  at Microsoft.Dnx.Tooling.RestoreOperations+<>c__DisplayClass3_0.<ChainPredicate>b__0 (System.String name) <0x10a0f09b0 + 0x001c4> in <filename unknown>:0 
+  at Microsoft.Dnx.Tooling.RestoreOperations+<CreateGraphNode>d__2.MoveNext () <0x1081c41a0 + 0x00787> in <filename unknown>:0 
+--- End of stack trace from previous location where exception was thrown ---
+  at System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw () <0x104c70510 + 0x00029> in <filename unknown>:0 
+  at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess (System.Threading.Tasks.Task task) <0x104c6e4f0 + 0x000b3> in <filename unknown>:0 
+  at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification (System.Threading.Tasks.Task task) <0x104c6e450 + 0x00093> in <filename unknown>:0 
+  at System.Runtime.CompilerServices.TaskAwaiter.ValidateEnd (System.Threading.Tasks.Task task) <0x104c6e400 + 0x0003a> in <filename unknown>:0 
+  at System.Runtime.CompilerServices.TaskAwaiter`1[TResult].GetResult () <0x104c6e720 + 0x00017> in <filename unknown>:0 
+  at Microsoft.Dnx.Tooling.RestoreOperations+<CreateGraphNode>d__2.MoveNext () <0x1081c41a0 + 0x00f1b> in <filename unknown>:0 
+--- End of stack trace from previous location where exception was thrown ---
+  at System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw () <0x104c70510 + 0x00029> in <filename unknown>:0 
+  at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess (System.Threading.Tasks.Task task) <0x104c6e4f0 + 0x000b3> in <filename unknown>:0 
+  at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification (System.Threading.Tasks.Task task) <0x104c6e450 + 0x00093> in <filename unknown>:0 
+  at System.Runtime.CompilerServices.TaskAwaiter.ValidateEnd (System.Threading.Tasks.Task task) <0x104c6e400 + 0x0003a> in <filename unknown>:0 
+  at System.Runtime.CompilerServices.TaskAwaiter`1[TResult].GetResult () <0x104c6e720 + 0x00017> in <filename unknown>:0 
+  at Microsoft.Dnx.Tooling.RestoreOperations+<CreateGraphNode>d__2.MoveNext () <0x1081c41a0 + 0x00f1b> in <filename unknown>:0 
+--- End of stack trace from previous location where exception was thrown ---
+  at System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw () <0x104c70510 + 0x00029> in <filename unknown>:0 
+  at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess (System.Threading.Tasks.Task task) <0x104c6e4f0 + 0x000b3> in <filename unknown>:0 
+  at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification (System.Threading.Tasks.Task task) <0x104c6e450 + 0x00093> in <filename unknown>:0 
+  at System.Runtime.CompilerServices.TaskAwaiter.ValidateEnd (System.Threading.Tasks.Task task) <0x104c6e400 + 0x0003a> in <filename unknown>:0 
+  at System.Runtime.CompilerServices.TaskAwaiter`1[TResult].GetResult () <0x104c6e720 + 0x00017> in <filename unknown>:0 
+  at Microsoft.Dnx.Tooling.RestoreOperations+<CreateGraphNode>d__2.MoveNext () <0x1081c41a0 + 0x00f1b> in <filename unknown>:0 
+--- End of stack trace from previous location where exception was thrown ---
+  at System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw () <0x104c70510 + 0x00029> in <filename unknown>:0 
+  at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess (System.Threading.Tasks.Task task) <0x104c6e4f0 + 0x000b3> in <filename unknown>:0 
+  at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification (System.Threading.Tasks.Task task) <0x104c6e450 + 0x00093> in <filename unknown>:0 
+  at System.Runtime.CompilerServices.TaskAwaiter.ValidateEnd (System.Threading.Tasks.Task task) <0x104c6e400 + 0x0003a> in <filename unknown>:0 
+  at System.Runtime.CompilerServices.TaskAwaiter`1[TResult].GetResult () <0x104c6e720 + 0x00017> in <filename unknown>:0 
+  at Microsoft.Dnx.Tooling.RestoreOperations+<CreateGraphNode>d__2.MoveNext () <0x1081c41a0 + 0x00f1b> in <filename unknown>:0 
+--- End of stack trace from previous location where exception was thrown ---
+  at System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw () <0x104c70510 + 0x00029> in <filename unknown>:0 
+  at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess (System.Threading.Tasks.Task task) <0x104c6e4f0 + 0x000b3> in <filename unknown>:0 
+  at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification (System.Threading.Tasks.Task task) <0x104c6e450 + 0x00093> in <filename unknown>:0 
+  at System.Runtime.CompilerServices.TaskAwaiter.ValidateEnd (System.Threading.Tasks.Task task) <0x104c6e400 + 0x0003a> in <filename unknown>:0 
+  at System.Runtime.CompilerServices.TaskAwaiter`1[TResult].GetResult () <0x104c6e720 + 0x00017> in <filename unknown>:0 
+  at Microsoft.Dnx.Tooling.RestoreCommand+<CreateGraphNode>d__62.MoveNext () <0x1081c38b0 + 0x00178> in <filename unknown>:0 
+--- End of stack trace from previous location where exception was thrown ---
+  at System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw () <0x104c70510 + 0x00029> in <filename unknown>:0 
+  at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess (System.Threading.Tasks.Task task) <0x104c6e4f0 + 0x000b3> in <filename unknown>:0 
+  at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification (System.Threading.Tasks.Task task) <0x104c6e450 + 0x00093> in <filename unknown>:0 
+  at System.Runtime.CompilerServices.TaskAwaiter.ValidateEnd (System.Threading.Tasks.Task task) <0x104c6e400 + 0x0003a> in <filename unknown>:0 
+  at System.Runtime.CompilerServices.TaskAwaiter`1[TResult].GetResult () <0x104c6e720 + 0x00017> in <filename unknown>:0 
+  at Microsoft.Dnx.Tooling.RestoreCommand+<RestoreForProject>d__61.MoveNext () <0x1081a6000 + 0x025df> in <filename unknown>:0 
+--- End of stack trace from previous location where exception was thrown ---
+  at System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw () <0x104c70510 + 0x00029> in <filename unknown>:0 
+  at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess (System.Threading.Tasks.Task task) <0x104c6e4f0 + 0x000b3> in <filename unknown>:0 
+  at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification (System.Threading.Tasks.Task task) <0x104c6e450 + 0x00093> in <filename unknown>:0 
+  at System.Runtime.CompilerServices.TaskAwaiter.ValidateEnd (System.Threading.Tasks.Task task) <0x104c6e400 + 0x0003a> in <filename unknown>:0 
+  at System.Runtime.CompilerServices.TaskAwaiter`1[TResult].GetResult () <0x104f36b40 + 0x00012> 24212 in <filename unknown>:0 
+  at Microsoft.Dnx.Tooling.RestoreCommand+<>c__DisplayClass60_0+<<Execute>b__2>d.MoveNext () <0x1081a3c00 + 0x001b5> in <filename unknown>:0 
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw () in <filename unknown>:line 0
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess (System.Threading.Tasks.Task task) in <filename unknown>:line 0
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification (System.Threading.Tasks.Task task) in <filename unknown>:line 0
+   at System.Runtime.CompilerServices.TaskAwaiter.ValidateEnd (System.Threading.Tasks.Task task) in <filename unknown>:line 0
+   at System.Runtime.CompilerServices.TaskAwaiter.GetResult () in <filename unknown>:line 0
+   at Microsoft.Dnx.Tooling.RestoreCommand+<Execute>d__60.MoveNext () in <filename unknown>:line 0
+----------
+Restore failed
+TODO: Circular dependency references not supported. Package 'EntityFramework.Commands'.
+
+NuGet Config files used:
+    /Users/cchamberlain/.config/NuGet/NuGet.Config
+
+Feeds used:
+    https://www.myget.org/F/aspnetvnext/api/v2/
+    https://www.nuget.org/api/v2/
+>>> elapsed time 44s                                                                      
+
+ ✘ cchamberlain@MINIBEAST  ~/c/h/n/web   master ⁝ ? 
+ ❯❯❯ ls
+Controllers  README.md   ViewModels  config.json  package.json
+Migrations   Services    Views       gulpfile.js  project.json
+Models       Startup.cs  bower.json  hosting.ini  wwwroot
+
+ cchamberlain@MINIBEAST  ~/c/h/n/web   master ⁝ ? 
+ ❯❯❯ ls ~
+Adlm                      Movies      bitstampstreaming  genymotion-log.zip  sugar
+Adobe                     Music       books              gist                tinderfy
+Applications              Pictures    c                  hackr               tinderizer
+Applications (Parallels)  Public      cchamberlain       hidden              tixinc
+Creative Cloud Files      README.md   chambersoft        install-txt         tv
+Desktop                   TixInc.bak  config             local               video
+Documents                 XVim        csrc               package_root        zshrc
+Downloads                 aspnet      dotfiles           physics
+Dropbox                   automation  ext                physics6
+Library                   bin         games              src
+
+ cchamberlain@MINIBEAST  ~/c/h/n/web   master ⁝ ? 
+ ❯❯❯ ls ~ -al
+total 552
+drwxr-xr-x+ 122 cchamberlain staff   4148 Sep  5 10:57 .
+drwxr-xr-x    5 root         admin    170 Mar 16 19:21 ..
+-r--------    1 cchamberlain staff      7 Oct  5  2014 .CFUserTextEncoding
+-rw-r--r--    1 cchamberlain staff  32772 Sep  5 09:26 .DS_Store
+drwxr-xr-x    5 cchamberlain staff    170 Jan 27  2015 .Genymobile
+drwx------    5 cchamberlain staff    170 Sep  5 09:27 .Trash
+drwxr-xr-x    3 cchamberlain staff    102 Mar 28 18:09 .WebStorm10
+drwxr-xr-x    3 cchamberlain staff    102 Nov 12  2014 .WebStorm9
+drwxr-x--x    4 cchamberlain staff    136 Dec  7  2014 .adobe
+drwxr-xr-x   14 cchamberlain staff    476 Jan 27  2015 .android
+-rw-r--r--    1 cchamberlain staff    655 Oct 13  2014 .anyconnect
+drwx------    3 cchamberlain staff    102 Sep  5 10:05 .aspnet
+drwxr-xr-x   13 cchamberlain staff    442 Jul  3 12:11 .atom
+drwxr-xr-x  194 cchamberlain staff   6596 Aug 18 23:09 .backup
+-rw-------    1 cchamberlain staff  18856 May 15 01:30 .bash_history
+-rw-r--r--    1 cchamberlain staff      0 Sep  5 10:53 .bash_profile
+-rw-r--r--    1 cchamberlain staff    133 Jul  3 01:04 .bashrc
+drwxr-xr-x    3 cchamberlain staff    102 Nov 13  2014 .cache
+drwxr-xr-x    3 cchamberlain staff    102 Mar  3  2014 .cocoapods
+drwxr-xr-x    9 cchamberlain staff    306 Sep  5 10:02 .config
+drwxr-xr-x    3 cchamberlain staff    102 Jan 25  2015 .cordova
+drwx------    3 cchamberlain staff    102 Dec 20  2014 .cups
+-rw-r--r--    1 cchamberlain staff    167 Dec  9  2014 .dbshell
+drwxr-xr-x    3 cchamberlain staff    102 May 28  2014 .distlib
+drwxr-xr-x    6 cchamberlain staff    204 Sep  5 10:03 .dnx
+drwx------    9 cchamberlain staff    306 Sep  5 08:11 .dropbox
+drwxr-xr-x    2 cchamberlain staff     68 May 31  2014 .elasticbeanstalk
+drwxr-xr-x    5 cchamberlain staff    170 Apr 21 23:46 .forever
+drwxr-xr-x    4 cchamberlain staff    136 May 28  2014 .gem
+drwx------    2 cchamberlain staff     68 Mar 15 13:06 .git-credential-cache
+-rw-r--r--    1 cchamberlain staff   1002 Mar 16 15:16 .gitconfig
+-rw-r--r--    1 cchamberlain admin     13 Jan 30  2014 .gitignore_global
+drwxr-xr-x    7 cchamberlain staff    238 May 15 08:16 .heroku
+-rw-r--r--    1 cchamberlain admin     27 Jan 30  2014 .hgignore_global
+-rwxrwxrwx    1 cchamberlain staff     70 Dec  2  2014 .hrtcPthrc
+drwxr-xr-x    3 cchamberlain staff    102 Jan 25  2015 .ionic
+drwxr-xr-x   28 cchamberlain staff    952 Feb  6  2015 .iso
+-rw-------    1 cchamberlain staff     72 Jul 25 11:51 .lesshst
+drwxr-xr-x    3 cchamberlain staff    102 Nov 13  2014 .local
+-rw-r--r--    1 cchamberlain staff      0 Oct 20  2014 .mongorc.js
+-rw-------    1 cchamberlain staff    311 May 15 08:24 .netrc
+drwxr-xr-x    7 cchamberlain staff    238 Apr 11 10:15 .node-gyp
+drwxr-xr-x  199 cchamberlain staff   6766 Jul 25 11:30 .npm
+-rw-------    1 cchamberlain staff    231 Jul  3 01:01 .npmrc
+drwxr-xr-x   15 cchamberlain staff    510 Feb  9  2014 .nvm
+drwxr-xr-x   15 cchamberlain staff    510 Jun 20 22:44 .oh-my-zsh
+drwxr-xr-x    4 cchamberlain staff    136 Jan 25  2015 .plugman
+-rw-------    1 cchamberlain staff    320 May 29  2014 .psql_history
+-rw-------    1 cchamberlain staff     10 May 26 23:13 .sh_history
+drwx------    7 cchamberlain staff    238 Nov 12  2014 .ssh
+drwxr-xr-x    4 cchamberlain staff    136 Apr 13 22:12 .sublime
+drwxr-xr-x    6 cchamberlain staff    204 May 28  2014 .subversion
+-rw-------    1 cchamberlain staff  12288 Feb  8  2014 .swp
+drwxr-xr-x    4 cchamberlain staff    136 Jul  3 00:50 .tig
+-rw-r--r--    1 cchamberlain staff     17 Oct  7  2014 .upvpzxme
+-rw-r--r--    1 cchamberlain staff   6789 Apr  9 21:33 .v8flags.3.28.73.cchamberlain.json
+drwxr-xr-x    9 cchamberlain staff    306 Aug  1 18:16 .vagrant.d
+drwxr-xr-x    8 cchamberlain staff    272 Sep  5 10:10 .vim
+-rw-------    1 cchamberlain staff  17423 Sep  5 10:57 .viminfo
+-rw-r--r--    1 cchamberlain staff   4103 Aug 18 23:09 .vimrc
+-rw-r--r--    1 cchamberlain staff   3302 Jul 18 01:06 .vimrc~
+-rw-r--r--    1 cchamberlain staff   3143 Jul  3 12:11 .z
+-rw-r--r--    1 cchamberlain staff  35553 Feb 24  2015 .zcompdump
+-rw-r--r--    1 cchamberlain staff  35673 Feb  4  2015 .zcompdump-Cole’s MacBook Pro-5.0.5
+-rw-r--r--    1 cchamberlain staff  36066 Jul 15 23:17 .zcompdump-MINIBEAST-5.0.5
+-rw-r--r--    1 cchamberlain staff  36571 Apr 25 12:15 .zcompdump-MINIBEAST-5.0.7
+drwxr-xr-x   23 cchamberlain staff    782 Sep  5 11:02 .zsh
+drwxr-xr-x   19 cchamberlain staff    646 Jul 18 00:49 .zsh-bak
+-rw-r--r--    1 cchamberlain staff     17 Jul 15 22:00 .zsh-update
+drwxr-xr-x    2 cchamberlain staff     68 Jul 25 13:03 .zsh.bak.corrupt
+drwxr-xr-x   21 cchamberlain staff    714 Jul 25 13:02 .zsh.bak.recent
+-rw-------    1 cchamberlain staff 151615 Jul 15 23:21 .zsh_history
+-rw-r-----    1 cchamberlain staff    900 Sep  5 08:41 .zshenv
+-rw-r--r--    1 cchamberlain staff   1744 Jul 25 11:30 .zshenv.bak
+-rw-r--r--    1 cchamberlain staff  21149 Jul 18 01:35 .zshrc-bak
+drwxrwxrwx    3 cchamberlain staff    102 Oct  7  2014 Adlm
+drwxrwxrwx    3 cchamberlain staff    102 Feb 22  2014 Adobe
+drwxr-xr-x   18 cchamberlain staff    612 Aug  1 18:15 Applications
+drwxr-xr-x    4 cchamberlain staff    136 Aug  1 18:15 Applications (Parallels)
+drwx------  279 cchamberlain staff   9486 Jul 15 22:23 Creative Cloud Files
+drwx------+   9 cchamberlain staff    306 Sep  5 08:05 Desktop
+drwx------+  37 cchamberlain staff   1258 Jun 19 00:49 Documents
+drwx------+ 221 cchamberlain staff   7514 Sep  5 10:15 Downloads
+drwx------   12 cchamberlain staff    408 Sep  5 08:11 Dropbox
+drwx------+  63 cchamberlain staff   2142 May 25 00:03 Library
+drwx------+  21 cchamberlain staff    714 Feb 17  2015 Movies
+drwx------+  11 cchamberlain staff    374 Oct 20  2014 Music
+drwx------+  66 cchamberlain staff   2244 Feb  6  2015 Pictures
+drwxr-xr-x+   5 cchamberlain staff    170 Feb  8  2014 Public
+-rw-r--r--    1 cchamberlain staff   2222 Jul 16 20:26 README.md
+drwxr-xr-x    6 cchamberlain staff    204 Apr 30 21:36 TixInc.bak
+drwxr-xr-x   16 cchamberlain staff    544 Jun  3  2014 XVim
+drwxr-xr-x    3 cchamberlain staff    102 Sep  5 10:48 aspnet
+drwxr-xr-x   16 cchamberlain staff    544 May  7 01:02 automation
+drwxr-xr-x    3 cchamberlain staff    102 Feb 10  2014 bin
+drwxr-xr-x    6 cchamberlain staff    204 Mar  7  2014 bitstampstreaming
+drwxr-xr-x   13 cchamberlain staff    442 Feb 17  2015 books
+lrwxr-xr-x    1 cchamberlain staff     55 Mar  3  2015 c -> /Users/cchamberlain/Desktop/Windows 8.1/Windows Disks/C
+drwxr-xr-x   10 cchamberlain staff    340 Jul 25 18:11 cchamberlain
+drwxr-xr-x    5 cchamberlain staff    170 Jun 18 23:39 chambersoft
+drwxr-xr-x   14 cchamberlain staff    476 May  7 01:02 config
+lrwxr-xr-x    1 cchamberlain staff     25 Mar  3  2015 csrc -> /Users/cchamberlain/c/src
+drwxr-xr-x    9 cchamberlain staff    306 Feb 10  2014 dotfiles
+drwxr-xr-x   19 cchamberlain staff    646 May  7 01:02 ext
+drwxrwxrwx   17 cchamberlain staff    578 May 25 16:20 games
+-rw-r--r--    1 cchamberlain staff  35899 Jan 27  2015 genymotion-log.zip
+drwxr-xr-x    6 cchamberlain staff    204 Jul 25 12:50 gist
+drwxr-xr-x    2 cchamberlain staff     68 Jul 25 18:09 hackr
+drwxr-xr-x    4 cchamberlain staff    136 Feb 10  2014 hidden
+drwxr-xr-x    3 cchamberlain staff    102 May  3 12:36 install-txt
+drwxr-xr-x    4 cchamberlain staff    136 Jul 25 14:20 local
+drwxr-xr-x    2 cchamberlain staff     68 Jul 18 01:11 package_root
+drwxr-xr-x    9 cchamberlain staff    306 Jun  4  2014 physics
+drwxr-xr-x    4 cchamberlain staff    136 Jun  4  2014 physics6
+drwxr-xr-x   13 cchamberlain staff    442 Jul 25 16:13 src
+drwxr-xr-x   18 cchamberlain staff    612 Jul 20  2014 sugar
+drwxr-xr-x    6 cchamberlain staff    204 Jun  2 14:00 tinderfy
+drwxr-xr-x    3 cchamberlain staff    102 Jun  6  2014 tinderizer
+drwxr-xr-x    8 cchamberlain staff    272 Jul 18 02:06 tixinc
+drwxr-xr-x   47 cchamberlain staff   1598 Jan 23  2015 tv
+drwxrwxrwx    8 cchamberlain staff    272 Jul  7  2014 video
+-rw-r--r--    1 cchamberlain staff    275 Jul 16 20:26 zshrc
+
+ cchamberlain@MINIBEAST  ~/c/h/n/web   master ⁝ ? 
+ ❯❯❯ ls ~/.cache
+bower
+
+ cchamberlain@MINIBEAST  ~/c/h/n/web   master ⁝ ? 
+ ❯❯❯ rm -rf ~/.cache
+
+ cchamberlain@MINIBEAST  ~/c/h/n/web   master ⁝ ? 
+ ❯❯❯ dnu restore
+Microsoft .NET Development Utility Mono-x64-1.0.0-beta7-15532
+
+  CACHE https://www.myget.org/F/aspnetvnext/api/v2/
+  CACHE https://www.nuget.org/api/v2/
+Restoring packages for /Users/cchamberlain/cchamberlain/hackr/net/web/project.json
+  CACHE https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='EntityFramework.SQLite'
+  CACHE https://www.nuget.org/api/v2/FindPackagesById()?id='EntityFramework.SQLite'
+  CACHE https://www.nuget.org/api/v2/package/EntityFramework.SQLite/7.0.0-beta1
+  CACHE https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='EntityFramework.Commands'
+  CACHE https://www.nuget.org/api/v2/FindPackagesById()?id='EntityFramework.Commands'
+  CACHE https://www.nuget.org/api/v2/package/EntityFramework.Commands/7.0.0-beta1
+  CACHE https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Mvc'
+  CACHE https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Mvc'
+  CACHE https://www.nuget.org/api/v2/package/Microsoft.AspNet.Mvc/6.0.0-beta1
+  CACHE https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Mvc.TagHelpers'
+  CACHE https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Mvc.TagHelpers'
+  CACHE https://www.nuget.org/api/v2/package/Microsoft.AspNet.Mvc.TagHelpers/6.0.0-beta1
+  CACHE https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Authentication.Cookies'
+  CACHE https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Authentication.Cookies'
+  CACHE https://www.nuget.org/api/v2/package/Microsoft.AspNet.Authentication.Cookies/1.0.0-beta4
+  CACHE https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Authentication.Facebook'
+  CACHE https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Authentication.Facebook'
+  CACHE https://www.nuget.org/api/v2/package/Microsoft.AspNet.Authentication.Facebook/1.0.0-beta4
+  CACHE https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Authentication.Google'
+  CACHE https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Authentication.Google'
+  CACHE https://www.nuget.org/api/v2/package/Microsoft.AspNet.Authentication.Google/1.0.0-beta4
+  CACHE https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Authentication.MicrosoftAccount'
+  CACHE https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Authentication.MicrosoftAccount'
+  CACHE https://www.nuget.org/api/v2/package/Microsoft.AspNet.Authentication.MicrosoftAccount/1.0.0-beta4
+  CACHE https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Authentication.Twitter'
+  CACHE https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Authentication.Twitter'
+  CACHE https://www.nuget.org/api/v2/package/Microsoft.AspNet.Authentication.Twitter/1.0.0-beta4
+  CACHE https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Diagnostics'
+  CACHE https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Diagnostics'
+  CACHE https://www.nuget.org/api/v2/package/Microsoft.AspNet.Diagnostics/1.0.0-beta1
+  CACHE https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Diagnostics.Entity'
+  CACHE https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Diagnostics.Entity'
+  CACHE https://www.nuget.org/api/v2/package/Microsoft.AspNet.Diagnostics.Entity/7.0.0-beta1
+  CACHE https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Authentication.OAuth'
+  CACHE https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Authentication.OAuth'
+  CACHE https://www.nuget.org/api/v2/package/Microsoft.AspNet.Authentication.OAuth/1.0.0-beta4
+  GET https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='EntityFramework.Migrations'
+  GET https://www.nuget.org/api/v2/FindPackagesById()?id='EntityFramework.Migrations'
+  CACHE https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.Data.SQLite'
+^C
+
+ ✘ cchamberlain@MINIBEAST  ~/c/h/n/web   master ⁝ ? 
+ ❮❮❮ rm -rf ~/.cache
+
+ cchamberlain@MINIBEAST  ~/c/h/n/web   master ⁝ ? 
+ ❯❯❯ ls ~/.dnx
+alias  dnvm  packages  runtimes
+
+ cchamberlain@MINIBEAST  ~/c/h/n/web   master ⁝ ? 
+ ❯❯❯ ls ~/.dnx/packages
+Microsoft.Win32.Primitives       System.Resources.ResourceManager
+Microsoft.Win32.Registry         System.Runtime
+System.Collections               System.Runtime.Extensions
+System.Console                   System.Runtime.Handles
+System.Diagnostics.Debug         System.Runtime.InteropServices
+System.Diagnostics.Process       System.Text.Encoding
+System.Globalization             System.Text.Encoding.Extensions
+System.IO                        System.Threading
+System.IO.FileSystem             System.Threading.Overlapped
+System.IO.FileSystem.Primitives  System.Threading.Tasks
+System.Linq                      System.Threading.Thread
+System.Reflection                System.Threading.ThreadPool
+System.Reflection.Primitives
+
+ cchamberlain@MINIBEAST  ~/c/h/n/web   master ⁝ ? 
+ ❯❯❯ rm -rf ~/.dnx/packages/*
+
+ cchamberlain@MINIBEAST  ~/c/h/n/web   master ⁝ ? 
+ ❯❯❯ ls ~/.dnx/dnvm
+dnvm.sh
+
+ cchamberlain@MINIBEAST  ~/c/h/n/web   master ⁝ ? 
+ ❯❯❯ ls ~/.dnx/dnvm/runtimes
+gls: cannot access /Users/cchamberlain/.dnx/dnvm/runtimes: No such file or directory
+
+ ✘ cchamberlain@MINIBEAST  ~/c/h/n/web   master ⁝ ? 
+ ❮❮❮ ls ~/.dnx/runtimes
+dnx-coreclr-darwin-x64.1.0.0-beta7  dnx-mono.1.0.0-beta7  dnx-mono.1.0.0-beta8-15564
+
+ cchamberlain@MINIBEAST  ~/c/h/n/web   master ⁝ ? 
+ ❯❯❯ dnu restore
+Microsoft .NET Development Utility Mono-x64-1.0.0-beta7-15532
+
+  CACHE https://www.myget.org/F/aspnetvnext/api/v2/
+  CACHE https://www.nuget.org/api/v2/
+Restoring packages for /Users/cchamberlain/cchamberlain/hackr/net/web/project.json
+  CACHE https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='EntityFramework.SQLite'
+  CACHE https://www.nuget.org/api/v2/FindPackagesById()?id='EntityFramework.SQLite'
+  CACHE https://www.nuget.org/api/v2/package/EntityFramework.SQLite/7.0.0-beta1
+  CACHE https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='EntityFramework.Commands'
+  CACHE https://www.nuget.org/api/v2/FindPackagesById()?id='EntityFramework.Commands'
+  CACHE https://www.nuget.org/api/v2/package/EntityFramework.Commands/7.0.0-beta1
+  CACHE https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Mvc'
+  CACHE https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Mvc'
+  CACHE https://www.nuget.org/api/v2/package/Microsoft.AspNet.Mvc/6.0.0-beta1
+  CACHE https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Mvc.TagHelpers'
+  CACHE https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Mvc.TagHelpers'
+  CACHE https://www.nuget.org/api/v2/package/Microsoft.AspNet.Mvc.TagHelpers/6.0.0-beta1
+  CACHE https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Authentication.Cookies'
+  CACHE https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Authentication.Cookies'
+  CACHE https://www.nuget.org/api/v2/package/Microsoft.AspNet.Authentication.Cookies/1.0.0-beta4
+  CACHE https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Authentication.Facebook'
+  CACHE https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Authentication.Facebook'
+  CACHE https://www.nuget.org/api/v2/package/Microsoft.AspNet.Authentication.Facebook/1.0.0-beta4
+  CACHE https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Authentication.Google'
+  CACHE https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Authentication.Google'
+  CACHE https://www.nuget.org/api/v2/package/Microsoft.AspNet.Authentication.Google/1.0.0-beta4
+  CACHE https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Authentication.MicrosoftAccount'
+  CACHE https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Authentication.MicrosoftAccount'
+  CACHE https://www.nuget.org/api/v2/package/Microsoft.AspNet.Authentication.MicrosoftAccount/1.0.0-beta4
+  CACHE https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Authentication.Twitter'
+  CACHE https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Authentication.Twitter'
+  CACHE https://www.nuget.org/api/v2/package/Microsoft.AspNet.Authentication.Twitter/1.0.0-beta4
+  CACHE https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Diagnostics'
+  CACHE https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Diagnostics'
+  CACHE https://www.nuget.org/api/v2/package/Microsoft.AspNet.Diagnostics/1.0.0-beta1
+  CACHE https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Diagnostics.Entity'
+  CACHE https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Diagnostics.Entity'
+  CACHE https://www.nuget.org/api/v2/package/Microsoft.AspNet.Diagnostics.Entity/7.0.0-beta1
+  CACHE https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Identity.EntityFramework'
+  CACHE https://www.nuget.org/api/v2/FindPackagesById()?id='Microsoft.AspNet.Identity.EntityFramework'
+  CACHE https://www.nuget.org/api/v2/package/Microsoft.AspNet.Identity.EntityFramework/3.0.0-beta1
+  CACHE https://www.myget.org/F/aspnetvnext/api/v2/FindPackagesById()?id='Microsoft.AspNet.Authentication.OAuth'
+^C
+>>> elapsed time 42s                                                                      
+
+ ✘ cchamberlain@MINIBEAST  ~/c/h/n/web   master ⁝ ? 
+ ❯❯❯ which dnu
+/Users/cchamberlain/.dnx/runtimes/dnx-mono.1.0.0-beta7/bin/dnu
+
+ cchamberlain@MINIBEAST  ~/c/h/n/web   master ⁝ ? 
+ ❯❯❯ ls ~/.dnx/runtimes/dnx-mono.1.0.0-beta7
+bin  dnx-mono.nuspec  package
+
+ cchamberlain@MINIBEAST  ~/c/h/n/web   master ⁝ ? 
+ ❯❯❯ ls ~/.dnx/runtimes/dnx-mono.1.0.0-beta7/package
+services
+
+ cchamberlain@MINIBEAST  ~/c/h/n/web   master ⁝ ? 
+ ❯❯❯ ls ~/.dnx/runtimes/dnx-mono.1.0.0-beta7/package/services
+metadata
+
+ cchamberlain@MINIBEAST  ~/c/h/n/web   master ⁝ ? 
+ ❯❯❯ ls ~/.dnx/runtimes/dnx-mono.1.0.0-beta7/package/services/metadata
+core-properties
+
+ cchamberlain@MINIBEAST  ~/c/h/n/web   master ⁝ ? 
+ ❯❯❯ ls ~/.dnx/runtimes/dnx-mono.1.0.0-beta7/bin
+Microsoft.CodeAnalysis.CSharp.dll
+Microsoft.CodeAnalysis.dll
+Microsoft.Dnx.ApplicationHost.dll
+Microsoft.Dnx.Compilation.Abstractions.dll
+Microsoft.Dnx.Compilation.CSharp.Abstractions.dll
+Microsoft.Dnx.Compilation.CSharp.Common.dll
+Microsoft.Dnx.Compilation.CSharp.dll
+Microsoft.Dnx.Compilation.DesignTime.dll
+Microsoft.Dnx.Compilation.dll
+Microsoft.Dnx.DesignTimeHost.Abstractions.dll
+Microsoft.Dnx.Host.Mono.dll
+Microsoft.Dnx.Host.dll
+Microsoft.Dnx.Loader.dll
+Microsoft.Dnx.Runtime.Abstractions.dll
+Microsoft.Dnx.Runtime.dll
+Microsoft.Framework.HashCodeCombiner.Sources.dll
+System.Collections.Immutable.dll
+System.Reflection.Metadata.dll
+dnu
+dnx
+lib
+
+ cchamberlain@MINIBEAST  ~/c/h/n/web   master ⁝ ? 
+ ❮❮❮ ls ~/.dnx/runtimes/dnx-mono.1.0.0-beta7/bin
+>>> elapsed time 14s                                                                      
+
+ ✘ cchamberlain@MINIBEAST  ~/c/h/n/web   master ⁝ ? 
+ ❯❯❯ ls
+Controllers  README.md   ViewModels  config.json  package.json
+Migrations   Services    Views       gulpfile.js  project.json
+Models       Startup.cs  bower.json  hosting.ini  wwwroot
+
+ cchamberlain@MINIBEAST  ~/c/h/n/web   master ⁝ ? 
+ ❯❯❯ ls /usr/local/dnu
+gls: cannot access /usr/local/dnu: No such file or directory
+
+ ✘ cchamberlain@MINIBEAST  ~/c/h/n/web   master ⁝ ? 
+ ❯❯❯ sudo ls /usr/local
+Password:
+.DS_Store		LICENSE.txt		heroku
+.git			Library			include
+.gitignore		README.md		lib
+.yardopts		SUPPORTERS.md		n
+CODEOFCONDUCT.md	bin			opt
+CONTRIBUTING.md		ec2			share
+Cellar			etc			var
+Frameworks		foreman
+
+ cchamberlain@MINIBEAST  ~/c/h/n/web   master ⁝ ? 
+ ❯❯❯ vim /etc/sudoers
+
+ cchamberlain@MINIBEAST  ~/c/h/n/web   master ⁝ ? 
+ ❯❯❯ sudo vim /etc/sudoers
+>>> elapsed time 32s                                                                      
+
+ cchamberlain@MINIBEAST  ~/c/h/n/web   master ⁝ ? 
+ ❯❯❯ visudo /etc/sudoers
+usage: visudo [-chqsV] [-f sudoers]
+
+ ✘ cchamberlain@MINIBEAST  ~/c/h/n/web   master ⁝ ? 
+ ❯❯❯ visudo
+visudo: /etc/sudoers: Permission denied
+
+ ✘ cchamberlain@MINIBEAST  ~/c/h/n/web   master ⁝ ? 
+ ❯❯❯ sudo visudo
+
+  GNU nano 2.0.6               File: /etc/sudoers.tmp                           Modified  
+
+# sudoers file.
+#
+# This file MUST be edited with the 'visudo' command as root.
+# Failure to use 'visudo' may result in syntax or file permission errors
+# that prevent sudo from running.
+#
+# See the sudoers man page for the details on how to write a sudoers file.
+#
+
+# Host alias specification
+
+# User alias specification
+
+# Cmnd alias specification
+
+# Defaults specification
+Defaults        env_reset
+Defaults        env_keep += "BLOCKSIZE"
+Defaults        env_keep += "COLORFGBG COLORTERM"
+Defaults        env_keep += "__CF_USER_TEXT_ENCODING"
+Defaults        env_keep += "CHARSET LANG LANGUAGE LC_ALL LC_COLLATE LC_CTYPE"
+Defaults        env_keep += "LC_MESSAGES LC_MONETARY LC_NUMERIC LC_TIME"
+Defaults        env_keep += "LINES COLUMNS"
+Defaults        env_keep += "LSCOLORS"
+Defaults        env_keep += "SSH_AUTH_SOCK"
+Defaults        env_keep += "TZ"
+Defaults        env_keep += "DISPLAY XAUTHORIZATION XAUTHORITY"
+Defaults        env_keep += "EDITOR VISUAL"
+Defaults        env_keep += "HOME MAIL"
+
+Defaults:cchamberlain   timestamp_timeout=300  
+
+# Runas alias specification
+
+# User privilege specification
+root    ALL=(ALL) ALL
+%admin  ALL=(ALL) ALL
+
+# Uncomment to allow people in group wheel to run all commands
+# %wheel        ALL=(ALL) ALL
+
+# Same thing without a password
+# %wheel        ALL=(ALL) NOPASSWD: ALL
+
+# Samples
+# %users  ALL=/sbin/mount /cdrom,/sbin/umount /cdrom
+# %users  localhost=/sbin/shutdown -h now
+
+
+
+
+
+
+
+
+                                   [ Unknown Command ]
+^G Get Help    ^O WriteOut    ^R Read File   ^Y Prev Page   ^K Cut Text    ^C Cur Pos
+^X Exit        ^J Justify     ^W Where Is    ^V Next Page   ^U UnCut Text  ^T To Spell

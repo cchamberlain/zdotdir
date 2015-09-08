@@ -4,7 +4,10 @@ if [[ -s "$ZPREZTODIR/init.zsh" ]]; then
   . "$ZPREZTODIR/init.zsh"
 fi
 
-. /usr/local/Cellar/dnvm/1.0.0-dev/libexec/dnvm.sh
+# [ -s "$HOME/.dnx/dnvm/dnvm.sh" ] && . "$HOME/.dnx/dnvm/dnvm.sh"
+source dnvm.sh
+export MONO_MANAGED_WATCHER=disabled
+
 . "$ZSCRIPTDIR/checks.zsh"
 . "$ZSCRIPTDIR/colors.zsh"
 . "$ZSCRIPTDIR/setopt.zsh"

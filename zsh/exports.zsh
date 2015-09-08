@@ -65,6 +65,8 @@ export PAGER='less'
 export PKG_CONFIG_PATH="/usr/lib/pkgconfig"
 
 export NODE_PATH="$USR_NODESCRIPT_ROOT:$NODE_PATH"
+[[ $IS_MAC -eq 1 ]] && export NODE_PATH=$NODE_PATH:/Users/cchamberlain/local/npm/lib/node_modules
+
 #export PYTHONPATH=/usr/local/lib/python2.6/site-packages
 # CTAGS Sorting in VIM/Emacs is better behaved with this in place
 export LC_COLLATE=C
