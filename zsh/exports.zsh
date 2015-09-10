@@ -45,12 +45,15 @@ if [[ $IS_WIN -eq 1 ]]; then
   export CHROME_PATH=$PF86/Google/Chrome/Application/chrome.exe
   export EDITOR_VS=$PF86/Microsoft\ Visual\ Studio\ 12.0/Common7/IDE/devenv.exe
   export EDITOR_WEBSTORM=$PF86/JetBrains/WebStorm\ 10.0.4/bin/WebStorm64.exe
-  export PATH="/usr/local/bin:/usr/bin:/bin:/opt/bin:/mingw64/bin:$LOCAL_ROOT/bin:$LOCAL_ROOT/npm:$ZPYTHONDIR:$LOCAL_ROOT/twisted/bin:$LOCAL_ROOT/iojs:$LOCAL_ROOT/tcc:/c/WINDOWS/system32:/c/WINDOWS:$PF86/Windows\ Kits/8.0/bin/x64:/c/WINDOWS/System32/WindowsPowerShell/v1.0:$PF86/Heroku/bin:$LOCAL_ROOT/chocolatey/bin:$HOME/AppData/Local/atom/bin"
+  export PATH="/usr/local/bin:/usr/bin:/bin:/opt/bin:/mingw64/bin:$LOCAL_ROOT/bin:$LOCAL_ROOT/npm:/c/HashiCorp/Vagrant/bin:$PF/Oracle/VirtualBox:$PF/Docker Toolbox:$PF86/Microsoft VS Code:$ZPYTHONDIR:$LOCAL_ROOT/twisted/bin:$LOCAL_ROOT/iojs:$LOCAL_ROOT/tcc:/c/WINDOWS/system32:/c/WINDOWS:$PF86/Windows Kits/8.0/bin/x64:/c/WINDOWS/System32/WindowsPowerShell/v1.0:$PF86/Heroku/bin:$LOCAL_ROOT/chocolatey/bin:$HOME/AppData/Local/atom/bin"
 elif [[ $IS_MAC -eq 1 ]]; then
   export TERM=xterm-256color
   export CHROME_PATH="$(which chrome)"
   export PATH="$USR_BIN_ROOT:$NPM_CONFIG_PREFIX/bin:$PATH:~/bin:/usr/local/bin:/usr/local/sbin:~/bin"
   export EDITOR_WEBSTORM="wstorm"
+elif [[ $IS_LINUX -eq 1 ]]; then
+  export TERM=xterm-256color
+  export PATH="$USR_BIN_ROOT:$NPM_CONFIG_PREFIX/bin:$PATH:~/bin:/usr/local/bin:/usr/local/sbin:~/bin"
 fi
 
 # vi mode lag fix
