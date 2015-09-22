@@ -660,6 +660,10 @@ function update-vs {
   exec-iso "$local_iso_path"
 }
 
+function update-docker {
+  eval "$(docker-machine env default --shell=zsh)"
+}
+
 # -------------------------------------------------------------------
 # pull latest upstream msys2 packages and reset
 # -------------------------------------------------------------------
