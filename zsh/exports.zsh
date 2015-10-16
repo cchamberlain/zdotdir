@@ -18,6 +18,7 @@ export LOCAL_SRC_ROOT="$LOCAL_ROOT/src"
 export USR_SRC_GIST_ROOT="$USR_SRC_ROOT/gist"
 export USR_BACKUP_ROOT="$HOME/.backup"
 export USR_NOTES_ROOT="$HOME/.notes"
+export USR_SCRIPTS_ROOT="$HOME/cchamberlain/scripts"
 
 # USR APP DIRECTORIES
 export USR_PREFIX="$LOCAL_ROOT"
@@ -43,8 +44,9 @@ if [[ $IS_WIN -eq 1 ]]; then
 
   export PF=/c/Program\ Files
   export PF86=/c/Program\ Files\ \(x86\)
+  export SUBLIME="$PF/Sublime Text 3"
 
-  export PATH="/usr/local/bin:/usr/bin:/bin:/opt/bin:/mingw64/bin:$LOCAL_ROOT/bin:$PF/git/bin:$PF86/Microsoft VS Code:$LOCAL_ROOT/npm:$ZPYTHONDIR:$LOCAL_ROOT/twisted/bin:/c/HashiCorp/Vagrant/bin:$PF/Docker Toolbox:$PF/Oracle/VirtualBox:$PF86/VMware/VMware Workstation/x64:$PF86/VMware/VMware Workstation:$LOCAL_ROOT/iojs:$PF/Java/jre1.8.0_60/bin:$LOCAL_ROOT/tcc:/c/WINDOWS/system32:/c/WINDOWS:$PF86/Windows Kits/8.0/bin/x64:/c/WINDOWS/System32/WindowsPowerShell/v1.0:$PF86/Heroku/bin:$LOCAL_ROOT/chocolatey/bin:$HOME/AppData/Local/atom/bin"
+  export PATH="/usr/local/bin:/usr/bin:/bin:$USR_SCRIPTS_ROOT:/opt/bin:/mingw64/bin:$LOCAL_ROOT/bin:$PF/git/bin:$PF86/Microsoft VS Code:$SUBLIME:$LOCAL_ROOT/npm:$ZPYTHONDIR:$LOCAL_ROOT/twisted/bin:/c/HashiCorp/Vagrant/bin:$PF/Docker Toolbox:$PF/Oracle/VirtualBox:$PF86/VMware/VMware Workstation/x64:$PF86/VMware/VMware Workstation:$LOCAL_ROOT/iojs:$PF/Java/jre1.8.0_60/bin:$LOCAL_ROOT/tcc:/c/WINDOWS/system32:/c/WINDOWS:$PF86/Windows Kits/8.0/bin/x64:/c/WINDOWS/System32/WindowsPowerShell/v1.0:$PF86/Heroku/bin:$LOCAL_ROOT/chocolatey/bin:$HOME/AppData/Local/atom/bin"
 
   export CHROME_PATH=$PF86/Google/Chrome/Application/chrome.exe
   export EDITOR_VS=$PF86/Microsoft\ Visual\ Studio\ 12.0/Common7/IDE/devenv.exe
