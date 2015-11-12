@@ -46,7 +46,7 @@ if [[ $IS_WIN -eq 1 ]]; then
   export PF86=/c/Program\ Files\ \(x86\)
   export SUBLIME="$PF/Sublime Text 3"
 
-  export PATH="/usr/local/bin:/usr/bin:/bin:$USR_SCRIPTS_ROOT:/opt/bin:/mingw64/bin:$LOCAL_ROOT/bin:$LOCAL_ROOT/npm:$(cygpath -u -p $PATH)"
+  export PATH="/usr/local/bin:/usr/bin:/bin:$USR_SCRIPTS_ROOT:/opt/bin:/mingw64/bin:$PF86/nodejs:$LOCAL_ROOT/bin:$LOCAL_ROOT/npm:$PF/Git/cmd:$(cygpath -u -p $PATH)"
   
   # export PATH="/usr/local/bin:/usr/bin:/bin:$USR_SCRIPTS_ROOT:/opt/bin:/mingw64/bin:$LOCAL_ROOT/bin:$PF/Git/cmd:$PF/Git/mingw64/bin:$PF/Git/usr/bin:$PF86/Microsoft VS Code:$SUBLIME:$LOCAL_ROOT/npm:$ZPYTHONDIR:$LOCAL_ROOT/twisted/bin:/c/HashiCorp/Vagrant/bin:$PF/Docker Toolbox:$PF/Oracle/VirtualBox:$PF86/VMware/VMware Workstation/x64:$PF86/VMware/VMware Workstation:$LOCAL_ROOT/iojs:$PF/Java/jre1.8.0_60/bin:$LOCAL_ROOT/tcc:/c/WINDOWS/system32:/c/WINDOWS:$PF86/Windows Kits/8.0/bin/x64:/c/WINDOWS/System32/WindowsPowerShell/v1.0:$PF86/Heroku/bin:$LOCAL_ROOT/chocolatey/bin:$HOME/AppData/Local/atom/bin"
 
